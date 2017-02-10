@@ -5,8 +5,99 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ShapeEditor"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
+        Title="ShapeEditor" Height="756" Width="844"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+        TextElement.FontWeight="Medium"
+        TextElement.FontSize="14"
+        TextOptions.TextFormattingMode="Ideal"
+        TextOptions.TextRenderingMode="Auto"
+        Background="{DynamicResource MaterialDesignPaper}"
+         FontFamily="pack://application:,,,/MaterialDesignThemes.Wpf;component/Resources/Roboto/#Roboto">
     <Grid>
-        
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition Width="200"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <StackPanel Grid.Column="1">
+            <materialDesign:Card Margin="4 4 4 0" Background="{DynamicResource PrimaryHueDarkBrush}"
+                  Foreground="{DynamicResource PrimaryHueDarkForegroundBrush}"
+                  Padding="8">
+                <StackPanel>
+                    <TextBlock Margin="10 10 12 8"  Style="{DynamicResource MaterialDesignTitleTextBlock}">New shape</TextBlock>
+                    <StackPanel Orientation="Horizontal">
+                        <Button Height="35" Width="35" ToolTip="New rectangle" Margin="2"  Style="{DynamicResource MaterialDesignRaisedButton}">
+                            <materialDesign:PackIcon Kind="CheckboxBlankOutline" Margin="-12,0" Width="Auto" Height="Auto"/>
+                        </Button>
+                        <Button Height="35" Width="35" ToolTip="New ellypse"   Margin="2"  Style="{DynamicResource MaterialDesignRaisedButton}">
+                            <materialDesign:PackIcon Kind="PanoramaFisheye" Margin="-12,0" Width="Auto" Height="Auto"/>
+                        </Button>
+                        <Button Height="35" Width="35" ToolTip="New triangle"  Margin="2"   Style="{DynamicResource MaterialDesignRaisedButton}">
+                            <materialDesign:PackIcon Kind="TriangleOutline" Margin="-12,0" Width="Auto" Height="Auto"/>
+                        </Button>
+                        <Button Height="35" Width="35" ToolTip="New line"  Margin="2"   Style="{DynamicResource MaterialDesignRaisedButton}">
+                            <materialDesign:PackIcon Kind="VectorLine" Margin="-12,0" Width="Auto" Height="Auto"/>
+                        </Button>
+                    </StackPanel>
+                </StackPanel>
+            </materialDesign:Card>
+
+            <materialDesign:Card Margin="4 4 4 0" Background="{DynamicResource PrimaryHueDarkBrush}"
+                  Foreground="{DynamicResource PrimaryHueDarkForegroundBrush}"
+                  Padding="8">
+                <StackPanel>
+                    <TextBlock Margin="10 10 12 8"  Style="{DynamicResource MaterialDesignTitleTextBlock}">Appearance</TextBlock>
+                    <StackPanel Orientation="Horizontal">
+                        <Button Height="35" Width="35" ToolTip="Select fill color" Margin="2"  Padding="0,6,0,0" Style="{DynamicResource MaterialDesignRaisedButton}">
+                            <materialDesign:PackIcon Kind="FormatColorFill" Margin="-13,0" Width="Auto" Height="Auto"/>
+                        </Button>
+                        <Button Height="35" Width="35" ToolTip="Select border color"  Padding="0,7,0,0" Margin="2"  Style="{DynamicResource MaterialDesignRaisedButton}">
+                            <materialDesign:PackIcon Kind="BorderColor" Margin="-13,-1" Width="Auto" Height="Auto"/>
+                        </Button>
+                        <Button Height="35" Width="35" ToolTip="Move shape to top"  Margin="2"   Style="{DynamicResource MaterialDesignRaisedButton}">
+                            <materialDesign:PackIcon Kind="FormatVerticalAlignTop" Margin="-12,0" Width="Auto" Height="Auto"/>
+                        </Button>
+                        <Button Height="35" Width="35" ToolTip="Delete shape"  Margin="2"   Style="{DynamicResource MaterialDesignRaisedButton}">
+                            <materialDesign:PackIcon Kind="DeleteForever" Margin="-12,0" Width="Auto" Height="Auto"/>
+                        </Button>
+                    </StackPanel>
+
+                    <TextBlock Margin="10 10 12 8"  Style="{DynamicResource MaterialDesignSubheadingTextBlock}">Border width</TextBlock>
+                    <Slider Minimum="0" Maximum="10" Margin="0 -30 0 0" Style="{DynamicResource MaterialDesignDiscreteSlider}"/>
+                </StackPanel>
+            </materialDesign:Card>
+            
+            <materialDesign:Card Margin="4 4 4 0" Background="{DynamicResource PrimaryHueDarkBrush}"
+                  Foreground="{DynamicResource PrimaryHueDarkForegroundBrush}"
+                  Padding="8">
+                <StackPanel>
+                    <TextBlock Margin="10 10 12 8"  Style="{DynamicResource MaterialDesignTitleTextBlock}">Canvas</TextBlock>
+
+                    <DockPanel Margin="10 10 12 8" >
+                        <TextBlock DockPanel.Dock="Left"  Style="{DynamicResource MaterialDesignSubheadingTextBlock}">Current scale: </TextBlock>
+                        <TextBlock DockPanel.Dock="Right" Style="{DynamicResource MaterialDesignSubheadingTextBlock}" HorizontalAlignment="Right">100%</TextBlock>
+
+                    </DockPanel>
+                    <Slider Margin="10 0 12 0" TickFrequency="5" Orientation="Horizontal" Minimum="1" Maximum="50" Value="25" />
+                </StackPanel>
+            </materialDesign:Card>
+
+            <materialDesign:Card Margin="4 4 4 0" Background="{DynamicResource PrimaryHueDarkBrush}"
+                  Foreground="{DynamicResource PrimaryHueDarkForegroundBrush}"
+                  Padding="8">
+                <StackPanel>
+                    <TextBlock Margin="10 10 12 8"  Style="{DynamicResource MaterialDesignTitleTextBlock}">I/O</TextBlock>
+                    <StackPanel Orientation="Horizontal">
+                        <Button Height="35" Width="35" ToolTip="Save to..." Margin="2"  Padding="0,0,0,0" Style="{DynamicResource MaterialDesignRaisedButton}">
+                            <materialDesign:PackIcon Kind="PackageDown" Margin="0,0" Width="Auto" Height="Auto"/>
+                        </Button>
+                        <Button Height="35" Width="35" ToolTip="Load from..."  Padding="1,1,1,1" Margin="2"  Style="{DynamicResource MaterialDesignRaisedButton}">
+                            <materialDesign:PackIcon Kind="PackageUp" Margin="-13,-1" Width="Auto" Height="Auto"/>
+                        </Button>
+                    </StackPanel>
+                </StackPanel>
+            </materialDesign:Card>
+        </StackPanel>
+
     </Grid>
 </Window>

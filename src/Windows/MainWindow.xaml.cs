@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using MaterialDesignThemes.Wpf;
 
 namespace ShapeEditor.Windows
 {
@@ -10,6 +11,7 @@ namespace ShapeEditor.Windows
         public MainWindow()
         {
             InitializeComponent();
+
         }
     }
 }
