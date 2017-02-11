@@ -108,7 +108,7 @@ namespace ShapeEditor.Windows
         private object _colorPickerContent;
         private ICommand _openColorPickerCommand;
         private ICommand _cancelColorPickerCommand;
-        private Color _selectedFillColor = Color.FromRgb(0, 0, 0);
+        private Color _selectedFillColor = Color.FromRgb(255, 255, 255);
         private Color _selectedBorderColor = Color.FromRgb(0, 0, 0);
         private double _scale = 1;
         private int _borderWidth;
