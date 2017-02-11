@@ -1,8 +1,9 @@
 using System;
+using ShapeEditor.Fabrics;
+using ShapeEditor.Shapes;
 
 namespace ShapeEditor
 {
-    struct Point { }
 
     class SuperShapeFabric : ShapeFabric
     {

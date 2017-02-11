@@ -1,4 +1,6 @@
-namespace ShapeEditor
+using ShapeEditor.Shapes;
+
+namespace ShapeEditor.Fabrics
 {
     abstract class ShapeFabric
     {

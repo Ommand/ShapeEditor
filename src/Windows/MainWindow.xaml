@@ -3,11 +3,10 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:ShapeEditor"
+        xmlns:wpf="clr-namespace:SharpGL.WPF;assembly=SharpGL.WPF"
         mc:Ignorable="d"
         Title="ShapeEditor" Height="756" Width="844"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-        xmlns:system="clr-namespace:System;assembly=mscorlib"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
         TextElement.FontWeight="Medium"
         TextElement.FontSize="14"
@@ -25,11 +24,12 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Window.Resources>
-    <Grid>
+    <Grid x:Name="grdMain">
         <Grid.ColumnDefinitions>
             <ColumnDefinition></ColumnDefinition>
             <ColumnDefinition Width="200"></ColumnDefinition>
         </Grid.ColumnDefinitions>
+        <Canvas Name="WpfRender" Background="Transparent" Grid.Row="0" Grid.Column="0"/>
         <StackPanel Grid.Column="1">
             <materialDesign:Card Margin="4 4 4 0" Background="{DynamicResource PrimaryHueDarkBrush}"
                   Foreground="{DynamicResource PrimaryHueDarkForegroundBrush}"

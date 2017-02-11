@@ -1,13 +1,20 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using MaterialDesignThemes.Wpf;
 using ShapeEditor.Domain;
+using ShapeEditor.Renderers;
 using ShapeEditor.src;
+using ShapeEditor.Shapes;
+using SharpGL;
+using SharpGL.SceneGraph;
+using SharpGL.WPF;
 
 namespace ShapeEditor.Windows
 {
@@ -62,14 +69,27 @@ namespace ShapeEditor.Windows
                 OnPropertyChanged();
             }
         }
-
+        
+        List<IShape> listShapes;
+        IRenderer renderer;
+        private OpenGLControl control;
         #endregion
 
-        #region Init
+        #region Main
         public MainWindow()
         {
             InitializeColorDialog();
             InitializeComponent();
+            
+            control = new OpenGLControl();
+            grdMain.Children.Add(control);
+            renderer = new RendererOpenGl(control);
+            
+            listShapes = new List<IShape> { new Triangle(new Point(-0.5, -0.5), new Point(0.7, -0.5), new Point(0.5, 0.5), SelectedBorderColor, SelectedFillColor) };
+            // renderer = new RendererWpf(WpfRender);
+            WpfRender.Visibility = Visibility.Hidden;
+            control.Visibility = Visibility.Visible;
+
             //Show dialog host
             dialogHost.HorizontalAlignment = HorizontalAlignment.Stretch;
         } 
@@ -169,7 +189,7 @@ namespace ShapeEditor.Windows
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        } 
+        }
         #endregion
 
     }
