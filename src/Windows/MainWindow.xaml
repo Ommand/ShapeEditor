@@ -74,7 +74,7 @@
                     </StackPanel>
 
                     <TextBlock Margin="10 10 12 8"  Style="{DynamicResource MaterialDesignSubheadingTextBlock}">Border width</TextBlock>
-                    <Slider Minimum="0" Maximum="10" Margin="0 -30 0 0" Style="{DynamicResource MaterialDesignDiscreteSlider}"/>
+                    <Slider Minimum="0" Maximum="10" Value="{Binding BorderWidth,ElementName=window}" Margin="0 -30 0 0" Style="{DynamicResource MaterialDesignDiscreteSlider}"/>
                 </StackPanel>
             </materialDesign:Card>
 
@@ -93,10 +93,10 @@
                     </DockPanel>
                     <DockPanel Margin="10 0 12 8" >
                         <TextBlock DockPanel.Dock="Left"  Style="{DynamicResource MaterialDesignSubheadingTextBlock}">Current scale:</TextBlock>
-                        <TextBlock DockPanel.Dock="Right" Style="{DynamicResource MaterialDesignSubheadingTextBlock}" HorizontalAlignment="Right">100%</TextBlock>
+                        <TextBlock DockPanel.Dock="Right" Style="{DynamicResource MaterialDesignSubheadingTextBlock}" HorizontalAlignment="Right" Text="{Binding ScalePercent,ElementName=window}"></TextBlock>
 
                     </DockPanel>
-                    <Slider Margin="10 0 12 0" TickFrequency="5" Orientation="Horizontal" Minimum="1" Maximum="50" Value="25" />
+                    <Slider Margin="10 0 12 0" TickFrequency="5" Orientation="Horizontal" Minimum="0.1" Maximum="5" Value="{Binding Scale,ElementName=window}" />
                 </StackPanel>
             </materialDesign:Card>
 

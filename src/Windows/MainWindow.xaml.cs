@@ -16,17 +16,17 @@ namespace ShapeEditor.Windows
     /// </summary>
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
+        #region Variables
         public Color SelectedFillColor
         {
             get { return _selectedFillColor; }
             private set
             {
-                _selectedFillColor = value; 
+                _selectedFillColor = value;
                 OnPropertyChanged();
                 OnPropertyChanged(nameof(SelectedFillColorBrush));
             }
         }
-        
         public Color SelectedBorderColor
         {
             get { return _selectedBorderColor; }
@@ -39,6 +39,31 @@ namespace ShapeEditor.Windows
         }
         public Brush SelectedFillColorBrush => new SolidColorBrush(SelectedFillColor);
         public Brush SelectedBorderColorBrush => new SolidColorBrush(SelectedBorderColor);
+
+        public double Scale
+        {
+            get { return _scale; }
+            set
+            {
+                if (value == _scale)
+                    return;
+                _scale = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(ScalePercent));
+            }
+        }
+        public string ScalePercent => $"{(int)(Scale*100)}%";
+        public int BorderWidth
+        {
+            get { return _borderWidth; }
+            set
+            {
+                _borderWidth = value;
+                OnPropertyChanged();
+            }
+        }
+
+        #endregion
 
         #region Init
         public MainWindow()
@@ -85,6 +110,8 @@ namespace ShapeEditor.Windows
         private ICommand _cancelColorPickerCommand;
         private Color _selectedFillColor = Color.FromRgb(0, 0, 0);
         private Color _selectedBorderColor = Color.FromRgb(0, 0, 0);
+        private double _scale = 1;
+        private int _borderWidth;
 
         public bool IsColorPickerOpen
         {
