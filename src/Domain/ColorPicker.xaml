@@ -1,0 +1,41 @@
+﻿<UserControl x:Class="ShapeEditor.src.ColorPicker"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ShapeEditor.src"
+             mc:Ignorable="d" 
+             xmlns:wpf="clr-namespace:MaterialDesignThemes.Wpf;assembly=MaterialDesignThemes.Wpf"
+             xmlns:system="clr-namespace:System;assembly=mscorlib"
+             xmlns:shapeEditor="clr-namespace:ShapeEditor"
+             xmlns:domain="clr-namespace:ShapeEditor.Domain"
+             d:DesignHeight="290" d:DesignWidth="290" Height="290">
+    <!--    <Grid Margin="16" x:Name="grdMain">-->
+    <!--        <Grid.ColumnDefinitions>-->
+    <!--            <ColumnDefinition></ColumnDefinition>-->
+    <!--            <ColumnDefinition></ColumnDefinition>-->
+    <!--            <ColumnDefinition></ColumnDefinition>-->
+    <!--            <ColumnDefinition></ColumnDefinition>-->
+    <!--            <ColumnDefinition></ColumnDefinition>-->
+    <!--        </Grid.ColumnDefinitions>-->
+    <!--    </Grid>-->
+    <ListBox x:Name="lbMain" Margin="16">
+        <ListBox.ItemsPanel>
+            <ItemsPanelTemplate >
+                <VirtualizingStackPanel IsItemsHost="True" Orientation="Vertical"/>
+            </ItemsPanelTemplate>
+        </ListBox.ItemsPanel>
+        <ListBox.ItemContainerStyle>
+            <Style TargetType="{x:Type ListBoxItem}">
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                            <ContentPresenter/>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+        </ListBox.ItemContainerStyle>
+    </ListBox>
+</UserControl>
+
