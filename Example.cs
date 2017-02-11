@@ -1,9 +1,9 @@
 using System;
+using ShapeEditor.Fabrics;
+using ShapeEditor.Shapes;
 
 namespace ShapeEditor
 {
-    struct Point { }
-    struct Color { }
 
     class SuperShapeFabric : ShapeFabric
     {

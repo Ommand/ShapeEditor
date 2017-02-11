@@ -1,10 +1,12 @@
 using System.Collections.Generic;
+using System.Windows;
 
-namespace ShapeEditor
+namespace ShapeEditor.Shapes
 {
-    interface IShape
+    interface IShape 
     {
         IEnumerable<Point> Points { get; }
+
         void UpdatePoints(ITransform transform);
     }
 }
