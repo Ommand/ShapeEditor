@@ -92,6 +92,8 @@ namespace ShapeEditor.Windows
 
             //Show dialog host
             dialogHost.HorizontalAlignment = HorizontalAlignment.Stretch;
+            grdMain.Children.Remove(dialogHost);
+            grdMain.Children.Add(dialogHost);
         } 
         #endregion
 
