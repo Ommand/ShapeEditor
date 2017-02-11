@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
@@ -25,10 +26,27 @@ namespace ShapeEditor.src
         private double buttonSize = 35;
         private Thickness buttonMargin = new Thickness(4);
 
-        public ColorPicker()
+        private static ColorPicker _instance;
+        public static ColorPicker Instance
+        {
+            get
+            {
+                if (_instance == null)
+                    throw new Exception("Color picker did not initialized");
+                return _instance;
+            }
+        }
+        private ColorPicker()
         {
             InitializeComponent();
             FillWithColors();
+        }
+
+        public static void Init(object dataContext)
+        {
+            if (_instance == null)
+                _instance = new ColorPicker();
+            _instance.DataContext = dataContext;
         }
 
         void FillWithColors()
@@ -46,6 +64,11 @@ namespace ShapeEditor.src
                 {
                     //Define the control that will be added to new row
                     var button = new Button();
+
+                    var binding = new Binding {Path = new PropertyPath("CancelSample4DialogCommand")};
+                    //Name of the property in Datacontext
+                    button.SetBinding(ButtonBase.CommandProperty, binding);
+
                     button.Background = new SolidColorBrush(_colorList[currentColor++]);
                     button.Margin = buttonMargin;
                     button.Height = button.Width = buttonSize;

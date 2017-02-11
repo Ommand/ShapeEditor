@@ -21,6 +21,7 @@ namespace ShapeEditor.Windows
             AcceptSample4DialogCommand = new AnotherCommandImplementation(AcceptSample4Dialog);
             CancelSample4DialogCommand = new AnotherCommandImplementation(CancelSample4Dialog);
             InitializeComponent();
+            ColorPicker.Init(this);
             dialogHost.HorizontalAlignment = HorizontalAlignment.Stretch;
             //Sample 4
         }
@@ -60,7 +61,7 @@ namespace ShapeEditor.Windows
 
         private void OpenSample4Dialog(object obj)
         {
-            Sample4Content = new ColorPicker {DataContext = this};
+            Sample4Content = ColorPicker.Instance;
             IsSample4DialogOpen = true;
         }
 
