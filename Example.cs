@@ -3,7 +3,6 @@ using System;
 namespace ShapeEditor
 {
     struct Point { }
-    struct Color { }
 
     class SuperShapeFabric : ShapeFabric
     {

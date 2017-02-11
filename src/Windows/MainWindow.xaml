@@ -59,10 +59,10 @@
                 <StackPanel>
                     <TextBlock Margin="10 10 12 8"  Style="{DynamicResource MaterialDesignTitleTextBlock}">Appearance</TextBlock>
                     <StackPanel Orientation="Horizontal">
-                        <Button Height="35" Width="35" Command="{Binding OpenSample4DialogCommand, ElementName=window, Mode=Default}" ToolTip="Select fill color" Margin="2"  Padding="0,6,0,0" Style="{DynamicResource MaterialDesignRaisedButton}">
+                        <Button  Height="35" Width="35" Click="btnFillColorClick" Command="{Binding OpenColorPickerCommand, ElementName=window, Mode=Default}" ToolTip="Select fill color" Margin="2"  Padding="0,6,0,0" Style="{DynamicResource MaterialDesignRaisedButton}">
                             <materialDesign:PackIcon Kind="FormatColorFill" Margin="-13,0" Width="Auto" Height="Auto"/>
                         </Button>
-                        <Button Height="35" Width="35" ToolTip="Select border color"  Padding="0,7,0,0" Margin="2"  Style="{DynamicResource MaterialDesignRaisedButton}">
+                        <Button Height="35" Width="35" Click="btnBorderColorClick" ToolTip="Select border color" Command="{Binding OpenColorPickerCommand, ElementName=window, Mode=Default}"  Padding="0,7,0,0" Margin="2"  Style="{DynamicResource MaterialDesignRaisedButton}">
                             <materialDesign:PackIcon Kind="BorderColor" Margin="-13,-1" Width="Auto" Height="Auto"/>
                         </Button>
                         <Button Height="35" Width="35" ToolTip="Move shape to top"  Margin="2"   Style="{DynamicResource MaterialDesignRaisedButton}">
@@ -84,6 +84,13 @@
                 <StackPanel>
                     <TextBlock Margin="10 10 12 8"  Style="{DynamicResource MaterialDesignTitleTextBlock}">Canvas</TextBlock>
 
+                    <DockPanel Margin="10 0 12 8" >
+                        <TextBlock DockPanel.Dock="Left" VerticalAlignment="Center" Style="{DynamicResource MaterialDesignSubheadingTextBlock}">Colors:</TextBlock>
+                        <StackPanel Orientation="Horizontal" DockPanel.Dock="Right" HorizontalAlignment="Right">
+                            <Button Margin="2" Height="20" Width="20" Background="{Binding SelectedFillColorBrush, ElementName=window}" IsHitTestVisible="False" Focusable="False" ></Button>
+                            <Button  Margin="2" Height="20" Width="20" Background="{Binding SelectedBorderColorBrush, ElementName=window}" IsHitTestVisible="False" Focusable="False" />
+                        </StackPanel>
+                    </DockPanel>
                     <DockPanel Margin="10 0 12 8" >
                         <TextBlock DockPanel.Dock="Left"  Style="{DynamicResource MaterialDesignSubheadingTextBlock}">Current scale:</TextBlock>
                         <TextBlock DockPanel.Dock="Right" Style="{DynamicResource MaterialDesignSubheadingTextBlock}" HorizontalAlignment="Right">100%</TextBlock>
@@ -110,8 +117,8 @@
             </materialDesign:Card>
         </StackPanel>
         <materialDesign:DialogHost x:Name="dialogHost" Grid.ColumnSpan="2" Grid.Column="0" Identifier="RootDialog"
-                                           IsOpen="{Binding IsSample4DialogOpen, ElementName=window, Mode=Default}"
-                                           DialogContent="{Binding Sample4Content, ElementName=window, Mode=Default}"
+                                           IsOpen="{Binding IsColorPickerOpen, ElementName=window, Mode=Default}"
+                                           DialogContent="{Binding ColorPickerContent, ElementName=window, Mode=Default}"
                                            CloseOnClickAway="True" HorizontalAlignment="Left">
         </materialDesign:DialogHost>
     </Grid>

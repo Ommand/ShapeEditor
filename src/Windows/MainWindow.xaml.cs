@@ -4,6 +4,7 @@ using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Media;
 using MaterialDesignThemes.Wpf;
 using ShapeEditor.Domain;
 using ShapeEditor.src;
@@ -15,77 +16,134 @@ namespace ShapeEditor.Windows
     /// </summary>
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
+        public Color SelectedFillColor
+        {
+            get { return _selectedFillColor; }
+            private set
+            {
+                _selectedFillColor = value; 
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(SelectedFillColorBrush));
+            }
+        }
+        
+        public Color SelectedBorderColor
+        {
+            get { return _selectedBorderColor; }
+            private set
+            {
+                _selectedBorderColor = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(SelectedBorderColorBrush));
+            }
+        }
+        public Brush SelectedFillColorBrush => new SolidColorBrush(SelectedFillColor);
+        public Brush SelectedBorderColorBrush => new SolidColorBrush(SelectedBorderColor);
+
+        #region Init
         public MainWindow()
         {
-            OpenSample4DialogCommand = new AnotherCommandImplementation(OpenSample4Dialog);
-            AcceptSample4DialogCommand = new AnotherCommandImplementation(AcceptSample4Dialog);
-            CancelSample4DialogCommand = new AnotherCommandImplementation(CancelSample4Dialog);
+            InitializeColorDialog();
             InitializeComponent();
-            ColorPicker.Init(this);
+            //Show dialog host
             dialogHost.HorizontalAlignment = HorizontalAlignment.Stretch;
-            //Sample 4
-        }
-        private string _name;
-        
-        #region SAMPLE 4
+        } 
+        #endregion
 
-        //pretty much ignore all the stuff provided, and manage everything via custom commands and a binding for .IsOpen
-        public ICommand OpenSample4DialogCommand { get; }
-        public ICommand AcceptSample4DialogCommand { get; }
-        public ICommand CancelSample4DialogCommand { get; }
-
-        private bool _isSample4DialogOpen;
-        private object _sample4Content;
-
-        public bool IsSample4DialogOpen
+        #region ColorDialog
+        private void InitializeColorDialog()
         {
-            get { return _isSample4DialogOpen; }
-            set
+            //Set color picker command
+            OpenColorPickerCommand = new CommandImplementation(OpenColorPickerDialog);
+            //Initialize colorPicker dialog
+            ColorPicker.Init(this);
+        }
+
+        public ICommand OpenColorPickerCommand
+        {
+            get { return _openColorPickerCommand; }
+            private set
             {
-                if (_isSample4DialogOpen == value) return;
-                _isSample4DialogOpen = value;
+                _openColorPickerCommand = value;
                 OnPropertyChanged();
             }
         }
 
-        public object Sample4Content
+        public ICommand CancelColorPickerCommand
         {
-            get { return _sample4Content; }
-            set
+            get { return _cancelColorPickerCommand; }
+            private set
             {
-                if (_sample4Content == value) return;
-                _sample4Content = value;
+                _cancelColorPickerCommand = value;
                 OnPropertyChanged();
             }
         }
 
-        private void OpenSample4Dialog(object obj)
+        private bool _isColorPickerOpen;
+        private object _colorPickerContent;
+        private ICommand _openColorPickerCommand;
+        private ICommand _cancelColorPickerCommand;
+        private Color _selectedFillColor = Color.FromRgb(0, 0, 0);
+        private Color _selectedBorderColor = Color.FromRgb(0, 0, 0);
+
+        public bool IsColorPickerOpen
         {
-            Sample4Content = ColorPicker.Instance;
-            IsSample4DialogOpen = true;
+            get { return _isColorPickerOpen; }
+            set
+            {
+                if (_isColorPickerOpen == value) return;
+                _isColorPickerOpen = value;
+                OnPropertyChanged();
+            }
         }
 
-        private void CancelSample4Dialog(object obj)
+        public object ColorPickerContent
         {
-            IsSample4DialogOpen = false;
+            get { return _colorPickerContent; }
+            set
+            {
+                if (_colorPickerContent == value) return;
+                _colorPickerContent = value;
+                OnPropertyChanged();
+            }
         }
 
-        private void AcceptSample4Dialog(object obj)
+        private void OpenColorPickerDialog(object obj)
         {
-            //pretend to do something for 3 seconds, then close
-            //            Sample4Content = new SampleProgressDialog();
-            Task.Delay(TimeSpan.FromSeconds(3))
-                .ContinueWith((t, _) => IsSample4DialogOpen = false, null,
-                    TaskScheduler.FromCurrentSynchronizationContext());
+            ColorPickerContent = ColorPicker.Instance;
+            IsColorPickerOpen = true;
+        }
+
+        private void OnSelectColorPickerFill(object obj)
+        {
+            IsColorPickerOpen = false;
+            SelectedFillColor = ColorPicker.SelectedColor;
+        }
+
+        private void OnSelectColorPickerBorder(object obj)
+        {
+            IsColorPickerOpen = false;
+            SelectedBorderColor = ColorPicker.SelectedColor;
+        }
+        private void btnFillColorClick(object sender, RoutedEventArgs e)
+        {
+            CancelColorPickerCommand = new CommandImplementation(OnSelectColorPickerFill);
+        }
+        private void btnBorderColorClick(object sender, RoutedEventArgs e)
+        {
+            CancelColorPickerCommand = new CommandImplementation(OnSelectColorPickerBorder);
         }
 
         #endregion
 
+        #region INotifyPropertyChanged
         public event PropertyChangedEventHandler PropertyChanged;
 
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
+        } 
+        #endregion
+
     }
 }

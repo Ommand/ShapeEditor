@@ -65,11 +65,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="src\Domain\NotEmptyValidationRule.cs" />
     <Compile Include="src\Domain\ColorPicker.xaml.cs">
       <DependentUpon>ColorPicker.xaml</DependentUpon>
     </Compile>
-    <Compile Include="src\Domain\NotifyPropertyChangedExtension.cs" />
     <Compile Include="src\Fabrics\ShapeFabric.cs" />
     <Page Include="src\Domain\ColorPicker.xaml">
       <SubType>Designer</SubType>
@@ -89,8 +87,7 @@
     <Compile Include="src\Renderers\IRenderer.cs" />
     <Compile Include="src\Shapes\IShape.cs" />
     <Compile Include="src\Transforms\ITransform.cs" />
-    <Compile Include="src\Domain\AnotherCommandImplementation.cs" />
-    <Compile Include="src\Domain\ColorPickerViewModel.cs" />
+    <Compile Include="src\Domain\CommandImplementation.cs" />
     <Compile Include="src\Windows\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>

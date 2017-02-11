@@ -27,6 +27,7 @@ namespace ShapeEditor.src
         private Thickness buttonMargin = new Thickness(4);
 
         private static ColorPicker _instance;
+        public static Color SelectedColor { get; private set; } = Color.FromRgb(0, 0, 0);
         public static ColorPicker Instance
         {
             get
@@ -65,13 +66,15 @@ namespace ShapeEditor.src
                     //Define the control that will be added to new row
                     var button = new Button();
 
-                    var binding = new Binding {Path = new PropertyPath("CancelSample4DialogCommand")};
+                    var binding = new Binding {Path = new PropertyPath("CancelColorPickerCommand")};
                     //Name of the property in Datacontext
                     button.SetBinding(ButtonBase.CommandProperty, binding);
 
                     button.Background = new SolidColorBrush(_colorList[currentColor++]);
                     button.Margin = buttonMargin;
                     button.Height = button.Width = buttonSize;
+
+                    button.Click += OnClick;
 
                     //add the stackpanel to the grid
                     stackPanel.Children.Add(button);
@@ -82,6 +85,11 @@ namespace ShapeEditor.src
                 row++;
 
             } while (currentColor != _colorList.Count);
+        }
+
+        private void OnClick(object e, RoutedEventArgs args)
+        {
+            SelectedColor = ((SolidColorBrush) ((Button) e).Background).Color;
         }
 
         private List<System.Windows.Media.Color> _colorList =>

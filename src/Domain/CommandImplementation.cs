@@ -3,16 +3,16 @@ using System.Windows.Input;
 
 namespace ShapeEditor.Domain
 {
-    public class AnotherCommandImplementation : ICommand
+    public class CommandImplementation : ICommand
     {
         private readonly Action<object> _execute;
         private readonly Func<object, bool> _canExecute;
 
-        public AnotherCommandImplementation(Action<object> execute) : this(execute, null)
+        public CommandImplementation(Action<object> execute) : this(execute, null)
         {
         }
 
-        public AnotherCommandImplementation(Action<object> execute, Func<object, bool> canExecute)
+        public CommandImplementation(Action<object> execute, Func<object, bool> canExecute)
         {
             if (execute == null) throw new ArgumentNullException(nameof(execute));
 
