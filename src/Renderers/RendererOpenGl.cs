@@ -72,45 +72,27 @@ namespace ShapeEditor.Renderers
         public void DrawBoundingBox(Point pointLeftBot, Point pointRightTop)
         {
             var gl = _openGlRender.OpenGL;
+            gl.LineStipple(1, 0x0101);
+            gl.Enable(SharpGL.OpenGL.GL_LINE_STIPPLE);
             gl.Begin(SharpGL.OpenGL.GL_LINES);
             double size = 3.0 * 2.0 / _openGlRender.ActualWidth;
             gl.Color(0.5f, 0.5f, 0.5f);
-            int countHorizont = (int)((pointRightTop.X - pointLeftBot.X) / (2.0 * size));
-            int countVertical = (int)((pointRightTop.Y - pointLeftBot.Y) / (2.0 * size));
-            for (int i = 0, k = 0; i < countHorizont; i++, k += 2)
-            {
-                gl.Vertex(pointLeftBot.X + k * size, pointLeftBot.Y, 0.1);
-                gl.Vertex(pointLeftBot.X + (k + 1) * size, pointLeftBot.Y, 0.1);
 
-                gl.Vertex(pointRightTop.X - k * size, pointRightTop.Y, 0.1);
-                gl.Vertex(pointRightTop.X - (k + 1) * size, pointRightTop.Y, 0.1);
-
-            }
-
-            gl.Vertex(pointRightTop.X - size, pointLeftBot.Y, 0.1);
+            gl.Vertex(pointLeftBot.X, pointLeftBot.Y, 0.1);
             gl.Vertex(pointRightTop.X, pointLeftBot.Y, 0.1);
 
-            gl.Vertex(pointLeftBot.X + size, pointRightTop.Y, 0.1);
+            gl.Vertex(pointLeftBot.X, pointRightTop.Y, 0.1);
+            gl.Vertex(pointRightTop.X, pointRightTop.Y, 0.1);
+
+            gl.Vertex(pointLeftBot.X, pointLeftBot.Y, 0.1);
             gl.Vertex(pointLeftBot.X, pointRightTop.Y, 0.1);
 
-            for (int i = 0, k = 0; i < countVertical; i++, k += 2)
-            {
-                gl.Vertex(pointLeftBot.X, pointLeftBot.Y + k * size, 0.1);
-                gl.Vertex(pointLeftBot.X, pointLeftBot.Y + (k + 1) * size, 0.1);
-
-                gl.Vertex(pointRightTop.X, pointRightTop.Y - k * size, 0.1);
-                gl.Vertex(pointRightTop.X, pointRightTop.Y - (k + 1) * size, 0.1);
-
-            }
-
-            gl.Vertex(pointLeftBot.X, pointRightTop.Y - size, 0.1);
-            gl.Vertex(pointLeftBot.X, pointRightTop.Y, 0.1);
-
-            gl.Vertex(pointRightTop.X, pointLeftBot.Y + size, 0.1);
             gl.Vertex(pointRightTop.X, pointLeftBot.Y, 0.1);
-
+            gl.Vertex(pointRightTop.X, pointRightTop.Y, 0.1);
 
             gl.End();
+
+            gl.Disable(SharpGL.OpenGL.GL_LINE_STIPPLE);
         }
         public void DrawPolygon(IEnumerable<Point> points, Color color)
         {

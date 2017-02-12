@@ -24,84 +24,47 @@ namespace ShapeEditor.Renderers
 
         public void DrawBoundingBox(Point pointLeftBot, Point pointRightTop)
         {
-            double size = 3.0 * 2.0 / _canvasRender.ActualWidth;
             Color color = Color.FromRgb(128, 128, 128);
 
-            int countHorizont = (int)((pointRightTop.X - pointLeftBot.X) / (2.0 * size));
-            int countVertical = (int)((pointRightTop.Y - pointLeftBot.Y) / (2.0 * size));
+            Line newLine1 = new Line();
+            Line newLine2 = new Line();
+            newLine1.Stroke = new SolidColorBrush(color);
+            newLine2.Stroke = new SolidColorBrush(color);
+            newLine1.StrokeDashArray = new DoubleCollection() { 2, 2 };
+            newLine2.StrokeDashArray = new DoubleCollection() { 2, 2 };
 
-            for (int i = 0, k = 0; i < countHorizont; i++, k += 2)
-            {
-                Line newLine1 = new Line();
-                Line newLine2 = new Line();
-                newLine1.Stroke = new SolidColorBrush(color);
-                newLine2.Stroke = new SolidColorBrush(color);
-                newLine1.X1 = ToWindowX(pointLeftBot.X + k * size);
-                newLine1.X2 = ToWindowX(pointLeftBot.X + (k + 1) * size);
-                newLine1.Y1 = ToWindowY(pointLeftBot.Y);
-                newLine1.Y2 = ToWindowY(pointLeftBot.Y);
+            newLine1.X1 = ToWindowX(pointRightTop.X);
+            newLine1.X2 = ToWindowX(pointLeftBot.X);
+            newLine1.Y1 = ToWindowY(pointLeftBot.Y);
+            newLine1.Y2 = ToWindowY(pointLeftBot.Y);
 
-                newLine2.X1 = ToWindowX(pointRightTop.X - k * size);
-                newLine2.X2 = ToWindowX(pointRightTop.X - (k + 1) * size);
-                newLine2.Y1 = ToWindowY(pointRightTop.Y);
-                newLine2.Y2 = ToWindowY(pointRightTop.Y);
+            newLine2.X1 = ToWindowX(pointRightTop.X);
+            newLine2.X2 = ToWindowX(pointLeftBot.X);
+            newLine2.Y1 = ToWindowY(pointRightTop.Y);
+            newLine2.Y2 = ToWindowY(pointRightTop.Y);
 
-                _canvasRender.Children.Add(newLine1);
-                _canvasRender.Children.Add(newLine2);
-            }
+            _canvasRender.Children.Add(newLine1);
+            _canvasRender.Children.Add(newLine2);
+
 
             Line newLine3 = new Line();
             Line newLine4 = new Line();
             newLine3.Stroke = new SolidColorBrush(color);
             newLine4.Stroke = new SolidColorBrush(color);
-            newLine3.X1 = ToWindowX(pointRightTop.X - size);
+            newLine3.StrokeDashArray = new DoubleCollection() { 2, 2 };
+            newLine4.StrokeDashArray = new DoubleCollection() { 2, 2 };
+            newLine3.X1 = ToWindowX(pointRightTop.X);
             newLine3.X2 = ToWindowX(pointRightTop.X);
             newLine3.Y1 = ToWindowY(pointLeftBot.Y);
-            newLine3.Y2 = ToWindowY(pointLeftBot.Y);
+            newLine3.Y2 = ToWindowY(pointRightTop.Y);
 
-            newLine4.X1 = ToWindowX(pointLeftBot.X + size);
+            newLine4.X1 = ToWindowX(pointLeftBot.X);
             newLine4.X2 = ToWindowX(pointLeftBot.X);
-            newLine4.Y1 = ToWindowY(pointRightTop.Y);
+            newLine4.Y1 = ToWindowY(pointLeftBot.Y);
             newLine4.Y2 = ToWindowY(pointRightTop.Y);
 
             _canvasRender.Children.Add(newLine3);
             _canvasRender.Children.Add(newLine4);
-
-            for (int i = 0, k = 0; i < countVertical; i++, k += 2)
-            {
-                Line newLine1 = new Line();
-                Line newLine2 = new Line();
-                newLine1.Stroke = new SolidColorBrush(color);
-                newLine2.Stroke = new SolidColorBrush(color);
-                newLine1.X1 = ToWindowX(pointLeftBot.X);
-                newLine1.X2 = ToWindowX(pointLeftBot.X);
-                newLine1.Y1 = ToWindowY(pointLeftBot.Y + k * size);
-                newLine1.Y2 = ToWindowY(pointLeftBot.Y + (k + 1) * size);
-
-                newLine2.X1 = ToWindowX(pointRightTop.X);
-                newLine2.X2 = ToWindowX(pointRightTop.X);
-                newLine2.Y1 = ToWindowY(pointRightTop.Y - k * size);
-                newLine2.Y2 = ToWindowY(pointRightTop.Y - (k + 1) * size);
-
-                _canvasRender.Children.Add(newLine1);
-                _canvasRender.Children.Add(newLine2);
-            }
-            Line newLine5 = new Line();
-            Line newLine6 = new Line();
-            newLine5.Stroke = new SolidColorBrush(color);
-            newLine6.Stroke = new SolidColorBrush(color);
-            newLine5.X1 = ToWindowX(pointLeftBot.X);
-            newLine5.X2 = ToWindowX(pointLeftBot.X);
-            newLine5.Y1 = ToWindowY(pointRightTop.Y - size);
-            newLine5.Y2 = ToWindowY(pointRightTop.Y);
-
-            newLine6.X1 = ToWindowX(pointRightTop.X);
-            newLine6.X2 = ToWindowX(pointRightTop.X);
-            newLine6.Y1 = ToWindowY(pointLeftBot.Y + size);
-            newLine6.Y2 = ToWindowY(pointLeftBot.Y);
-
-            _canvasRender.Children.Add(newLine5);
-            _canvasRender.Children.Add(newLine6);
         }
         public void DrawPolygon(IEnumerable<Point> points, Color color)
         {
