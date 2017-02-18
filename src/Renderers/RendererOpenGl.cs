@@ -21,7 +21,7 @@ namespace ShapeEditor.Renderers
             control.Name = "OpenGLRender";
             control.OpenGLDraw += OpenGLControl_OpenGLDraw;
             control.OpenGLInitialized += OpenGLControl_OpenGLInitialized;
-            control.FrameRate = 60;
+           // control.FrameRate = 60;
             control.Resized += OpenGLControl_Resized;
             control.BorderBrush = Brushes.Gray;
         }
@@ -94,10 +94,21 @@ namespace ShapeEditor.Renderers
 
             gl.Disable(SharpGL.OpenGL.GL_LINE_STIPPLE);
         }
+        public void DrawLine(IEnumerable<Point> points, Color color)
+        {
+            var gl = _openGlRender.OpenGL;
+            gl.Begin(SharpGL.OpenGL.GL_LINE_STRIP);
+            gl.Color(color.R, color.G, color.B);
+            foreach (var p in points)
+            {
+                gl.Vertex(p.X, p.Y, 0);
+            }
+            gl.End();
+        }
         public void DrawPolygon(IEnumerable<Point> points, Color color)
         {
             var gl = _openGlRender.OpenGL;
-            gl.Begin(OpenGL.GL_LINE_STRIP);
+            gl.Begin(SharpGL.OpenGL.GL_LINE_LOOP);
             gl.Color(color.R, color.G, color.B);
             foreach (var p in points)
             {
@@ -122,13 +133,7 @@ namespace ShapeEditor.Renderers
 
             gl.Disable(SharpGL.OpenGL.GL_POLYGON_OFFSET_FILL);
 
-            gl.Begin(SharpGL.OpenGL.GL_LINE_LOOP);
-            gl.Color(color.R, color.G, color.B);
-            foreach (var p in points)
-            {
-                gl.Vertex(p.X, p.Y, 0);
-            }
-            gl.End();
+            DrawPolygon(points, color);
         }
         double ToWindowX(double x) { return (x + 1) * _openGlRender.ActualWidth / 2; }// (x - мировое значение)
         double ToWindowY(double y)

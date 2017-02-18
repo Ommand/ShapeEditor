@@ -21,7 +21,19 @@ namespace ShapeEditor.Renderers
             double coef = (((double)(_canvasRender.ActualHeight)) / _canvasRender.ActualWidth);
             return _canvasRender.ActualHeight - (y + coef) * _canvasRender.ActualHeight / (2 * coef);
         }
-
+        public void DrawLine(IEnumerable<Point> points, Color color)
+        {
+            List<Point> polylineList = new List<Point> { };
+            foreach (var p in points)
+            {
+                polylineList.Add(new Point(ToWindowX(p.X), ToWindowY(p.Y)));
+            }
+            Polyline linepoly = new Polyline() { Points = new PointCollection(polylineList) };
+            SolidColorBrush Brush1 = new SolidColorBrush();
+            Brush1.Color = color;
+            linepoly.Stroke = Brush1;
+            _canvasRender.Children.Add(linepoly);
+        }
         public void DrawBoundingBox(Point pointLeftBot, Point pointRightTop)
         {
             Color color = Color.FromRgb(128, 128, 128);
