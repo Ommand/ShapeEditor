@@ -70,7 +70,7 @@ namespace ShapeEditor.Windows
             }
         }
         
-        List<IShape> listShapes;
+        List<Shape> listShapes;
         IRenderer renderer;
         private OpenGLControl control;
         #endregion
@@ -85,7 +85,7 @@ namespace ShapeEditor.Windows
             grdMain.Children.Add(control);
             renderer = new RendererOpenGl(control);
             
-            listShapes = new List<IShape> { new Triangle(new Point(-0.5, -0.5), new Point(0.7, -0.5), new Point(0.5, 0.5), SelectedBorderColor, SelectedFillColor) };
+           // listShapes = new List<Shape> { new Triangle(new Point(-0.5, -0.5), new Point(0.7, -0.5), new Point(0.5, 0.5), SelectedBorderColor, SelectedFillColor) };
             // renderer = new RendererWpf(WpfRender);
             WpfRender.Visibility = Visibility.Hidden;
             control.Visibility = Visibility.Visible;

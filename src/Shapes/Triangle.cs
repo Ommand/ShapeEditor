@@ -1,32 +1,35 @@
 using System.Collections.Generic;
 using System.Windows;
-using System.Windows.Media;
+using System.Drawing;
 
 namespace ShapeEditor.Shapes
 {
-    class Triangle : IShape, IDrawable
+    class Triangle : PointShape
     {
-        Color colorBorder;
-        Color colorFill;
-        public IEnumerable<Point> Points { get; }
-        public void Draw(IRenderer render)
-        {
-            render.FillPolygon(Points, colorBorder, colorFill);
-        }
-        public bool IsInside(Point point)
+        public override bool isInside(System.Windows.Point point)
         {
             return false;
         }
-        public void UpdatePoints(ITransform transform)
+
+        public override void applyTransformation(ITransform transform)
         {
 
         }
-        public Triangle(Point point1, Point point2, Point point3, Color _colorBorder, Color _colorFill)
+
+        public Triangle(int id_, 
+                        System.Windows.Point point1, 
+                        System.Windows.Point point2, 
+                        System.Windows.Point point3, 
+                        Color borderColor_, 
+                        Color fillColor_, 
+                        int borderWidth_)
         {
-            List<Point> listpoint = new List<Point> { point1, point2, point3 };
-            Points = listpoint;
-            colorBorder = _colorBorder;
-            colorFill = _colorFill;
+            List<System.Windows.Point> listPoint = new List<System.Windows.Point> { point1, point2, point3 };
+            points = listPoint;
+            id = id_;
+            borderColor = borderColor_;
+            fillColor = fillColor_;
+            borderWidth = borderWidth_;
         }
 
     }
