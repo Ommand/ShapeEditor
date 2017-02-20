@@ -93,13 +93,12 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Example.cs" />
     <Compile Include="src\Captions\ICaption.cs" />
     <Compile Include="src\Drawables\IDrawable.cs" />
     <Compile Include="src\Renderers\IRenderer.cs" />
     <Compile Include="src\Renderers\RendererOpenGl.cs" />
     <Compile Include="src\Renderers\RendererWpf.cs" />
-    <Compile Include="src\Shapes\IShape.cs" />
+    <Compile Include="src\Shapes\Shape.cs" />
     <Compile Include="src\Shapes\Triangle.cs" />
     <Compile Include="src\Transforms\ITransform.cs" />
     <Compile Include="src\Domain\CommandImplementation.cs" />
