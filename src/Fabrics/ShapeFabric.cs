@@ -29,20 +29,4 @@ namespace ShapeEditor.Fabrics
 
         public abstract Shape createShape();
     }
-
-    class TriangleFabric: ShapeFabric
-    {
-        List<Point> points;
-
-        public TriangleFabric()
-        {
-            points = new List<Point> { new Point(0, 0), new Point(10, 20), new Point(20, 0) };
-        }
-
-        public override Shape createShape()
-        {
-            idCounter++;
-            return new Triangle(idCounter, points[0], points[1], points[2], borderColor, fillColor, borderWidth);
-        }
-    }
 }

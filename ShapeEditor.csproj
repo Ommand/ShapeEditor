@@ -95,9 +95,11 @@
     </Compile>
     <Compile Include="src\Captions\ICaption.cs" />
     <Compile Include="src\Drawables\IDrawable.cs" />
+    <Compile Include="src\Fabrics\TriangleFabric.cs" />
     <Compile Include="src\Renderers\IRenderer.cs" />
     <Compile Include="src\Renderers\RendererOpenGl.cs" />
     <Compile Include="src\Renderers\RendererWpf.cs" />
+    <Compile Include="src\Shapes\PointShape.cs" />
     <Compile Include="src\Shapes\Shape.cs" />
     <Compile Include="src\Shapes\Triangle.cs" />
     <Compile Include="src\Transforms\ITransform.cs" />
