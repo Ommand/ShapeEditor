@@ -19,13 +19,4 @@ namespace ShapeEditor.Shapes
         public abstract bool isInside(Point point);
         public abstract void applyTransformation(ITransform transform);
     }
-
-    abstract class PointShape: Shape
-    {
-        protected IEnumerable<Point> points;
-        public IEnumerable<Point> getPoints()
-        {
-            return points;
-        }
-    }
 }
