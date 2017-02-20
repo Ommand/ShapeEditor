@@ -1,15 +1,16 @@
 using System.Collections.Generic;
 using ShapeEditor.Shapes;
-using System.Drawing;
+using System.Windows;
+using System.Windows.Media;
 
 namespace ShapeEditor.Fabrics
 {
     abstract class ShapeFabric
     {
         protected static int idCounter = -1;
-        protected Color fillColor;
-        protected Color borderColor;
-        protected int borderWidth;
+        protected Color fillColor = Color.FromRgb(255, 255, 255);
+        protected Color borderColor = Color.FromRgb(0, 0, 0);
+        protected int borderWidth = 1;
 
         public void useFillColor(Color color)
         {
@@ -31,14 +32,11 @@ namespace ShapeEditor.Fabrics
 
     class TriangleFabric: ShapeFabric
     {
-        List<System.Windows.Point> points;
+        List<Point> points;
 
-        TriangleFabric()
+        public TriangleFabric()
         {
-            borderColor = Color.Black;
-            fillColor = Color.White;
-            borderWidth = 1;
-            points = new List<System.Windows.Point> { new System.Windows.Point(0, 0), new System.Windows.Point(10, 20), new System.Windows.Point(20, 0) };
+            points = new List<Point> { new Point(0, 0), new Point(10, 20), new Point(20, 0) };
         }
 
         public override Shape createShape()

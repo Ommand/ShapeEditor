@@ -12,6 +12,7 @@ using ShapeEditor.Domain;
 using ShapeEditor.Renderers;
 using ShapeEditor.src;
 using ShapeEditor.Shapes;
+using ShapeEditor.Fabrics;
 using SharpGL;
 using SharpGL.SceneGraph;
 using SharpGL.WPF;
@@ -70,7 +71,7 @@ namespace ShapeEditor.Windows
             }
         }
         
-        List<Shape> listShapes;
+        List<Shape> listShapes = new List<Shape> { };
         IRenderer renderer;
         private OpenGLControl control;
         #endregion
@@ -84,7 +85,17 @@ namespace ShapeEditor.Windows
             control = new OpenGLControl();
             grdMain.Children.Add(control);
             renderer = new RendererOpenGl(control);
-            
+
+            //example of using shape fabric
+            List<ShapeFabric> fabricsList = new List<ShapeFabric> { new TriangleFabric(), new TriangleFabric() }; 
+            foreach(ShapeFabric fabric in fabricsList)
+            {
+                fabric.useBorderColor(SelectedBorderColor);
+                fabric.useBorderWidth(1);
+                fabric.useFillColor(SelectedFillColor);
+                Shape shape = fabric.createShape();
+                listShapes.Add(shape);
+            }
            // listShapes = new List<Shape> { new Triangle(new Point(-0.5, -0.5), new Point(0.7, -0.5), new Point(0.5, 0.5), SelectedBorderColor, SelectedFillColor) };
             // renderer = new RendererWpf(WpfRender);
             WpfRender.Visibility = Visibility.Hidden;
