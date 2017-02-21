@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Media;
+using System.Linq;
 
 namespace ShapeEditor.Shapes
 {
@@ -34,7 +35,19 @@ namespace ShapeEditor.Shapes
         public IEnumerable<Point> Points { get; }
         public bool IsInside(Point point)
         {
-            throw new System.NotImplementedException();
+            Point[] pointList = Points.ToArray();
+
+            double a = (pointList[0].X - point.X) * (pointList[1].Y - pointList[0].Y) -
+                       (pointList[0].Y - point.Y) * (pointList[1].X - pointList[0].X);
+            double b = (pointList[1].X - point.X) * (pointList[2].Y - pointList[1].Y) -
+                       (pointList[1].Y - point.Y) * (pointList[2].X - pointList[1].X);
+            double c = (pointList[2].X - point.X) * (pointList[0].Y - pointList[2].Y) -
+                       (pointList[2].Y - point.Y) * (pointList[0].X - pointList[2].X);
+
+            if (a >= 0 && b >= 0 && c >= 0 || a <= 0 && b <= 0 && c <= 0)
+                return true;
+
+            return false;
         }
 
         public void ApplyTransformation(ITransform transform)
