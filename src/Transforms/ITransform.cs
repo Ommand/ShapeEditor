@@ -3,7 +3,7 @@ using System.Windows;
 
 namespace ShapeEditor
 {
-    interface ITransform
+    public interface ITransform
     {
         Point Transform(Point p);
     }

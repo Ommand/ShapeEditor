@@ -4,7 +4,7 @@ using System.Windows.Media;
 
 namespace ShapeEditor
 {
-    interface IRenderer
+    public interface IRenderer
     {
         void DrawLine(IEnumerable<Point> points, Color color);
         void DrawPolygon(IEnumerable<Point> points, Color color);

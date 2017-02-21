@@ -37,16 +37,16 @@
                 <StackPanel>
                     <TextBlock Margin="10 10 12 8"  Style="{DynamicResource MaterialDesignTitleTextBlock}">New shape</TextBlock>
                     <StackPanel Orientation="Horizontal">
-                        <Button Height="35" Width="35" ToolTip="New rectangle" Margin="2"  Style="{DynamicResource MaterialDesignRaisedButton}">
+                        <Button x:Name="btnRect" Height="35" Width="35" ToolTip="New rectangle" Margin="2"  Style="{DynamicResource MaterialDesignRaisedButton}" Click="ButtonAddShape_Click">
                             <materialDesign:PackIcon Kind="CheckboxBlankOutline" Margin="-12,0" Width="Auto" Height="Auto"/>
                         </Button>
-                        <Button Height="35" Width="35" ToolTip="New ellipse"   Margin="2"  Style="{DynamicResource MaterialDesignRaisedButton}">
+                        <Button x:Name="btnEllipse" Height="35" Width="35" ToolTip="New ellipse"   Margin="2"  Style="{DynamicResource MaterialDesignRaisedButton}" Click="ButtonAddShape_Click">
                             <materialDesign:PackIcon Kind="PanoramaFisheye" Margin="-12,0" Width="Auto" Height="Auto"/>
                         </Button>
-                        <Button Height="35" Width="35" ToolTip="New triangle"  Margin="2"   Style="{DynamicResource MaterialDesignRaisedButton}">
+                        <Button x:Name="btnTriangle" Height="35" Width="35" ToolTip="New triangle"  Margin="2"   Style="{DynamicResource MaterialDesignRaisedButton}" Click="ButtonAddShape_Click">
                             <materialDesign:PackIcon Kind="TriangleOutline" Margin="-12,0" Width="Auto" Height="Auto"/>
                         </Button>
-                        <Button Height="35" Width="35" ToolTip="New line"  Margin="2"   Style="{DynamicResource MaterialDesignRaisedButton}">
+                        <Button x:Name="btnLine" Height="35" Width="35" ToolTip="New line"  Margin="2"   Style="{DynamicResource MaterialDesignRaisedButton}" Click="ButtonAddShape_Click">
                             <materialDesign:PackIcon Kind="VectorLine" Margin="-12,0" Width="Auto" Height="Auto"/>
                         </Button>
                     </StackPanel>
