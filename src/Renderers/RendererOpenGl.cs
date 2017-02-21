@@ -3,29 +3,28 @@ using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Media;
 using SharpGL;
+using SharpGL.SceneGraph;
 
 namespace ShapeEditor.Renderers
 {
     class RendererOpenGl : IRenderer
     {
         SharpGL.WPF.OpenGLControl _openGlRender;
-        
+        public event OpenGLEventHandler OnDraw = delegate {  };
         public RendererOpenGl(SharpGL.WPF.OpenGLControl control)
         {
             _openGlRender = control;
             InitOpenGl(control);
-
         }
         private void InitOpenGl(SharpGL.WPF.OpenGLControl control)
         {
             control.Name = "OpenGLRender";
             control.OpenGLDraw += OpenGLControl_OpenGLDraw;
             control.OpenGLInitialized += OpenGLControl_OpenGLInitialized;
-           // control.FrameRate = 60;
+             control.FrameRate = 60;
             control.Resized += OpenGLControl_Resized;
             control.BorderBrush = Brushes.Gray;
         }
-
         private void OpenGLControl_OpenGLInitialized(object sender, SharpGL.SceneGraph.OpenGLEventArgs args)
         {
             var gl = args.OpenGL;
@@ -43,21 +42,12 @@ namespace ShapeEditor.Renderers
             gl.Enable(OpenGL.GL_POLYGON_SMOOTH);
             gl.Hint(OpenGL.GL_POLYGON_SMOOTH_HINT, OpenGL.GL_NICEST);
         }
-
         private void OpenGLControl_OpenGLDraw(object sender, SharpGL.SceneGraph.OpenGLEventArgs args)
         {
             var gl = args.OpenGL;
             gl.Clear(SharpGL.OpenGL.GL_COLOR_BUFFER_BIT | SharpGL.OpenGL.GL_DEPTH_BUFFER_BIT);
-
-//            WpfRender.Children.Clear();
-//            foreach (var p in listShapes)
-//            {
-//                renderer.DrawBoundingBox(new Point(-0.5, -0.5), new Point(0.5, 0.5));
-//                p.Draw(renderer);
-//                renderer.DrawText("SSSSSSSSSS", new Point(0, 0), Color.FromRgb(0, 255, 0));
-//            }
+            OnDraw.Invoke(sender, args);
         }
-
         private void OpenGLControl_Resized(object sender, SharpGL.SceneGraph.OpenGLEventArgs args)
         {
             var gl = args.OpenGL;

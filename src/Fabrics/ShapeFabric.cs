@@ -1,32 +1,25 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using ShapeEditor.Shapes;
 using System.Windows;
 using System.Windows.Media;
 
 namespace ShapeEditor.Fabrics
 {
-    abstract class ShapeFabric
+    public static class ShapeFabric
     {
-        protected static int idCounter = -1;
-        protected Color fillColor = Color.FromRgb(255, 255, 255);
-        protected Color borderColor = Color.FromRgb(0, 0, 0);
-        protected int borderWidth = 1;
-
-        public void useFillColor(Color color)
+        public static IShape CreateShape(string name, IEnumerable<Point> points)
         {
-            fillColor = color;
+            switch (name)
+            {
+                case "Triangle":
+                    var pts = points as Point[] ?? points.ToArray();
+                    if (pts.Length < 3)
+                        throw new Exception("Cannot create triangle: points array has less than 3 points");
+                    return new Triangle(pts[0], pts[1], pts[2]);
+            }
+            throw new Exception($"Unknown shape: {name}");
         }
-
-        public void useBorderColor(Color color)
-        {
-            borderColor = color;
-        }
-
-        public void useBorderWidth(int width)
-        {
-            borderWidth = width;
-        }
-
-        public abstract Shape createShape();
     }
 }

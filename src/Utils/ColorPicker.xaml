@@ -8,7 +8,6 @@
              xmlns:wpf="clr-namespace:MaterialDesignThemes.Wpf;assembly=MaterialDesignThemes.Wpf"
              xmlns:system="clr-namespace:System;assembly=mscorlib"
              xmlns:shapeEditor="clr-namespace:ShapeEditor"
-             xmlns:domain="clr-namespace:ShapeEditor.Domain"
              d:DesignHeight="290" d:DesignWidth="290" Height="290">
     <!--    <Grid Margin="16" x:Name="grdMain">-->
     <!--        <Grid.ColumnDefinitions>-->

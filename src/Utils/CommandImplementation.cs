@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Input;
 
-namespace ShapeEditor.Domain
+namespace ShapeEditor.Utils
 {
     public class CommandImplementation : ICommand
     {

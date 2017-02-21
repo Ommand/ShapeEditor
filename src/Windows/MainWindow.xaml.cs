@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
@@ -8,11 +6,9 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using MaterialDesignThemes.Wpf;
-using ShapeEditor.Domain;
 using ShapeEditor.Renderers;
 using ShapeEditor.src;
-using ShapeEditor.Shapes;
-using ShapeEditor.Fabrics;
+using ShapeEditor.Utils;
 using SharpGL;
 using SharpGL.SceneGraph;
 using SharpGL.WPF;
@@ -25,79 +21,75 @@ namespace ShapeEditor.Windows
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
         #region Variables
+
+        GraphicsController _graphics = new GraphicsController();
+
         public Color SelectedFillColor
         {
-            get { return _selectedFillColor; }
+            get { return _graphics.SelectedFillColor; }
             private set
             {
-                _selectedFillColor = value;
+                _graphics.SelectedFillColor = value;
                 OnPropertyChanged();
                 OnPropertyChanged(nameof(SelectedFillColorBrush));
             }
         }
+
         public Color SelectedBorderColor
         {
-            get { return _selectedBorderColor; }
+            get { return _graphics.SelectedBorderColor; }
             private set
             {
-                _selectedBorderColor = value;
+                _graphics.SelectedBorderColor = value;
                 OnPropertyChanged();
                 OnPropertyChanged(nameof(SelectedBorderColorBrush));
             }
         }
+
         public Brush SelectedFillColorBrush => new SolidColorBrush(SelectedFillColor);
         public Brush SelectedBorderColorBrush => new SolidColorBrush(SelectedBorderColor);
 
         public double Scale
         {
-            get { return _scale; }
+            get { return _graphics.Scale; }
             set
             {
-                if (value == _scale)
+                if (value == _graphics.Scale)
                     return;
-                _scale = value;
+                _graphics.Scale = value;
                 OnPropertyChanged();
                 OnPropertyChanged(nameof(ScalePercent));
             }
         }
-        public string ScalePercent => $"{(int)(Scale*100)}%";
-        public int BorderWidth
+
+        public string ScalePercent => $"{(int)(Scale * 100)}%";
+
+        public double BorderWidth
         {
-            get { return _borderWidth; }
+            get { return _graphics.BorderWidth; }
             set
             {
-                _borderWidth = value;
+                _graphics.BorderWidth = value;
                 OnPropertyChanged();
             }
         }
-        
-        List<Shape> listShapes = new List<Shape> { };
-        IRenderer renderer;
+
         private OpenGLControl control;
+
         #endregion
 
         #region Main
+
         public MainWindow()
         {
             InitializeColorDialog();
             InitializeComponent();
-            
-            control = new OpenGLControl();
-            grdMain.Children.Add(control);
-            renderer = new RendererOpenGl(control);
 
-            //example of using shape fabric
-            List<ShapeFabric> fabricsList = new List<ShapeFabric> { new TriangleFabric(), new TriangleFabric() }; 
-            foreach(ShapeFabric fabric in fabricsList)
-            {
-                fabric.useBorderColor(SelectedBorderColor);
-                fabric.useBorderWidth(1);
-                fabric.useFillColor(SelectedFillColor);
-                Shape shape = fabric.createShape();
-                listShapes.Add(shape);
-            }
-           // listShapes = new List<Shape> { new Triangle(new Point(-0.5, -0.5), new Point(0.7, -0.5), new Point(0.5, 0.5), SelectedBorderColor, SelectedFillColor) };
-            // renderer = new RendererWpf(WpfRender);
+            control = new OpenGLControl();
+            control.MouseDown += _graphics.CanvasMouseDown;
+            grdMain.Children.Add(control);
+            _graphics.Renderer = new RendererOpenGl(control);
+
             WpfRender.Visibility = Visibility.Hidden;
             control.Visibility = Visibility.Visible;
 
@@ -105,10 +97,20 @@ namespace ShapeEditor.Windows
             dialogHost.HorizontalAlignment = HorizontalAlignment.Stretch;
             grdMain.Children.Remove(dialogHost);
             grdMain.Children.Add(dialogHost);
-        } 
+        }
+
+        #endregion
+
+        #region UI
+        private void ButtonAddShape_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender == btnTriangle)
+                _graphics.CanvasMode = GraphicsController.Mode.DrawTriangle;
+        }
         #endregion
 
         #region ColorDialog
+
         private void InitializeColorDialog()
         {
             //Set color picker command
@@ -141,10 +143,6 @@ namespace ShapeEditor.Windows
         private object _colorPickerContent;
         private ICommand _openColorPickerCommand;
         private ICommand _cancelColorPickerCommand;
-        private Color _selectedFillColor = Color.FromRgb(255, 255, 255);
-        private Color _selectedBorderColor = Color.FromRgb(0, 0, 0);
-        private double _scale = 1;
-        private int _borderWidth;
 
         public bool IsColorPickerOpen
         {
@@ -185,10 +183,12 @@ namespace ShapeEditor.Windows
             IsColorPickerOpen = false;
             SelectedBorderColor = ColorPicker.SelectedColor;
         }
+
         private void btnFillColorClick(object sender, RoutedEventArgs e)
         {
             CancelColorPickerCommand = new CommandImplementation(OnSelectColorPickerFill);
         }
+
         private void btnBorderColorClick(object sender, RoutedEventArgs e)
         {
             CancelColorPickerCommand = new CommandImplementation(OnSelectColorPickerBorder);
@@ -197,13 +197,14 @@ namespace ShapeEditor.Windows
         #endregion
 
         #region INotifyPropertyChanged
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
-        #endregion
 
+        #endregion
     }
 }
