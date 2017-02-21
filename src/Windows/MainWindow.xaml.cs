@@ -1,4 +1,7 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
@@ -23,6 +26,7 @@ namespace ShapeEditor.Windows
         #region Variables
 
         GraphicsController _graphics = new GraphicsController();
+        Dictionary<Button, GraphicsController.Mode> shapeButtons;
 
         public Color SelectedFillColor
         {
@@ -76,6 +80,9 @@ namespace ShapeEditor.Windows
 
         private OpenGLControl control;
 
+        private Brush secondaryAccentBrush;
+        private Brush primaryHueMidBrush;
+
         #endregion
 
         #region Main
@@ -97,6 +104,32 @@ namespace ShapeEditor.Windows
             dialogHost.HorizontalAlignment = HorizontalAlignment.Stretch;
             grdMain.Children.Remove(dialogHost);
             grdMain.Children.Add(dialogHost);
+
+            //Assign brushes
+            secondaryAccentBrush = (Brush)FindResource("SecondaryAccentBrush");
+            primaryHueMidBrush = (Brush)FindResource("PrimaryHueMidBrush");
+
+            //Initialize button dictionary
+            shapeButtons = new Dictionary<Button, GraphicsController.Mode>
+            {
+                {btnTriangle,GraphicsController.Mode.DrawTriangle},
+                {btnEllipse,GraphicsController.Mode.DrawEllipse},
+                {btnLine,GraphicsController.Mode.DrawLine},
+                {btnRect,GraphicsController.Mode.DrawRect}
+            };
+
+            //Assign button style to mode change
+            _graphics.PropertyChanged += (sender, args) =>
+            {
+                if (args.PropertyName.Equals("CanvasMode"))
+                {
+                    foreach (var it in shapeButtons.Keys)
+                        it.Background = primaryHueMidBrush;
+
+                    if (_graphics.CanvasMode != GraphicsController.Mode.None)
+                        shapeButtons.First(x => x.Value == _graphics.CanvasMode).Key.Background = secondaryAccentBrush;
+                }
+            };
         }
 
         #endregion
@@ -104,8 +137,8 @@ namespace ShapeEditor.Windows
         #region UI
         private void ButtonAddShape_Click(object sender, RoutedEventArgs e)
         {
-            if (sender == btnTriangle)
-                _graphics.CanvasMode = GraphicsController.Mode.DrawTriangle;
+            var mode = shapeButtons[(Button)sender];
+            _graphics.CanvasMode = _graphics.CanvasMode == mode ? GraphicsController.Mode.None : mode;
         }
         #endregion
 

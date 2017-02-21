@@ -1,15 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
+using ShapeEditor.Annotations;
 using ShapeEditor.Fabrics;
 using ShapeEditor.Renderers;
 using ShapeEditor.Shapes;
 
 namespace ShapeEditor.Utils
 {
-    public class GraphicsController
+    public class GraphicsController : INotifyPropertyChanged
     {
         public enum Mode
         {
@@ -27,6 +30,7 @@ namespace ShapeEditor.Utils
             {
                 _canvasMode = value;
                 currentPoints.Clear();
+                OnPropertyChanged();
             }
         }
 
@@ -82,6 +86,14 @@ namespace ShapeEditor.Utils
                     }
                     break;
             }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        [NotifyPropertyChangedInvocator]
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }
