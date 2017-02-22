@@ -77,6 +77,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="src\Fabrics\ShapeTypes.cs" />
+    <Compile Include="src\Transforms\Expand.cs" />
+    <Compile Include="src\Transforms\Rotate.cs" />
+    <Compile Include="src\Transforms\Translate.cs" />
     <Compile Include="src\Utils\ColorPicker.xaml.cs">
       <DependentUpon>ColorPicker.xaml</DependentUpon>
     </Compile>
@@ -99,7 +103,6 @@
     <Compile Include="src\Renderers\IRenderer.cs" />
     <Compile Include="src\Renderers\RendererOpenGl.cs" />
     <Compile Include="src\Renderers\RendererWpf.cs" />
-    <Compile Include="src\Shapes\IPointShape.cs" />
     <Compile Include="src\Shapes\IShape.cs" />
     <Compile Include="src\Shapes\Triangle.cs" />
     <Compile Include="src\Transforms\ITransform.cs" />
