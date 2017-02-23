@@ -37,9 +37,9 @@ namespace ShapeEditor.Utils
         public double Scale = 1;
         public double BorderWidth = 1;
 
-        public void AddShape(string name, IEnumerable<Point> points)
+        public void AddShape(ShapeTypes.ShapeType shape, IEnumerable<Point> points)
         {
-            var newShape = ShapeFabric.CreateShape(name, points);
+            var newShape = ShapeFabric.CreateShape(shape, points);
             var newShapeDrawable = newShape as IDrawable2DShape;
 
             if (newShapeDrawable != null)
@@ -74,7 +74,7 @@ namespace ShapeEditor.Utils
                 case Mode.DrawTriangle:
                     if (currentPoints.Count == 3)
                     {
-                        AddShape("Triangle", currentPoints);
+                        AddShape(ShapeTypes.ShapeType.Triangle_, currentPoints);
                         CanvasMode = Mode.None;
                     }
                     else
