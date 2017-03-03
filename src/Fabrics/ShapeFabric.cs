@@ -14,10 +14,16 @@ namespace ShapeEditor.Fabrics
             switch (shape)
             {
                 case ShapeTypes.ShapeType.Triangle_:
-                    var pts = points as Point[] ?? points.ToArray();
-                    if (pts.Length < 3)
+                    var ptsTriangle = points as Point[] ?? points.ToArray();
+                    if (ptsTriangle.Length < 3)
                         throw new Exception("Cannot create triangle: points array has less than 3 points");
-                    return new Triangle(pts[0], pts[1], pts[2]);
+                    return new Triangle(ptsTriangle[0], ptsTriangle[1], ptsTriangle[2]);
+
+                case ShapeTypes.ShapeType.Rectangle_:
+                    var ptsRectangle = points as Point[] ?? points.ToArray();
+                    if (ptsRectangle.Length < 4)
+                        throw new Exception("Cannot create rectangle: points array has less than 4 points");
+                    return new Quadrangle(ptsRectangle[0], ptsRectangle[1], ptsRectangle[2], ptsRectangle[3]);
             }
             throw new Exception($"Unknown shape: {ShapeTypes.name[shape]}");
         }
