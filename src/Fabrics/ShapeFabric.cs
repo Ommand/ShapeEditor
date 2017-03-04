@@ -24,6 +24,12 @@ namespace ShapeEditor.Fabrics
                     if (ptsRectangle.Length < 4)
                         throw new Exception("Cannot create rectangle: points array has less than 4 points");
                     return new Quadrangle(ptsRectangle[0], ptsRectangle[1], ptsRectangle[2], ptsRectangle[3]);
+
+                case ShapeTypes.ShapeType.Line_:
+                    var ptsLine = points as Point[] ?? points.ToArray();
+                    if (ptsLine.Length < 2)
+                        throw new Exception("Cannot create line: points array has less than 2 points");
+                    return new Line(ptsLine[0], ptsLine[1]);
             }
             throw new Exception($"Unknown shape: {ShapeTypes.name[shape]}");
         }
