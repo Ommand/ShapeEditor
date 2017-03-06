@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Media;
 using System.Linq;
+using System;
 
 namespace ShapeEditor.Shapes
 {
@@ -20,6 +21,9 @@ namespace ShapeEditor.Shapes
         }
         public Triangle(Point point1, Point point2, Point point3)
         {
+            if(SpecialMath.AreOnOneLine(point1, point2, point3))
+                throw new Exception("Cannot create triangle: points are on one line");
+
             Points = new List<Point> { point1, point2, point3 };
         }
 
@@ -36,15 +40,18 @@ namespace ShapeEditor.Shapes
         public bool IsInside(Point point)
         {
             Point[] pointsList = Points.ToArray();
+            Point ma = SpecialMath.GetVector(point, pointsList[0]);
+            Point mb = SpecialMath.GetVector(point, pointsList[1]);
+            Point mc = SpecialMath.GetVector(point, pointsList[2]);
+            Point ab = SpecialMath.GetVector(pointsList[0], pointsList[1]);
+            Point bc = SpecialMath.GetVector(pointsList[1], pointsList[2]);
+            Point ca = SpecialMath.GetVector(pointsList[2], pointsList[0]);
+            double productMAAB = SpecialMath.VectorProductAB(ma, ab);
+            double productMBBC = SpecialMath.VectorProductAB(mb, bc);
+            double productMCCA = SpecialMath.VectorProductAB(mc, ca);
 
-            double a = (pointsList[0].X - point.X) * (pointsList[1].Y - pointsList[0].Y) -
-                       (pointsList[0].Y - point.Y) * (pointsList[1].X - pointsList[0].X);
-            double b = (pointsList[1].X - point.X) * (pointsList[2].Y - pointsList[1].Y) -
-                       (pointsList[1].Y - point.Y) * (pointsList[2].X - pointsList[1].X);
-            double c = (pointsList[2].X - point.X) * (pointsList[0].Y - pointsList[2].Y) -
-                       (pointsList[2].Y - point.Y) * (pointsList[0].X - pointsList[2].X);
-
-            if (a >= 0 && b >= 0 && c >= 0 || a <= 0 && b <= 0 && c <= 0)
+            if (productMAAB >= 0 && productMBBC >= 0 && productMCCA >= 0 ||
+                productMAAB <= 0 && productMBBC <= 0 && productMCCA <= 0)
                 return true;
 
             return false;

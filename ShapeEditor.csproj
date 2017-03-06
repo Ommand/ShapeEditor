@@ -78,6 +78,9 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="src\Fabrics\ShapeTypes.cs" />
+    <Compile Include="src\Shapes\Line.cs" />
+    <Compile Include="src\Shapes\Quadrangle.cs" />
+    <Compile Include="src\SpecialMath\SpecialMath.cs" />
     <Compile Include="src\Transforms\Expand.cs" />
     <Compile Include="src\Transforms\Rotate.cs" />
     <Compile Include="src\Transforms\Translate.cs" />
