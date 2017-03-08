@@ -69,5 +69,20 @@ namespace ShapeEditor.Shapes
             foreach (Point point in Points)
                 transform.Transform(point);
         }
+
+        public Point GetCenter()
+        {
+            int count = Points.Count();
+            double xC = 0, yC = 0;
+
+            foreach(Point point in Points)
+            {
+                xC += point.X;
+                yC += point.Y;
+            }
+
+            Point center = new Point(xC / count, yC / count);
+            return center;
+        }
     }
 }
