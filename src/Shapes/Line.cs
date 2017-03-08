@@ -10,19 +10,18 @@ namespace ShapeEditor.Shapes
 {
     class Line : IShape, IDrawable2DShape
     {
-        public Line(Point point1,
-                    Point point2,
+        public Line(IEnumerable<Point> points,
                     Color borderColor,
                     Color fillColor,
-                    double borderWidth) : this(point1, point2)
+                    double borderWidth) : this(points)
         {
             BorderColor = borderColor;
             FillColor = fillColor;
             BorderWidth = borderWidth;
         }
-        public Line(Point point1, Point point2)
+        public Line(IEnumerable<Point> points)
         {
-            Points = new List<Point> { point1, point2 };
+            Points = points;
         }
 
 
@@ -47,7 +46,8 @@ namespace ShapeEditor.Shapes
 
         public void ApplyTransformation(ITransform transform)
         {
-            throw new System.NotImplementedException();
+            foreach (Point point in Points)
+                transform.Transform(point);
         }
     }
 }

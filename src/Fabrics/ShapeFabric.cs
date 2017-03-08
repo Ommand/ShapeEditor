@@ -29,7 +29,7 @@ namespace ShapeEditor.Fabrics
                     var ptsLine = points as Point[] ?? points.ToArray();
                     if (ptsLine.Length < 2)
                         throw new Exception("Cannot create line: points array has less than 2 points");
-                    return new Line(ptsLine[0], ptsLine[1]);
+                    return new Line(ptsLine);
             }
             throw new Exception($"Unknown shape: {ShapeTypes.name[shape]}");
         }
