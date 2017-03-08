@@ -10,5 +10,6 @@ namespace ShapeEditor.Shapes
         bool IsInside(Point point);
         void ApplyTransformation(ITransform transform);
         IEnumerable<Point> GetShapePoints(double scale);
+        Point GetCenter();
     }
 }
