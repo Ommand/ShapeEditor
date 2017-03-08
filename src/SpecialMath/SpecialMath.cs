@@ -32,5 +32,18 @@ namespace ShapeEditor.Shapes
             Point vec = new Point(end.X - begin.X, end.Y - begin.Y);
             return vec;
         }
+
+        public static double Norm(Point vec)
+        {
+            double norm = Math.Sqrt(vec.X * vec.X + vec.Y * vec.Y);
+            return norm;
+        }
+
+        public static double Norm(Point begin, Point end)
+        {
+            Point vec = GetVector(begin, end);
+            double norm = Norm(vec);
+            return norm;
+        }
     }
 }

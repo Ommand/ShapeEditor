@@ -30,6 +30,12 @@ namespace ShapeEditor.Fabrics
                     if (ptsLine.Length < 2)
                         throw new Exception("Cannot create line: points array has less than 2 points");
                     return new Line(ptsLine);
+
+                case ShapeTypes.ShapeType.Ellipse_:
+                    var ptsEllipse = points as Point[] ?? points.ToArray();
+                    if (ptsEllipse.Length < 3)
+                        throw new Exception("Cannot create ellipse: points array has less than 3 points");
+                    return new Ellipse(ptsEllipse[0], ptsEllipse[1], ptsEllipse[2]);
             }
             throw new Exception($"Unknown shape: {ShapeTypes.name[shape]}");
         }
