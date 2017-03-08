@@ -128,7 +128,8 @@ namespace ShapeEditor.Shapes
 
         public void ApplyTransformation(ITransform transform)
         {
-            throw new System.NotImplementedException();
+            foreach (Point point in Points)
+                transform.Transform(point);
         }
     }
 }
