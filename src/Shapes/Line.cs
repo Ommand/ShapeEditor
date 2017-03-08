@@ -39,7 +39,7 @@ namespace ShapeEditor.Shapes
             return false;
         }
 
-        public IEnumerable<Point> GetShapePoints(double scale)
+        public IEnumerable<Point> GetShapePoints(int segmentsCount)
         {
             return Points;
         }

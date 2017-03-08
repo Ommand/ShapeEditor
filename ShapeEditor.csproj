@@ -78,6 +78,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="src\Fabrics\ShapeTypes.cs" />
+    <Compile Include="src\Shapes\Ellipse.cs" />
     <Compile Include="src\Shapes\Line.cs" />
     <Compile Include="src\Shapes\Quadrangle.cs" />
     <Compile Include="src\SpecialMath\SpecialMath.cs" />

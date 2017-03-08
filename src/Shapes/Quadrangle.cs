@@ -119,7 +119,7 @@ namespace ShapeEditor.Shapes
             return false;
         }
 
-        public IEnumerable<Point> GetShapePoints(double scale)
+        public IEnumerable<Point> GetShapePoints(int segmentsCount)
         {
             List<Point> pointsList = Points.ToList();
             pointsList.Add(pointsList[0]);
