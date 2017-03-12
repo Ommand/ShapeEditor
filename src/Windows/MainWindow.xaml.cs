@@ -82,7 +82,18 @@ namespace ShapeEditor.Windows
             }
         }
 
-        //        private OpenGLControl control;
+        public bool IsWpfMode
+        {
+            get { return _graphics.CurrentRenderMode == GraphicsController.RenderMode.WPF; }
+            set
+            {
+                if (value == (_graphics.CurrentRenderMode == GraphicsController.RenderMode.WPF)) return;
+
+                _graphics.CurrentRenderMode = value ? GraphicsController.RenderMode.WPF : GraphicsController.RenderMode.OpenGL;
+                SwitchRenderer();
+                OnPropertyChanged();
+            }
+        }
 
         private Brush secondaryAccentBrush;
         private Brush primaryHueMidBrush;
@@ -95,19 +106,13 @@ namespace ShapeEditor.Windows
         {
             InitializeColorDialog();
             InitializeComponent();
-
-            //////переключение между окнами в рендере
-            //            WpfRender.Visibility = Visibility.Hidden;
-            //                       control.Visibility = Visibility.Visible;
-            HostOpenGL.Visibility = Visibility.Collapsed;
-            WpfRender.Visibility = Visibility.Visible;
-
+            IsWpfMode = true;
 
             //Show dialog host
             dialogHost.HorizontalAlignment = HorizontalAlignment.Stretch;
             grdMain.Children.Remove(dialogHost);
             grdMain.Children.Add(dialogHost);
-            
+
             //Assign brushes
             secondaryAccentBrush = (Brush)FindResource("SecondaryAccentBrush");
             primaryHueMidBrush = (Brush)FindResource("PrimaryHueMidBrush");
@@ -144,11 +149,41 @@ namespace ShapeEditor.Windows
         #endregion
 
         #region UI
+
         private void ButtonAddShape_Click(object sender, RoutedEventArgs e)
         {
             var mode = shapeButtons[(Button)sender];
             _graphics.CanvasMode = _graphics.CanvasMode == mode ? GraphicsController.Mode.None : mode;
         }
+
+        private void OpenGLRender_OnMouseDown(object sender, MouseEventArgs e)
+        {
+            _graphics.CanvasMouseDown(e.X, e.Y);
+        }
+
+        private void WpfRender_OnMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            var pt = e.GetPosition(this);
+            _graphics.CanvasMouseDown((int)pt.X, (int)pt.Y);
+        }
+
+        private void WpfRender_OnMouseMove(object sender, System.Windows.Input.MouseEventArgs e)
+        {
+            var pt = e.GetPosition(this);
+            _graphics.CanvasMouseMove((int)pt.X, (int)pt.Y);
+        }
+
+        private void OpenGLRender_OnMouseMove(object sender, MouseEventArgs e)
+        {
+            _graphics.CanvasMouseMove(e.X, e.Y);
+        }
+        private void SwitchRenderer()
+        {
+            //переключение между окнами в рендере
+            HostOpenGL.Visibility = _graphics.CurrentRenderMode == GraphicsController.RenderMode.OpenGL ? Visibility.Visible : Visibility.Collapsed;
+            WpfRender.Visibility = _graphics.CurrentRenderMode == GraphicsController.RenderMode.WPF ? Visibility.Visible : Visibility.Collapsed;
+        }
+
         #endregion
 
         #region ColorDialog
@@ -185,6 +220,7 @@ namespace ShapeEditor.Windows
         private object _colorPickerContent;
         private ICommand _openColorPickerCommand;
         private ICommand _cancelColorPickerCommand;
+        private bool _isWpfMode = true;
 
         public bool IsColorPickerOpen
         {
@@ -249,15 +285,5 @@ namespace ShapeEditor.Windows
 
         #endregion
 
-        private void OpenGLRender_OnMouseDown(object sender, MouseEventArgs e)
-        {
-            _graphics.CanvasMouseDown(e.X, e.Y);
-        }
-
-        private void WpfRender_OnMouseDown(object sender, MouseButtonEventArgs e)
-        {
-            var pt = e.GetPosition(this);
-            _graphics.CanvasMouseDown((int)pt.X, (int)pt.Y);
-        }
     }
 }
