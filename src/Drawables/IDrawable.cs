@@ -2,7 +2,7 @@ using System.Windows;
 
 namespace ShapeEditor
 {
-    interface IDrawable
+    public interface IDrawable
     {
         void Draw(IRenderer render);
     }
