@@ -43,8 +43,9 @@ namespace ShapeEditor.Renderers
             OpenGL.glColor3f(color.R / 255.0f, color.G / 255.0f, color.B / 255.0f);
             OpenGL.PrintText(hdc,origin.X, origin.Y,0,"Times New Roman",16,text);
         }
-        public void DrawLine(IEnumerable<Point> points, Color color)
+        public void DrawLine(IEnumerable<Point> points, Color color, float width)
         {
+            OpenGL.glLineWidth(width);
             OpenGL.glBegin(OpenGL.GL_LINE_STRIP);
             OpenGL.glColor3f(color.R / 255.0f, color.G / 255.0f, color.B / 255.0f);
             foreach (var p in points)
@@ -53,8 +54,9 @@ namespace ShapeEditor.Renderers
             }
             OpenGL.glEnd();
         }
-        public void DrawPolygon(IEnumerable<Point> points, Color color)
+        public void DrawPolygon(IEnumerable<Point> points, Color color, float width)
         {
+            OpenGL.glLineWidth(width);
             OpenGL.glBegin(OpenGL.GL_LINE_LOOP);
             OpenGL.glColor3f(color.R / 255.0f, color.G / 255.0f, color.B / 255.0f);
             foreach (var p in points)
@@ -63,11 +65,11 @@ namespace ShapeEditor.Renderers
             }
             OpenGL.glEnd();
         }
-        public void FillPolygon(IEnumerable<Point> points, Color color, Color fillColor)
+        public void FillPolygon(IEnumerable<Point> points, Color color, Color fillColor, float width)
         {
 
-            OpenGL.glEnable(OpenGL.GL_POLYGON_OFFSET_FILL);
-            OpenGL.glPolygonOffset(1.0f, 2.0f);
+//            OpenGL.glEnable(OpenGL.GL_POLYGON_OFFSET_FILL);
+//            OpenGL.glPolygonOffset(1.0f, 2.0f);
 
             OpenGL.glBegin(OpenGL.GL_POLYGON);
             OpenGL.glColor3f(fillColor.R/255.0f, fillColor.G/255.0f, fillColor.B/255.0f);
@@ -77,9 +79,9 @@ namespace ShapeEditor.Renderers
             }
             OpenGL.glEnd();
 
-            OpenGL.glDisable(OpenGL.GL_POLYGON_OFFSET_FILL);
+//            OpenGL.glDisable(OpenGL.GL_POLYGON_OFFSET_FILL);
 
-            DrawPolygon(points, color);
+            DrawPolygon(points, color, width);
         }
     }
 }

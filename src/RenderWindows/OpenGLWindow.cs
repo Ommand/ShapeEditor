@@ -8,27 +8,28 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using ShapeEditor;
+using ShapeEditor.Shapes;
+
 namespace ShapeEditor.src.RenderWindows
 {
     public partial class OpenGLWindow : UserControl
     {
-        int oglcontext_ = 0;
-        double centerX,centerY,sizeX;
+        int oglContext_;
+        double centerX, centerY, sizeX;
         IntPtr hdc;
-        int OglContex{ get { return oglcontext_; } }
+        public List<IDrawable2DShape> Shapes { get; set; }
         protected override void OnPaintBackground(PaintEventArgs pevent) { }
         public OpenGLWindow()
         {
             centerX = centerY = 0;
             sizeX = 1;
             InitializeComponent();
-            oglcontext_ = OpenGL.InitOpenGL((int)Handle);
+            oglContext_ = OpenGL.InitOpenGL((int)Handle);
 
             hdc = Win32.GetDC(Handle);
 
-            Win32.wglMakeCurrent(hdc, (IntPtr)oglcontext_);
+            Win32.wglMakeCurrent(hdc, (IntPtr)oglContext_);
 
-            OpenGL.glEnable(OpenGL.GL_DEPTH_TEST);
             OpenGL.glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
             OpenGL.glBlendFunc(OpenGL.GL_SRC_ALPHA, OpenGL.GL_ONE_MINUS_SRC_ALPHA);
             OpenGL.glEnable(OpenGL.GL_BLEND);
@@ -44,86 +45,63 @@ namespace ShapeEditor.src.RenderWindows
             Win32.wglMakeCurrent(IntPtr.Zero, IntPtr.Zero);
         }
 
-     
-
-        public void getOrthoValue(int X,int Y,out double XOrth,out double YOrth)
+        public void GetOrthoValue(int X, int Y, out double XOrth, out double YOrth)
         {
             double coefWnd = Height / (double)Width;
 
-            XOrth = X*(2* sizeX) / (double)Width + centerX - sizeX;
-            YOrth = (Height-Y) * (2 * sizeX* coefWnd) / (double)Height + centerY - sizeX*coefWnd;
-            chengeOrth();
+            XOrth = X * (2 * sizeX) / (double)Width + centerX - sizeX;
+            YOrth = (Height - Y) * (2 * sizeX * coefWnd) / (double)Height + centerY - sizeX * coefWnd;
+            ChangeOrth();
         }
-        public void getWindoValue(double XOrth,double YOrth,out int X,out int Y)
+        public void GetWindowValue(double XOrth, double YOrth, out int X, out int Y)
         {
             double coefWnd = Height / (double)Width;
 
-            X =  (int) (Width * (XOrth-(centerX - sizeX))/(2*sizeX));
-            Y = Height-(int)(Height * (YOrth - (centerY - sizeX*coefWnd)) / (2 * sizeX * coefWnd));
-            chengeOrth();
+            X = (int)(Width * (XOrth - (centerX - sizeX)) / (2 * sizeX));
+            Y = Height - (int)(Height * (YOrth - (centerY - sizeX * coefWnd)) / (2 * sizeX * coefWnd));
+            ChangeOrth();
         }
-        public void translatei(int deltHor,int deltVert) //перемещеат центр сцены (входные параметры это пиксели в окне)
+        public void TranslateI(int deltHor, int deltVert) //перемещеат центр сцены (входные параметры это пиксели в окне)
         {
             double coef = 2 * sizeX / Width;
             centerX += deltHor * coef;
             centerY += deltVert * coef;
-            chengeOrth();
+            ChangeOrth();
         }
-        public void translated(double deltHor, double deltVert) //перемещеат центр сцены (входные параметры это значение мировых координат)
+        public void TranslateD(double deltHor, double deltVert) //перемещеат центр сцены (входные параметры это значение мировых координат)
         {
-            centerX += deltHor ;
-            centerY += deltVert ;
-            chengeOrth();
+            centerX += deltHor;
+            centerY += deltVert;
+            ChangeOrth();
         }
-        public void scale(double sc) ///изменение размера видимой области
+        public void Scale(double sc) ///изменение размера видимой области
         {
-            sizeX*= sc;
-            chengeOrth();
+            sizeX *= sc;
+            ChangeOrth();
         }
         private void OpenGLWindow_Paint(object sender, PaintEventArgs e)
         {
+            if (oglContext_ == 0) return;
+            hdc = Win32.GetDC(Handle);
+            Win32.wglMakeCurrent(hdc, (IntPtr)oglContext_);
+            OpenGL.glClear(OpenGL.GL_COLOR_BUFFER_BIT);
 
-            if (oglcontext_ != 0)
-            {
-                hdc = Win32.GetDC(Handle);
-                Win32.wglMakeCurrent(hdc, (IntPtr)oglcontext_);
-                OpenGL.glClear(OpenGL.GL_COLOR_BUFFER_BIT | OpenGL.GL_DEPTH_BUFFER_BIT);
+            IRenderer renderMy = new Renderers.RendererOpenGl((int)hdc);
 
-                IRenderer renderMy = new Renderers.RendererOpenGl((int)hdc);
-
-                ////////////////////////////////////////////////////////тут должно быть что то типо
-                /// forech (var figure in figures)
-                ///    figure.draw(renderMy);
-                ///
-                //
+            if (Shapes != null)
+                foreach (var shape in Shapes)
+                    shape.Draw(renderMy);
 
 
-
-                ////////////////////////////////////////////////////////////////////////////////// этот блок можешь удалить (отладка была здесь)
-                IEnumerable<System.Windows.Point> pointsTr = new List<System.Windows.Point> {new System.Windows.Point(-0.5,-0.5),
-                new System.Windows.Point(0.4,-0.4),
-                new System.Windows.Point(0.5,0.5)};
-                IEnumerable<System.Windows.Point> pointsTr2 = new List<System.Windows.Point> {new System.Windows.Point(-0.5,-0.5),
-                new System.Windows.Point(-0.8,-0.8),
-                new System.Windows.Point(-1,1)};
-
-                renderMy.FillPolygon(pointsTr, System.Windows.Media.Color.FromRgb(255, 0, 0), System.Windows.Media.Color.FromRgb(0, 255, 0));
-                renderMy.DrawText("test", new System.Windows.Point(-0.5, 0), System.Windows.Media.Color.FromRgb(0, 0, 255));
-                renderMy.DrawBoundingBox(new System.Windows.Point(-0.6, -0.6), new System.Windows.Point(0.6, 0.6));
-                renderMy.DrawLine(pointsTr2, System.Windows.Media.Color.FromRgb(255, 255, 0));
-
-                //////////////////////////////////////////////////////////////////////////////////////////
-
-
-                Win32.SwapBuffers(hdc);
-                Win32.wglMakeCurrent(IntPtr.Zero, IntPtr.Zero);
-                Win32.ReleaseDC(Handle, hdc);
-            }
+            Win32.SwapBuffers(hdc);
+            Win32.wglMakeCurrent(IntPtr.Zero, IntPtr.Zero);
+            Win32.ReleaseDC(Handle, hdc);
         }
-        private void chengeOrth()
+
+        private void ChangeOrth()
         {
             hdc = Win32.GetDC(Handle);
-            Win32.wglMakeCurrent(hdc, (IntPtr)oglcontext_);
+            Win32.wglMakeCurrent(hdc, (IntPtr)oglContext_);
             OpenGL.glClearColor(1, 1, 1, 1);
             OpenGL.glMatrixMode(OpenGL.GL_PROJECTION);
             OpenGL.glLoadIdentity();
@@ -135,10 +113,10 @@ namespace ShapeEditor.src.RenderWindows
 
             Win32.wglMakeCurrent(IntPtr.Zero, IntPtr.Zero);
             Win32.ReleaseDC(Handle, hdc);
-        } 
+        }
         private void OpenGLWindow_ClientSizeChanged(object sender, EventArgs e)
         {
-            chengeOrth();
+            ChangeOrth();
         }
     }
 }

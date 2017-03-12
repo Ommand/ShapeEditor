@@ -1,11 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using ShapeEditor.Fabrics;
 using ShapeEditor.Renderers;
+using ShapeEditor.src.RenderWindows;
 using ShapeEditor.Shapes;
+using SharpGL.WPF;
+using MouseEventArgs = System.Windows.Forms.MouseEventArgs;
 
 namespace ShapeEditor.Utils
 {
@@ -20,6 +24,11 @@ namespace ShapeEditor.Utils
             DrawLine
         }
 
+        public enum RenderMode
+        {
+            OpenGL, WPF
+        }
+
         public Mode CanvasMode
         {
             get { return _canvasMode; }
@@ -30,12 +39,17 @@ namespace ShapeEditor.Utils
             }
         }
 
+        public RenderMode CurrentRenderMode { get; set; }
+
         public List<IShape> ShapesList { get; set; } = new List<IShape>();
         public IRenderer Renderer { get; set; }
         public Color SelectedFillColor = Color.FromRgb(255, 255, 255);
         public Color SelectedBorderColor = Color.FromRgb(0, 0, 0);
         public double Scale = 1;
         public double BorderWidth = 1;
+
+        public OpenGLWindow oglWindow { get; set; }
+        public WpfWindow wpfWindow { get; set; }
 
         public void AddShape(ShapeTypes.ShapeType shape, IEnumerable<Point> points)
         {
@@ -47,28 +61,47 @@ namespace ShapeEditor.Utils
                 newShapeDrawable.BorderWidth = BorderWidth;
                 newShapeDrawable.BorderColor = SelectedBorderColor;
                 newShapeDrawable.FillColor = SelectedFillColor;
-
-                var rendererOpenGl = Renderer as RendererOpenGl;
-           /*     if (rendererOpenGl != null)
-                    rendererOpenGl.OnDraw += (sender, args) => newShapeDrawable.Draw(Renderer);*/
             }
 
             ShapesList.Add(newShape);
+            Render();
         }
 
         public void Render()
         {
-            foreach (var shape in ShapesList)
-                (shape as IDrawable)?.Draw(Renderer);
+            switch (CurrentRenderMode)
+            {
+                case RenderMode.OpenGL:
+                    oglWindow.Shapes = ShapesList.Select(x => x as IDrawable2DShape).ToList();
+                    oglWindow.Invalidate();
+                    break;
+                case RenderMode.WPF:
+                    wpfWindow.Shapes = ShapesList.Select(x => x as IDrawable2DShape).ToList();
+                    wpfWindow.InvalidateVisual();
+                    break;
+            }
         }
 
         List<Point> currentPoints = new List<Point>();
         private Mode _canvasMode;
 
-        public void CanvasMouseDown(object sender, MouseButtonEventArgs mouseButtonEventArgs)
+        public void CanvasMouseDown(int inX,int inY)
         {
             Random r = new Random();
-            currentPoints.Add(new Point(r.NextDouble() - 0.5, r.NextDouble() - 0.5));
+
+            double y = 0;
+            double x = 0;
+            switch (CurrentRenderMode)
+            {
+                case RenderMode.OpenGL:
+                    oglWindow.GetOrthoValue(inX, inY, out x, out y);
+                    break;
+                case RenderMode.WPF:
+                    wpfWindow.GetOrthoValue(inX, inY, out x, out y);
+                    break;
+            }
+            currentPoints.Add(new Point(x, y));
+
             switch (CanvasMode)
             {
                 case Mode.DrawTriangle:

@@ -23,28 +23,25 @@ namespace ShapeEditor.src.RenderWindows
     public partial class WpfWindow : UserControl
     {
         double centerX, centerY, sizeX;
+        public List<IDrawable2DShape> Shapes { get; set; }
+
         public WpfWindow()
         {
             centerX = centerY = 0;
             sizeX = 1;
             InitializeComponent();
-            this.MouseDown += WpfWindow_MouseDown; ;
+            this.Background = Brushes.Transparent;
         }
 
-        private void WpfWindow_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void getOrthoValue(int X, int Y, out double XOrth, out double YOrth)
+        public void GetOrthoValue(int X, int Y, out double XOrth, out double YOrth)
         {
             double coefWnd = ActualHeight / (double)ActualWidth;
 
             XOrth = X * (2 * sizeX) / (double)ActualWidth + centerX - sizeX;
             YOrth = (ActualHeight - Y) * (2 * sizeX * coefWnd) / (double)ActualHeight + centerY - sizeX * coefWnd;
-      
+
         }
-        public void getWindoValue(double XOrth, double YOrth, out int X, out int Y)
+        public void GetWindowValue(double XOrth, double YOrth, out int X, out int Y)
         {
             double coefWnd = ActualHeight / (double)ActualWidth;
 
@@ -52,47 +49,28 @@ namespace ShapeEditor.src.RenderWindows
             Y = (int)ActualHeight - (int)(ActualHeight * (YOrth - (centerY - sizeX * coefWnd)) / (2 * sizeX * coefWnd));
 
         }
-        public void translatei(int deltHor, int deltVert) //перемещеат центр сцены (входные параметры это пиксели в окне)
+        public void TranslateI(int deltHor, int deltVert) //перемещеат центр сцены (входные параметры это пиксели в окне)
         {
             double coef = 2 * sizeX / ActualWidth;
             centerX += deltHor * coef;
             centerY += deltVert * coef;
         }
-        public void translated(double deltHor, double deltVert) //перемещеат центр сцены (входные параметры это значение мировых координат)
+        public void TranslateD(double deltHor, double deltVert) //перемещеат центр сцены (входные параметры это значение мировых координат)
         {
             centerX += deltHor;
             centerY += deltVert;
         }
-        public void scale(double sc) ///изменение размера видимой области
+        public void Scale(double sc) ///изменение размера видимой области
         {
             sizeX *= sc;
         }
         protected override void OnRender(DrawingContext dc)
         {
-            IRenderer renderMy = new Renderers.RendererWpf(dc,this);
+            IRenderer renderMy = new Renderers.RendererWpf(dc, this);
 
-
-            ////////////////////////////////////////////////////////тут должно быть что то типо
-            /// forech (var figure in figures)
-            ///    figure.draw(renderMy);
-            ///
-            //
-
-
-            ////////////////////////////////////////////////////////////////////////////////// этот блок можешь удалить (отладка была здесь)
-            IEnumerable<System.Windows.Point> pointsTr = new List<System.Windows.Point> {new System.Windows.Point(-0.5,-0.5),
-                new System.Windows.Point(0.4,-0.4),
-                new System.Windows.Point(0.5,0.5)};
-            IEnumerable<System.Windows.Point> pointsTr2 = new List<System.Windows.Point> {new System.Windows.Point(-0.5,-0.5),
-                new System.Windows.Point(-0.8,-0.8),
-                new System.Windows.Point(-1,1)};
-
-            renderMy.FillPolygon(pointsTr, System.Windows.Media.Color.FromRgb(255, 0, 0), System.Windows.Media.Color.FromRgb(0, 255, 0));
-            renderMy.DrawText("test", new System.Windows.Point(-0.5, 0), System.Windows.Media.Color.FromRgb(0, 0, 255));
-            renderMy.DrawBoundingBox(new System.Windows.Point(-0.6, -0.6), new System.Windows.Point(0.6, 0.6));
-            renderMy.DrawLine(pointsTr2, System.Windows.Media.Color.FromRgb(255, 255, 0));
-
-            //////////////////////////////////////////////////////////////////////////////////////////
+            if (Shapes == null) return;
+            foreach (var shape in Shapes)
+                shape.Draw(renderMy);
         }
     }
 }

@@ -30,7 +30,7 @@ namespace ShapeEditor.Shapes
 
         public void Draw(IRenderer render)
         {
-            render.FillPolygon(Points, BorderColor, FillColor);
+            render.FillPolygon(Points, BorderColor, FillColor,(float) BorderWidth);
         }
 
         public Color FillColor { get; set; }

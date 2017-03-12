@@ -3,6 +3,7 @@ using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
 using MaterialDesignThemes.Wpf;
@@ -12,6 +13,8 @@ using ShapeEditor.Utils;
 using SharpGL;
 using SharpGL.SceneGraph;
 using SharpGL.WPF;
+using HorizontalAlignment = System.Windows.HorizontalAlignment;
+using MouseEventArgs = System.Windows.Forms.MouseEventArgs;
 
 namespace ShapeEditor.Windows
 {
@@ -74,25 +77,32 @@ namespace ShapeEditor.Windows
             }
         }
 
-//        private OpenGLControl control;
+        //        private OpenGLControl control;
 
         #endregion
 
-       #region Main
+        #region Main
 
         public MainWindow()
         {
             InitializeColorDialog();
             InitializeComponent();
 
-           //////переключение между окнами в рендере
-           WpfRender.Visibility = Visibility.Hidden;
- //           control.Visibility = Visibility.Visible;
+            //////переключение между окнами в рендере
+            //            WpfRender.Visibility = Visibility.Hidden;
+            //                       control.Visibility = Visibility.Visible;
+            HostOpenGL.Visibility = Visibility.Collapsed;
+            WpfRender.Visibility = Visibility.Visible;
+
 
             //Show dialog host
             dialogHost.HorizontalAlignment = HorizontalAlignment.Stretch;
             grdMain.Children.Remove(dialogHost);
             grdMain.Children.Add(dialogHost);
+
+            _graphics.oglWindow = OpenGLRender;
+            _graphics.wpfWindow = WpfRender;
+            _graphics.CurrentRenderMode = GraphicsController.RenderMode.WPF;
         }
 
         #endregion
@@ -202,5 +212,16 @@ namespace ShapeEditor.Windows
         }
 
         #endregion
+
+        private void OpenGLRender_OnMouseDown(object sender, MouseEventArgs e)
+        {
+            _graphics.CanvasMouseDown(e.X, e.Y);
+        }
+
+        private void WpfRender_OnMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            var pt = e.GetPosition(this);
+            _graphics.CanvasMouseDown((int)pt.X, (int)pt.Y);
+        }
     }
 }

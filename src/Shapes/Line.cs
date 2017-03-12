@@ -27,7 +27,7 @@ namespace ShapeEditor.Shapes
 
         public void Draw(IRenderer render)
         {
-            render.DrawLine(Points, FillColor);
+            render.DrawLine(Points, FillColor, (float)BorderWidth);
         }
 
         public Color FillColor { get; set; }
