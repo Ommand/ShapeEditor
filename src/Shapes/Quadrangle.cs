@@ -121,9 +121,7 @@ namespace ShapeEditor.Shapes
 
         public IEnumerable<Point> GetShapePoints(int segmentsCount)
         {
-            List<Point> pointsList = Points.ToList();
-            pointsList.Add(pointsList[0]);
-            return pointsList;
+            return Points;
         }
 
         public void ApplyTransformation(ITransform transform)

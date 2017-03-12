@@ -32,7 +32,8 @@ namespace ShapeEditor.Shapes
 
         public void Draw(IRenderer render)
         {
-            
+            List<Point> shapePoints = GetShapePoints(360).ToList();
+            render.FillPolygon(shapePoints, BorderColor, FillColor);
         }
 
         public Color FillColor { get; set; }
@@ -88,7 +89,6 @@ namespace ShapeEditor.Shapes
                                         sinA * a * cosT + cosA * b * sinT + center.Y);
                 shapePoints.Add(point);
             }
-            shapePoints.Add(shapePoints[0]);
 
             return shapePoints;
         }
