@@ -49,8 +49,8 @@ namespace ShapeEditor.Utils
                 newShapeDrawable.FillColor = SelectedFillColor;
 
                 var rendererOpenGl = Renderer as RendererOpenGl;
-                if (rendererOpenGl != null)
-                    rendererOpenGl.OnDraw += (sender, args) => newShapeDrawable.Draw(Renderer);
+           /*     if (rendererOpenGl != null)
+                    rendererOpenGl.OnDraw += (sender, args) => newShapeDrawable.Draw(Renderer);*/
             }
 
             ShapesList.Add(newShape);
