@@ -74,24 +74,20 @@ namespace ShapeEditor.Windows
             }
         }
 
-        private OpenGLControl control;
+//        private OpenGLControl control;
 
         #endregion
 
-        #region Main
+       #region Main
 
         public MainWindow()
         {
             InitializeColorDialog();
             InitializeComponent();
 
-            control = new OpenGLControl();
-            control.MouseDown += _graphics.CanvasMouseDown;
-            grdMain.Children.Add(control);
-            _graphics.Renderer = new RendererOpenGl(control);
-
-            WpfRender.Visibility = Visibility.Hidden;
-            control.Visibility = Visibility.Visible;
+           //////переключение между окнами в рендере
+           WpfRender.Visibility = Visibility.Hidden;
+ //           control.Visibility = Visibility.Visible;
 
             //Show dialog host
             dialogHost.HorizontalAlignment = HorizontalAlignment.Stretch;
