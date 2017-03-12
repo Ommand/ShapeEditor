@@ -29,9 +29,9 @@
             <ColumnDefinition></ColumnDefinition>
             <ColumnDefinition Width="200"></ColumnDefinition>
         </Grid.ColumnDefinitions>
-        <render:WpfWindow x:Name="WpfRender" MouseDown="WpfRender_OnMouseDown" />
+        <render:WpfWindow x:Name="WpfRender" MouseDown="WpfRender_OnMouseDown" MouseMove="WpfRender_OnMouseMove" />
         <WindowsFormsHost Name="HostOpenGL">
-            <render:OpenGLWindow x:Name="OpenGLRender" MouseDown="OpenGLRender_OnMouseDown" />
+            <render:OpenGLWindow x:Name="OpenGLRender" MouseDown="OpenGLRender_OnMouseDown" MouseMove="OpenGLRender_OnMouseMove"/>
         </WindowsFormsHost>
         <StackPanel Grid.Column="1">
             <materialDesign:Card Margin="4 4 4 0" Background="{DynamicResource PrimaryHueDarkBrush}"
@@ -78,6 +78,13 @@
 
                     <TextBlock Margin="10 10 12 8"  Style="{DynamicResource MaterialDesignSubheadingTextBlock}">Border width</TextBlock>
                     <Slider Minimum="0" Maximum="10" Value="{Binding BorderWidth,ElementName=window}" Margin="0 -30 0 0" Style="{DynamicResource MaterialDesignDiscreteSlider}"/>
+
+                    <StackPanel Orientation="Horizontal" Margin="10,15,10,10">
+                        <TextBlock Style="{DynamicResource MaterialDesignSubheadingTextBlock}" Margin="0,0,0,0"> OpenGL</TextBlock>
+                        <ToggleButton Style="{DynamicResource MaterialDesignSwitchDarkToggleButton}" VerticalAlignment="Center" Margin="8 0 0 0"
+                          ToolTip="MaterialDesignSwitchDarkToggleButton" IsChecked="{Binding IsWpfMode,ElementName=window}" />
+                        <TextBlock Style="{DynamicResource MaterialDesignSubheadingTextBlock}" Margin="20,0,0,0"><Run Text="WPF"/></TextBlock>
+                    </StackPanel>
                 </StackPanel>
             </materialDesign:Card>
 

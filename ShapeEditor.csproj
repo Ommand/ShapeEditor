@@ -81,6 +81,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Properties\Annotations.cs" />
     <Compile Include="src\Fabrics\ShapeTypes.cs" />
     <Compile Include="src\OpenGL\FontBitmaps.cs" />
     <Compile Include="src\OpenGL\OpenGL.cs" />

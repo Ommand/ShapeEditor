@@ -1,19 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Linq;
 using System.Windows;
-using System.Windows.Input;
 using System.Windows.Media;
+using ShapeEditor.Annotations;
 using ShapeEditor.Fabrics;
-using ShapeEditor.Renderers;
 using ShapeEditor.src.RenderWindows;
 using ShapeEditor.Shapes;
-using SharpGL.WPF;
-using MouseEventArgs = System.Windows.Forms.MouseEventArgs;
 
 namespace ShapeEditor.Utils
 {
-    public class GraphicsController
+    public class GraphicsController : INotifyPropertyChanged
     {
         public enum Mode
         {
@@ -22,6 +21,36 @@ namespace ShapeEditor.Utils
             DrawRect,
             DrawEllipse,
             DrawLine
+        }
+
+        public GraphicsController()
+        {
+            PropertyChanged += (sender, args) =>
+            {
+                if (args.PropertyName.Equals("DynamicShape"))
+                    Render();
+                //                else if (args.PropertyName.Equals("SelectedBorderColor"))
+                //                {
+                //                    var dyn = DynamicShape as IDrawable2DShape;
+                //                    if (dyn != null)
+                //                        dyn.BorderColor = SelectedBorderColor;
+                //                    OnPropertyChanged(nameof(DynamicShape));
+                //                }
+                //                else if (args.PropertyName.Equals("SelectedFillColor"))
+                //                {
+                //                    var dyn = DynamicShape as IDrawable2DShape;
+                //                    if (dyn != null)
+                //                        dyn.FillColor = SelectedFillColor;
+                //                    OnPropertyChanged(nameof(DynamicShape));
+                //                }
+                //                else if (args.PropertyName.Equals("BorderWidth"))
+                //                {
+                //                    var dyn = DynamicShape as IDrawable2DShape;
+                //                    if (dyn != null)
+                //                        dyn.BorderWidth = BorderWidth;
+                //                    OnPropertyChanged(nameof(DynamicShape));
+                //                }
+            };
         }
 
         public enum RenderMode
@@ -36,20 +65,83 @@ namespace ShapeEditor.Utils
             {
                 _canvasMode = value;
                 currentPoints.Clear();
+                DynamicShape = null;
+                OnPropertyChanged();
             }
         }
 
-        public RenderMode CurrentRenderMode { get; set; }
+        public RenderMode CurrentRenderMode
+        {
+            get { return _currentRenderMode; }
+            set
+            {
+                if (value == _currentRenderMode) return;
+                _currentRenderMode = value;
+                Render();
+                OnPropertyChanged();
+            }
+        }
 
-        public List<IShape> ShapesList { get; set; } = new List<IShape>();
+        private List<IShape> ShapesList { get; set; } = new List<IShape>();
         public IRenderer Renderer { get; set; }
-        public Color SelectedFillColor = Color.FromRgb(255, 255, 255);
-        public Color SelectedBorderColor = Color.FromRgb(0, 0, 0);
-        public double Scale = 1;
-        public double BorderWidth = 1;
+        public Color _selectedFillColor = Color.FromRgb(255, 255, 255);
+        public Color _selectedBorderColor = Color.FromRgb(0, 0, 0);
+        public double _scale = 1;
+        public double _borderWidth = 1;
 
         public OpenGLWindow oglWindow { get; set; }
         public WpfWindow wpfWindow { get; set; }
+
+        private IShape DynamicShape
+        {
+            get { return _dynamicShape; }
+            set
+            {
+                if (value == _dynamicShape) return;
+                _dynamicShape = value;
+                UpdateDynamicShape();
+                OnPropertyChanged();
+            }
+        }
+
+        public Color SelectedBorderColor
+        {
+            get { return _selectedBorderColor; }
+            set
+            {
+                if (value.Equals(_selectedBorderColor)) return;
+                _selectedBorderColor = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public Color SelectedFillColor
+        {
+            get { return _selectedFillColor; }
+            set
+            {
+                if (value.Equals(_selectedFillColor)) return;
+                _selectedFillColor = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public double BorderWidth
+        {
+            get { return _borderWidth; }
+            set
+            {
+                if (value.Equals(_borderWidth)) return;
+                _borderWidth = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public double Scale
+        {
+            get { return _scale; }
+            set { _scale = value; }
+        }
 
         public void AddShape(ShapeTypes.ShapeType shape, IEnumerable<Point> points)
         {
@@ -69,14 +161,19 @@ namespace ShapeEditor.Utils
 
         public void Render()
         {
+            var drawable2DShapes = ShapesList.Select(x => x as IDrawable2DShape).ToList();
+            var drawable2DShape = DynamicShape as IDrawable2DShape;
+            if (drawable2DShape != null)
+                drawable2DShapes.Add(drawable2DShape);
+            if (drawable2DShapes.Count <= 0) return;
             switch (CurrentRenderMode)
             {
                 case RenderMode.OpenGL:
-                    oglWindow.Shapes = ShapesList.Select(x => x as IDrawable2DShape).ToList();
+                    oglWindow.Shapes = drawable2DShapes;
                     oglWindow.Invalidate();
                     break;
                 case RenderMode.WPF:
-                    wpfWindow.Shapes = ShapesList.Select(x => x as IDrawable2DShape).ToList();
+                    wpfWindow.Shapes = drawable2DShapes;
                     wpfWindow.InvalidateVisual();
                     break;
             }
@@ -84,23 +181,15 @@ namespace ShapeEditor.Utils
 
         List<Point> currentPoints = new List<Point>();
         private Mode _canvasMode;
+        private IShape _dynamicShape;
+        private RenderMode _currentRenderMode;
 
-        public void CanvasMouseDown(int inX,int inY)
+        public void CanvasMouseDown(int inX, int inY)
         {
-            Random r = new Random();
+            if (CanvasMode == Mode.None)
+                return;
 
-            double y = 0;
-            double x = 0;
-            switch (CurrentRenderMode)
-            {
-                case RenderMode.OpenGL:
-                    oglWindow.GetOrthoValue(inX, inY, out x, out y);
-                    break;
-                case RenderMode.WPF:
-                    wpfWindow.GetOrthoValue(inX, inY, out x, out y);
-                    break;
-            }
-            currentPoints.Add(new Point(x, y));
+            currentPoints.Add(GetOrthoPoint(inX, inY));
 
             switch (CanvasMode)
             {
@@ -110,11 +199,90 @@ namespace ShapeEditor.Utils
                         AddShape(ShapeTypes.ShapeType.Triangle_, currentPoints);
                         CanvasMode = Mode.None;
                     }
-                    else
+                    break;
+                case Mode.DrawRect:
+                    if (currentPoints.Count == 4)
                     {
+                        AddShape(ShapeTypes.ShapeType.Rectangle_, currentPoints);
+                        CanvasMode = Mode.None;
                     }
                     break;
+                case Mode.DrawEllipse:
+                    if (currentPoints.Count == 3)
+                    {
+                        AddShape(ShapeTypes.ShapeType.Ellipse_, currentPoints);
+                        CanvasMode = Mode.None;
+                    }
+                    break;
+                case Mode.DrawLine:
+                    break;
             }
+        }
+
+        private Point GetOrthoPoint(int inX, int inY)
+        {
+            double x;
+            double y;
+            switch (CurrentRenderMode)
+            {
+                case RenderMode.OpenGL:
+                    oglWindow.GetOrthoValue(inX, inY, out x, out y);
+                    break;
+                case RenderMode.WPF:
+                    wpfWindow.GetOrthoValue(inX, inY, out x, out y);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+            return new Point(x, y);
+        }
+
+        public void CanvasMouseMove(int inX, int inY)
+        {
+            var currentPoint = GetOrthoPoint(inX, inY);
+
+            try
+            {
+                var enumerable = currentPoints.Concat(new List<Point> { currentPoint });
+                switch (currentPoints.Count)
+                {
+                    case 1:
+                        DynamicShape = ShapeFabric.CreateShape(ShapeTypes.ShapeType.Line_, enumerable);
+                        break;
+                    case 2:
+                        DynamicShape = ShapeFabric.CreateShape(ShapeTypes.ShapeType.Triangle_, enumerable);
+                        break;
+                    case 3:
+                        DynamicShape = ShapeFabric.CreateShape(ShapeTypes.ShapeType.Rectangle_, enumerable);
+                        break;
+                    default:
+                        DynamicShape = null;
+                        break;
+                }
+            }
+            catch
+            {
+                // ignored
+            }
+        }
+
+        private void UpdateDynamicShape()
+        {
+            var dyn = DynamicShape as IDrawable2DShape;
+            if (dyn != null)
+            {
+                dyn.BorderColor = SelectedBorderColor;
+                dyn.FillColor = DynamicShape is Line ? SelectedBorderColor : SelectedFillColor;
+                dyn.BorderWidth = BorderWidth;
+            }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        [NotifyPropertyChangedInvocator]
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }
