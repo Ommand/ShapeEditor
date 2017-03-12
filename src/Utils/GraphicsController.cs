@@ -250,7 +250,10 @@ namespace ShapeEditor.Utils
                         DynamicShape = ShapeFabric.CreateShape(ShapeTypes.ShapeType.Line_, enumerable);
                         break;
                     case 2:
-                        DynamicShape = ShapeFabric.CreateShape(ShapeTypes.ShapeType.Triangle_, enumerable);
+                        if (CanvasMode == Mode.DrawEllipse)
+                            DynamicShape = ShapeFabric.CreateShape(ShapeTypes.ShapeType.Ellipse_, enumerable);
+                        else
+                            DynamicShape = ShapeFabric.CreateShape(ShapeTypes.ShapeType.Triangle_, enumerable);
                         break;
                     case 3:
                         DynamicShape = ShapeFabric.CreateShape(ShapeTypes.ShapeType.Rectangle_, enumerable);

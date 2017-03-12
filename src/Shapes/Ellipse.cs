@@ -33,7 +33,7 @@ namespace ShapeEditor.Shapes
         public void Draw(IRenderer render)
         {
             List<Point> shapePoints = GetShapePoints(360).ToList();
-            render.FillPolygon(shapePoints, BorderColor, FillColor);
+            render.FillPolygon(shapePoints, BorderColor, FillColor, (float) BorderWidth);
         }
 
         public Color FillColor { get; set; }
