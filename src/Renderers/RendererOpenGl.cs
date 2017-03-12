@@ -2,139 +2,86 @@ using System;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Media;
-using SharpGL;
-using SharpGL.SceneGraph;
 
 namespace ShapeEditor.Renderers
 {
     class RendererOpenGl : IRenderer
     {
-        SharpGL.WPF.OpenGLControl _openGlRender;
-        public event OpenGLEventHandler OnDraw = delegate {  };
-        public RendererOpenGl(SharpGL.WPF.OpenGLControl control)
+        int hdc;
+        public RendererOpenGl(int _hdc)
         {
-            _openGlRender = control;
-            InitOpenGl(control);
+            hdc = _hdc;
         }
-        private void InitOpenGl(SharpGL.WPF.OpenGLControl control)
-        {
-            control.Name = "OpenGLRender";
-            control.OpenGLDraw += OpenGLControl_OpenGLDraw;
-            control.OpenGLInitialized += OpenGLControl_OpenGLInitialized;
-             control.FrameRate = 60;
-            control.Resized += OpenGLControl_Resized;
-            control.BorderBrush = Brushes.Gray;
-        }
-        private void OpenGLControl_OpenGLInitialized(object sender, SharpGL.SceneGraph.OpenGLEventArgs args)
-        {
-            var gl = args.OpenGL;
-            args.OpenGL.Enable(OpenGL.GL_DEPTH_TEST);
-            gl.ClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-            gl.BlendFunc(OpenGL.GL_SRC_ALPHA, OpenGL.GL_ONE_MINUS_SRC_ALPHA);
-            gl.Enable(OpenGL.GL_BLEND);
-            // Сглаживание точек
-            gl.Enable(OpenGL.GL_POINT_SMOOTH);
-            gl.Hint(OpenGL.GL_POINT_SMOOTH_HINT, OpenGL.GL_NICEST);
-            // Сглаживание линий
-            gl.Enable(OpenGL.GL_LINE_SMOOTH);
-            gl.Hint(OpenGL.GL_LINE_SMOOTH_HINT, OpenGL.GL_NICEST);
-            // Сглаживание полигонов    
-            gl.Enable(OpenGL.GL_POLYGON_SMOOTH);
-            gl.Hint(OpenGL.GL_POLYGON_SMOOTH_HINT, OpenGL.GL_NICEST);
-        }
-        private void OpenGLControl_OpenGLDraw(object sender, SharpGL.SceneGraph.OpenGLEventArgs args)
-        {
-            var gl = args.OpenGL;
-            gl.Clear(SharpGL.OpenGL.GL_COLOR_BUFFER_BIT | SharpGL.OpenGL.GL_DEPTH_BUFFER_BIT);
-            OnDraw.Invoke(sender, args);
-        }
-        private void OpenGLControl_Resized(object sender, SharpGL.SceneGraph.OpenGLEventArgs args)
-        {
-            var gl = args.OpenGL;
-            gl.MatrixMode(OpenGL.GL_PROJECTION);
-            gl.LoadIdentity();
-            double coef = _openGlRender.ActualHeight / _openGlRender.ActualWidth;
-            double minx = -1, miny = coef * -1, maxx = 1, maxy = coef;
-            gl.Ortho(minx, maxx, miny, maxy, -1, 1);
-            gl.MatrixMode(OpenGL.GL_MODELVIEW);
-            gl.LoadIdentity();
-        }
+
         public void DrawBoundingBox(Point pointLeftBot, Point pointRightTop)
         {
-            var gl = _openGlRender.OpenGL;
-            gl.LineStipple(1, 0x0101);
-            gl.Enable(SharpGL.OpenGL.GL_LINE_STIPPLE);
-            gl.Begin(SharpGL.OpenGL.GL_LINES);
-            double size = 3.0 * 2.0 / _openGlRender.ActualWidth;
-            gl.Color(0.5f, 0.5f, 0.5f);
+           
+            OpenGL.glLineStipple(1, 0x0101);
+            OpenGL.glEnable(OpenGL.GL_LINE_STIPPLE);
+            OpenGL.glBegin(OpenGL.GL_LINES);
+            OpenGL.glColor3f(0.5f, 0.5f, 0.5f);
 
-            gl.Vertex(pointLeftBot.X, pointLeftBot.Y, 0.1);
-            gl.Vertex(pointRightTop.X, pointLeftBot.Y, 0.1);
+            OpenGL.glVertex3d(pointLeftBot.X, pointLeftBot.Y, 0.1);
+            OpenGL.glVertex3d(pointRightTop.X, pointLeftBot.Y, 0.1);
 
-            gl.Vertex(pointLeftBot.X, pointRightTop.Y, 0.1);
-            gl.Vertex(pointRightTop.X, pointRightTop.Y, 0.1);
+            OpenGL.glVertex3d(pointLeftBot.X, pointRightTop.Y, 0.1);
+            OpenGL.glVertex3d(pointRightTop.X, pointRightTop.Y, 0.1);
 
-            gl.Vertex(pointLeftBot.X, pointLeftBot.Y, 0.1);
-            gl.Vertex(pointLeftBot.X, pointRightTop.Y, 0.1);
+            OpenGL.glVertex3d(pointLeftBot.X, pointLeftBot.Y, 0.1);
+            OpenGL.glVertex3d(pointLeftBot.X, pointRightTop.Y, 0.1);
 
-            gl.Vertex(pointRightTop.X, pointLeftBot.Y, 0.1);
-            gl.Vertex(pointRightTop.X, pointRightTop.Y, 0.1);
+            OpenGL.glVertex3d(pointRightTop.X, pointLeftBot.Y, 0.1);
+            OpenGL.glVertex3d(pointRightTop.X, pointRightTop.Y, 0.1);
 
-            gl.End();
+            OpenGL.glEnd();
 
-            gl.Disable(SharpGL.OpenGL.GL_LINE_STIPPLE);
+            OpenGL.glDisable(OpenGL.GL_LINE_STIPPLE);
         }
-        public void DrawLine(IEnumerable<Point> points, Color color)
-        {
-            var gl = _openGlRender.OpenGL;
-            gl.Begin(SharpGL.OpenGL.GL_LINE_STRIP);
-            gl.Color(color.R, color.G, color.B);
-            foreach (var p in points)
-            {
-                gl.Vertex(p.X, p.Y, 0);
-            }
-            gl.End();
-        }
-        public void DrawPolygon(IEnumerable<Point> points, Color color)
-        {
-            var gl = _openGlRender.OpenGL;
-            gl.Begin(SharpGL.OpenGL.GL_LINE_LOOP);
-            gl.Color(color.R, color.G, color.B);
-            foreach (var p in points)
-            {
-                gl.Vertex(p.X, p.Y, 0);
-            }
-            gl.End();
-        }
-        public void FillPolygon(IEnumerable<Point> points, Color color, Color fillColor)
-        {
-            var gl = _openGlRender.OpenGL;
 
-            gl.Enable(SharpGL.OpenGL.GL_POLYGON_OFFSET_FILL);
-            gl.PolygonOffset(1.0f, 2.0f);
-
-            gl.Begin(SharpGL.OpenGL.GL_POLYGON);
-            gl.Color(fillColor.R, fillColor.G, fillColor.B);
-            foreach (var p in points)
-            {
-                gl.Vertex(p.X, p.Y, 0);
-            }
-            gl.End();
-
-            gl.Disable(SharpGL.OpenGL.GL_POLYGON_OFFSET_FILL);
-
-            DrawPolygon(points, color);
-        }
-        double ToWindowX(double x) { return (x + 1) * _openGlRender.ActualWidth / 2; }// (x - мировое значение)
-        double ToWindowY(double y)
-        {
-            double coef = (((double)(_openGlRender.ActualHeight)) / _openGlRender.ActualWidth);
-            return _openGlRender.ActualHeight - (y + coef) * _openGlRender.ActualHeight / (2 * coef);
-        }
         public void DrawText(string text, Point origin, Color color)
         {
-            var gl = _openGlRender.OpenGL;
-            gl.DrawText((int)ToWindowX(origin.X), (int)ToWindowY(origin.Y), color.R, color.G, color.B, "Arial", 11, text);
+            OpenGL.glColor3f(color.R / 255.0f, color.G / 255.0f, color.B / 255.0f);
+            OpenGL.PrintText(hdc,origin.X, origin.Y,0,"Times New Roman",16,text);
+        }
+        public void DrawLine(IEnumerable<Point> points, Color color, float width)
+        {
+            OpenGL.glLineWidth(width);
+            OpenGL.glBegin(OpenGL.GL_LINE_STRIP);
+            OpenGL.glColor3f(color.R / 255.0f, color.G / 255.0f, color.B / 255.0f);
+            foreach (var p in points)
+            {
+                OpenGL.glVertex3d(p.X, p.Y, 0);
+            }
+            OpenGL.glEnd();
+        }
+        public void DrawPolygon(IEnumerable<Point> points, Color color, float width)
+        {
+            OpenGL.glLineWidth(width);
+            OpenGL.glBegin(OpenGL.GL_LINE_LOOP);
+            OpenGL.glColor3f(color.R / 255.0f, color.G / 255.0f, color.B / 255.0f);
+            foreach (var p in points)
+            {
+                OpenGL.glVertex3d(p.X, p.Y, 0);
+            }
+            OpenGL.glEnd();
+        }
+        public void FillPolygon(IEnumerable<Point> points, Color color, Color fillColor, float width)
+        {
+
+//            OpenGL.glEnable(OpenGL.GL_POLYGON_OFFSET_FILL);
+//            OpenGL.glPolygonOffset(1.0f, 2.0f);
+
+            OpenGL.glBegin(OpenGL.GL_POLYGON);
+            OpenGL.glColor3f(fillColor.R/255.0f, fillColor.G/255.0f, fillColor.B/255.0f);
+            foreach (var p in points)
+            {
+                OpenGL.glVertex3d(p.X, p.Y, 0);
+            }
+            OpenGL.glEnd();
+
+//            OpenGL.glDisable(OpenGL.GL_POLYGON_OFFSET_FILL);
+
+            DrawPolygon(points, color, width);
         }
     }
 }

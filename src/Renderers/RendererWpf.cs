@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -8,117 +9,118 @@ namespace ShapeEditor.Renderers
 {
     class RendererWpf : IRenderer
     {
-        Canvas _canvasRender;
-        public RendererWpf(Canvas canvasRender)
+        DrawingContext _contex;
+        ShapeEditor.src.RenderWindows.WpfWindow window;
+        public RendererWpf(DrawingContext ctx, ShapeEditor.src.RenderWindows.WpfWindow win)
         {
-            _canvasRender = canvasRender;
+            _contex = ctx;
+            window = win;
         }
-        double getx(double x) { return (x) * 2 / _canvasRender.ActualWidth - 1; } //координата x по нажатию (x - пиксельное значение)
-        double gety(double y) { double coef = (_canvasRender.ActualHeight / _canvasRender.ActualWidth); return (_canvasRender.ActualHeight - y) * 2 * coef / _canvasRender.ActualHeight - coef; }
-        double ToWindowX(double x) { return (x + 1) * _canvasRender.ActualWidth / 2; }// (x - мировое значение)
-        double ToWindowY(double y)
+
+        public void DrawLine(IEnumerable<Point> points, Color color, float width)
         {
-            double coef = (((double)(_canvasRender.ActualHeight)) / _canvasRender.ActualWidth);
-            return _canvasRender.ActualHeight - (y + coef) * _canvasRender.ActualHeight / (2 * coef);
-        }
-        public void DrawLine(IEnumerable<Point> points, Color color)
-        {
-            List<Point> polylineList = new List<Point> { };
+            var geometry = new StreamGeometry();
+            List<Point> listPoints = new List<Point>();
             foreach (var p in points)
             {
-                polylineList.Add(new Point(ToWindowX(p.X), ToWindowY(p.Y)));
+                int x, y;
+                window.GetWindowValue(p.X, p.Y, out x, out y);
+                listPoints.Add(new Point(x, y));
             }
-            Polyline linepoly = new Polyline() { Points = new PointCollection(polylineList) };
-            SolidColorBrush Brush1 = new SolidColorBrush();
-            Brush1.Color = color;
-            linepoly.Stroke = Brush1;
-            _canvasRender.Children.Add(linepoly);
+            using (StreamGeometryContext ctx = geometry.Open())
+            {
+                ctx.BeginFigure(listPoints[0], true /* is filled */, false /* is closed */);//если замыкать то здесь  true
+                for (int i = 1; i < listPoints.Count; i++)
+                    ctx.LineTo(listPoints[i], true /* is stroked */, false /* is smooth join */);
+            }
+
+            Pen myPen = new Pen(new SolidColorBrush(color), width); //бордер
+            _contex.DrawGeometry(null, myPen, geometry);
         }
         public void DrawBoundingBox(Point pointLeftBot, Point pointRightTop)
         {
+
             Color color = Color.FromRgb(128, 128, 128);
 
-            Line newLine1 = new Line();
-            Line newLine2 = new Line();
-            newLine1.Stroke = new SolidColorBrush(color);
-            newLine2.Stroke = new SolidColorBrush(color);
-            newLine1.StrokeDashArray = new DoubleCollection() { 2, 2 };
-            newLine2.StrokeDashArray = new DoubleCollection() { 2, 2 };
+            var geometry = new StreamGeometry();
+            List<Point> listPoints = new List<Point>();
+            int x, y;
+            window.GetWindowValue(pointLeftBot.X, pointLeftBot.Y, out x, out y);
+            Point localleftbot = new Point(x, y);
 
-            newLine1.X1 = ToWindowX(pointRightTop.X);
-            newLine1.X2 = ToWindowX(pointLeftBot.X);
-            newLine1.Y1 = ToWindowY(pointLeftBot.Y);
-            newLine1.Y2 = ToWindowY(pointLeftBot.Y);
+            window.GetWindowValue(pointRightTop.X, pointRightTop.Y, out x, out y);
+            Point localrighttop = new Point(x, y);
 
-            newLine2.X1 = ToWindowX(pointRightTop.X);
-            newLine2.X2 = ToWindowX(pointLeftBot.X);
-            newLine2.Y1 = ToWindowY(pointRightTop.Y);
-            newLine2.Y2 = ToWindowY(pointRightTop.Y);
+            using (StreamGeometryContext ctx = geometry.Open())
+            {
+                ctx.BeginFigure(localleftbot, true /* is filled */, true /* is closed */);//если замыкать то здесь  true
+                ctx.LineTo(new Point(localrighttop.X, localleftbot.Y), true /* is stroked */, false /* is smooth join */);
+                ctx.LineTo(new Point(localrighttop.X, localrighttop.Y), true /* is stroked */, false /* is smooth join */);
+                ctx.LineTo(new Point(localleftbot.X, localrighttop.Y), true /* is stroked */, false /* is smooth join */);
 
-            _canvasRender.Children.Add(newLine1);
-            _canvasRender.Children.Add(newLine2);
+            }
+
+            Pen myPen = new Pen(new SolidColorBrush(color), 1); //бордер
+            myPen.DashStyle = new DashStyle(new double[2] { 5, 5 }, 0);
+
+            _contex.DrawGeometry(null, myPen, geometry);
 
 
-            Line newLine3 = new Line();
-            Line newLine4 = new Line();
-            newLine3.Stroke = new SolidColorBrush(color);
-            newLine4.Stroke = new SolidColorBrush(color);
-            newLine3.StrokeDashArray = new DoubleCollection() { 2, 2 };
-            newLine4.StrokeDashArray = new DoubleCollection() { 2, 2 };
-            newLine3.X1 = ToWindowX(pointRightTop.X);
-            newLine3.X2 = ToWindowX(pointRightTop.X);
-            newLine3.Y1 = ToWindowY(pointLeftBot.Y);
-            newLine3.Y2 = ToWindowY(pointRightTop.Y);
-
-            newLine4.X1 = ToWindowX(pointLeftBot.X);
-            newLine4.X2 = ToWindowX(pointLeftBot.X);
-            newLine4.Y1 = ToWindowY(pointLeftBot.Y);
-            newLine4.Y2 = ToWindowY(pointRightTop.Y);
-
-            _canvasRender.Children.Add(newLine3);
-            _canvasRender.Children.Add(newLine4);
         }
-        public void DrawPolygon(IEnumerable<Point> points, Color color)
+        public void DrawPolygon(IEnumerable<Point> points, Color color, float width)
         {
-            List<Point> polylineList = new List<Point> { };
+
+            var geometry = new StreamGeometry();
+            List<Point> listPoints = new List<Point>();
             foreach (var p in points)
             {
-                polylineList.Add(new Point(ToWindowX(p.X), ToWindowY(p.Y)));
+                int x, y;
+                window.GetWindowValue(p.X, p.Y, out x, out y);
+                listPoints.Add(new Point(x, y));
             }
-            polylineList.Add(polylineList[0]);
-            Polyline linepoly = new Polyline() { Points = new PointCollection(polylineList) };
-            SolidColorBrush Brush1 = new SolidColorBrush();
-            Brush1.Color = color;
-            linepoly.Stroke = Brush1;
-            _canvasRender.Children.Add(linepoly);
+            using (StreamGeometryContext ctx = geometry.Open())
+            {
+                ctx.BeginFigure(listPoints[0], true /* is filled */, true /* is closed */);//если замыкать то здесь  true
+                for (int i = 1; i < listPoints.Count; i++)
+                    ctx.LineTo(listPoints[i], true /* is stroked */, false /* is smooth join */);
+            }
+
+            Pen myPen = new Pen(new SolidColorBrush(color), width); //бордер
+
+            _contex.DrawGeometry(null, myPen, geometry);
         }
-        public void FillPolygon(IEnumerable<Point> points, Color color, Color fillColor)
+        public void FillPolygon(IEnumerable<Point> points, Color color, Color fillColor, float width)
         {
-            List<Point> polygonList = new List<Point> { };
+            var geometry = new StreamGeometry();
+            List<Point> listPoints = new List<Point>();
             foreach (var p in points)
             {
-                polygonList.Add(new Point(ToWindowX(p.X), ToWindowY(p.Y)));
+                int x, y;
+                window.GetWindowValue(p.X, p.Y, out x, out y);
+                listPoints.Add(new Point(x, y));
             }
-            Polygon polygon = new Polygon() { Points = new PointCollection(polygonList) };
-            SolidColorBrush Brush2 = new SolidColorBrush();
-            Brush2.Color = fillColor;
-            polygon.Stroke = Brush2;
-            polygon.Fill = Brush2;
-            _canvasRender.Children.Add(polygon);
+            using (StreamGeometryContext ctx = geometry.Open())
+            {
+                ctx.BeginFigure(listPoints[0], true /* is filled */, true /* is closed */);//если замыкать то здесь  true
+                for (int i = 1; i < listPoints.Count; i++)
+                    ctx.LineTo(listPoints[i], true /* is stroked */, false /* is smooth join */);
+            }
 
-            DrawPolygon(points, color);
+            _contex.DrawGeometry(new SolidColorBrush(fillColor), null, geometry);
+            DrawPolygon(points, color, width);
         }
         public void DrawText(string text, Point origin, Color color)
         {
-            TextBlock textBlock = new TextBlock();
-            textBlock.Text = text;
-            textBlock.FontSize = 12;
-            textBlock.FontFamily = new FontFamily("Arial");
-            textBlock.Foreground = new SolidColorBrush(color);
-            Canvas.SetLeft(textBlock, ToWindowX(origin.X));
-            Canvas.SetTop(textBlock, ToWindowY(origin.Y));
 
-            _canvasRender.Children.Add(textBlock);
+            int x, y;
+            window.GetWindowValue(origin.X, origin.Y, out x, out y);
+            _contex.DrawText(new FormattedText(text, CultureInfo.GetCultureInfo("en-us"),
+      FlowDirection.LeftToRight,
+      new Typeface("Times New Roman"),
+      16,
+      new SolidColorBrush(color)), new Point(x, y));
+
+
         }
     }
 }

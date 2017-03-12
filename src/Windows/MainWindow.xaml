@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:wpf="clr-namespace:SharpGL.WPF;assembly=SharpGL.WPF"
+        xmlns:render ="clr-namespace:ShapeEditor.src.RenderWindows"
         mc:Ignorable="d"
         Title="ShapeEditor" Height="756" Width="844"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
@@ -29,7 +29,10 @@
             <ColumnDefinition></ColumnDefinition>
             <ColumnDefinition Width="200"></ColumnDefinition>
         </Grid.ColumnDefinitions>
-        <Canvas Name="WpfRender" Background="Transparent" Grid.Row="0" Grid.Column="0"/>
+        <render:WpfWindow x:Name="WpfRender" MouseDown="WpfRender_OnMouseDown" />
+        <WindowsFormsHost Name="HostOpenGL">
+            <render:OpenGLWindow x:Name="OpenGLRender" MouseDown="OpenGLRender_OnMouseDown" />
+        </WindowsFormsHost>
         <StackPanel Grid.Column="1">
             <materialDesign:Card Margin="4 4 4 0" Background="{DynamicResource PrimaryHueDarkBrush}"
                   Foreground="{DynamicResource PrimaryHueDarkForegroundBrush}"

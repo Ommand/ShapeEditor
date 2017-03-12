@@ -24,6 +24,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -33,6 +34,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="MaterialDesignColors, Version=1.1.3.0, Culture=neutral, processorArchitecture=MSIL">
@@ -68,9 +70,11 @@
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
+    <Reference Include="UIAutomationProvider" />
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
+    <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
@@ -78,11 +82,35 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Properties\Annotations.cs" />
+    <Compile Include="src\Fabrics\ShapeTypes.cs" />
+    <Compile Include="src\OpenGL\FontBitmaps.cs" />
+    <Compile Include="src\OpenGL\OpenGL.cs" />
+    <Compile Include="src\OpenGL\Win32.cs" />
+    <Compile Include="src\RenderWindows\OpenGLWindow.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="src\RenderWindows\OpenGLWindow.Designer.cs">
+      <DependentUpon>OpenGLWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="src\RenderWindows\WpfWindow.xaml.cs">
+      <DependentUpon>WpfWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="src\Shapes\Ellipse.cs" />
+    <Compile Include="src\Shapes\Line.cs" />
+    <Compile Include="src\Shapes\Quadrangle.cs" />
+    <Compile Include="src\SpecialMath\SpecialMath.cs" />
+    <Compile Include="src\Transforms\Expand.cs" />
+    <Compile Include="src\Transforms\Rotate.cs" />
+    <Compile Include="src\Transforms\Translate.cs" />
     <Compile Include="src\Utils\ColorPicker.xaml.cs">
       <DependentUpon>ColorPicker.xaml</DependentUpon>
     </Compile>
     <Compile Include="src\Drawables\IDrawable2DShape.cs" />
     <Compile Include="src\Fabrics\ShapeFabric.cs" />
+    <Page Include="src\RenderWindows\WpfWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="src\Utils\ColorPicker.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -100,7 +128,6 @@
     <Compile Include="src\Renderers\IRenderer.cs" />
     <Compile Include="src\Renderers\RendererOpenGl.cs" />
     <Compile Include="src\Renderers\RendererWpf.cs" />
-    <Compile Include="src\Shapes\IPointShape.cs" />
     <Compile Include="src\Shapes\IShape.cs" />
     <Compile Include="src\Shapes\Triangle.cs" />
     <Compile Include="src\Transforms\ITransform.cs" />
@@ -129,6 +156,9 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <EmbeddedResource Include="src\RenderWindows\OpenGLWindow.resx">
+      <DependentUpon>OpenGLWindow.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -141,6 +171,9 @@
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>xcopy /y /d  "$(ProjectDir)External\*.dll" "$(ProjectDir)$(OutDir)"</PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
