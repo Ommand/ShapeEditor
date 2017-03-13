@@ -15,7 +15,7 @@ namespace ShapeEditor.Shapes
                         Point point3,
                         Color borderColor,
                         Color fillColor,
-                        double borderWidth) : this(point1, point2, point3)
+                        float borderWidth) : this(point1, point2, point3)
         {
             BorderColor = borderColor;
             FillColor = fillColor;
@@ -33,12 +33,12 @@ namespace ShapeEditor.Shapes
         public void Draw(IRenderer render)
         {
             List<Point> shapePoints = GetShapePoints(360).ToList();
-            render.FillPolygon(shapePoints, BorderColor, FillColor, (float) BorderWidth);
+            render.FillPolygon(shapePoints, BorderColor, FillColor, BorderWidth);
         }
 
         public Color FillColor { get; set; }
         public Color BorderColor { get; set; }
-        public double BorderWidth { get; set; }
+        public float BorderWidth { get; set; }
         public IEnumerable<Point> Points { get; }
         public bool IsInside(Point point)
         {
@@ -79,14 +79,14 @@ namespace ShapeEditor.Shapes
             double h = Math.PI * 2 / segmentsCount;
 
             //0<=t<=2*PI
-            shapePoints.Add(new Point(cosA * a + center.X, sinA * a + center.Y));
+            shapePoints.Add(new Point(cosA * a + center.X, -sinA * a + center.Y));
             for (int i = 1; i < segmentsCount; i++)
             {
                 double t = i * h;
                 double cosT = Math.Cos(t);
                 double sinT = Math.Sin(t);
-                Point point = new Point(cosA * a * cosT - sinA * b * sinT + center.X,
-                                        sinA * a * cosT + cosA * b * sinT + center.Y);
+                Point point = new Point(cosA * a * cosT + sinA * b * sinT + center.X,
+                                        -sinA * a * cosT + cosA * b * sinT + center.Y);
                 shapePoints.Add(point);
             }
 

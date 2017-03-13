@@ -88,7 +88,7 @@ namespace ShapeEditor.Utils
         public Color _selectedFillColor = Color.FromRgb(255, 255, 255);
         public Color _selectedBorderColor = Color.FromRgb(0, 0, 0);
         public double _scale = 1;
-        public double _borderWidth = 1;
+        public float _borderWidth = 1;
 
         public OpenGLWindow oglWindow { get; set; }
         public WpfWindow wpfWindow { get; set; }
@@ -127,7 +127,7 @@ namespace ShapeEditor.Utils
             }
         }
 
-        public double BorderWidth
+        public float BorderWidth
         {
             get { return _borderWidth; }
             set

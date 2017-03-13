@@ -6,6 +6,6 @@ namespace ShapeEditor
     {
         Color FillColor { get; set; }
         Color BorderColor { get; set; }
-        double BorderWidth { get; set; }
+        float BorderWidth { get; set; }
     }
 }
