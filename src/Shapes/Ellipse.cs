@@ -64,10 +64,7 @@ namespace ShapeEditor.Shapes
 
             double k = (pointsList[1].Y - pointsList[0].Y) / (pointsList[1].X - pointsList[0].X);
             double alpha = Math.Atan(k);
-            if(k < 0)
-            {
-                alpha += Math.PI * 0.5;
-            }
+
             Point center = GetCenter();
             double a = (SpecialMath.Norm(pointsList[0], pointsList[2]) +
                         SpecialMath.Norm(pointsList[1], pointsList[2])) * 0.5;
@@ -79,14 +76,14 @@ namespace ShapeEditor.Shapes
             double h = Math.PI * 2 / segmentsCount;
 
             //0<=t<=2*PI
-            shapePoints.Add(new Point(cosA * a + center.X, -sinA * a + center.Y));
+            shapePoints.Add(new Point(cosA * a + center.X, sinA * a + center.Y));
             for (int i = 1; i < segmentsCount; i++)
             {
                 double t = i * h;
                 double cosT = Math.Cos(t);
                 double sinT = Math.Sin(t);
-                Point point = new Point(cosA * a * cosT + sinA * b * sinT + center.X,
-                                        -sinA * a * cosT + cosA * b * sinT + center.Y);
+                Point point = new Point(cosA * a * cosT - sinA * b * sinT + center.X,
+                                        sinA * a * cosT + cosA * b * sinT + center.Y);
                 shapePoints.Add(point);
             }
 
