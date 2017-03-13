@@ -18,6 +18,7 @@ using SharpGL.SceneGraph;
 using SharpGL.WPF;
 using Button = System.Windows.Controls.Button;
 using HorizontalAlignment = System.Windows.HorizontalAlignment;
+using KeyEventArgs = System.Windows.Input.KeyEventArgs;
 using MouseEventArgs = System.Windows.Forms.MouseEventArgs;
 
 namespace ShapeEditor.Windows
@@ -272,6 +273,10 @@ namespace ShapeEditor.Windows
             CancelColorPickerCommand = new CommandImplementation(OnSelectColorPickerBorder);
         }
 
+        private void OnKeyDown(object sender, KeyEventArgs e)
+        {
+            _graphics.KeyPressed(e.Key);
+        }
         #endregion
 
         #region INotifyPropertyChanged

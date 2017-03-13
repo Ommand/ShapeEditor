@@ -24,12 +24,12 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Window.Resources>
-    <Grid x:Name="grdMain">
+    <Grid x:Name="grdMain" KeyDown="OnKeyDown">
         <Grid.ColumnDefinitions>
             <ColumnDefinition></ColumnDefinition>
             <ColumnDefinition Width="200"></ColumnDefinition>
         </Grid.ColumnDefinitions>
-        <render:WpfWindow x:Name="WpfRender" MouseDown="WpfRender_OnMouseDown" MouseMove="WpfRender_OnMouseMove" />
+        <render:WpfWindow x:Name="WpfRender" MouseDown="WpfRender_OnMouseDown" MouseMove="WpfRender_OnMouseMove"/>
         <WindowsFormsHost Name="HostOpenGL">
             <render:OpenGLWindow x:Name="OpenGLRender" MouseDown="OpenGLRender_OnMouseDown" MouseMove="OpenGLRender_OnMouseMove"/>
         </WindowsFormsHost>
