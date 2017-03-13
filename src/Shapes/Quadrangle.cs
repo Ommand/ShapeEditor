@@ -16,7 +16,7 @@ namespace ShapeEditor.Shapes
                           Point point4,
                           Color borderColor,
                           Color fillColor,
-                          double borderWidth) : this(point1, point2, point3, point4)
+                          float borderWidth) : this(point1, point2, point3, point4)
         {
             BorderColor = borderColor;
             FillColor = fillColor;
@@ -91,12 +91,12 @@ namespace ShapeEditor.Shapes
 
         public void Draw(IRenderer render)
         {
-            render.FillPolygon(Points, BorderColor, FillColor,(float) BorderWidth);
+            render.FillPolygon(Points, BorderColor, FillColor, BorderWidth);
         }
 
         public Color FillColor { get; set; }
         public Color BorderColor { get; set; }
-        public double BorderWidth { get; set; }
+        public float BorderWidth { get; set; }
         public IEnumerable<Point> Points { get; }
         public bool IsInside(Point point)
         {

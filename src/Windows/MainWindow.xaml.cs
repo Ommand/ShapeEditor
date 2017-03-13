@@ -73,7 +73,7 @@ namespace ShapeEditor.Windows
 
         public string ScalePercent => $"{(int)(Scale * 100)}%";
 
-        public double BorderWidth
+        public float BorderWidth
         {
             get { return _graphics.BorderWidth; }
             set

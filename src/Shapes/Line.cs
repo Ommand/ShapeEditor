@@ -13,7 +13,7 @@ namespace ShapeEditor.Shapes
         public Line(IEnumerable<Point> points,
                     Color borderColor,
                     Color fillColor,
-                    double borderWidth) : this(points)
+                    float borderWidth) : this(points)
         {
             BorderColor = borderColor;
             FillColor = fillColor;
@@ -27,12 +27,12 @@ namespace ShapeEditor.Shapes
 
         public void Draw(IRenderer render)
         {
-            render.DrawLine(Points, FillColor, (float)BorderWidth);
+            render.DrawLine(Points, FillColor, BorderWidth);
         }
 
         public Color FillColor { get; set; }
         public Color BorderColor { get; set; }
-        public double BorderWidth { get; set; }
+        public float BorderWidth { get; set; }
         public IEnumerable<Point> Points { get; }
         public bool IsInside(Point point)
         {
