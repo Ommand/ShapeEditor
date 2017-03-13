@@ -9,7 +9,7 @@ namespace ShapeEditor.Fabrics
 {
     public static class ShapeFabric
     {
-        public static IShape CreateShape(ShapeTypes.ShapeType shape, IEnumerable<Point> points)
+        public static Shape CreateShape(ShapeTypes.ShapeType shape, IEnumerable<Point> points)
         {
             switch (shape)
             {

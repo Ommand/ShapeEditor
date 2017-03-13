@@ -128,7 +128,7 @@
     <Compile Include="src\Renderers\IRenderer.cs" />
     <Compile Include="src\Renderers\RendererOpenGl.cs" />
     <Compile Include="src\Renderers\RendererWpf.cs" />
-    <Compile Include="src\Shapes\IShape.cs" />
+    <Compile Include="src\Shapes\Shape.cs" />
     <Compile Include="src\Shapes\Triangle.cs" />
     <Compile Include="src\Transforms\ITransform.cs" />
     <Compile Include="src\Utils\CommandImplementation.cs" />

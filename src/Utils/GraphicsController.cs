@@ -83,7 +83,7 @@ namespace ShapeEditor.Utils
             }
         }
 
-        private List<IShape> ShapesList { get; set; } = new List<IShape>();
+        private List<Shape> ShapesList { get; set; } = new List<Shape>();
         public IRenderer Renderer { get; set; }
         public Color _selectedFillColor = Color.FromRgb(255, 255, 255);
         public Color _selectedBorderColor = Color.FromRgb(0, 0, 0);
@@ -93,7 +93,7 @@ namespace ShapeEditor.Utils
         public OpenGLWindow oglWindow { get; set; }
         public WpfWindow wpfWindow { get; set; }
 
-        private IShape DynamicShape
+        private Shape DynamicShape
         {
             get { return _dynamicShape; }
             set
@@ -188,7 +188,7 @@ namespace ShapeEditor.Utils
 
         List<Point> currentPoints = new List<Point>();
         private Mode _canvasMode;
-        private IShape _dynamicShape;
+        private Shape _dynamicShape;
         private RenderMode _currentRenderMode;
 
         public void CanvasMouseDown(int inX, int inY)

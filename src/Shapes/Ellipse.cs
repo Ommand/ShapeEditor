@@ -8,7 +8,7 @@ using System.Windows.Media;
 
 namespace ShapeEditor.Shapes
 {
-    class Ellipse : IShape, IDrawable2DShape
+    class Ellipse : Shape, IDrawable2DShape
     {
         public Ellipse(Point point1,
                         Point point2,
@@ -39,8 +39,8 @@ namespace ShapeEditor.Shapes
         public Color FillColor { get; set; }
         public Color BorderColor { get; set; }
         public float BorderWidth { get; set; }
-        public IEnumerable<Point> Points { get; }
-        public bool IsInside(Point point)
+
+        public override bool IsInside(Point point)
         {
             Point[] pointsList = Points.ToArray();
 
@@ -93,13 +93,7 @@ namespace ShapeEditor.Shapes
             return shapePoints;
         }
 
-        public void ApplyTransformation(ITransform transform)
-        {
-            foreach (Point point in Points)
-                transform.Transform(point);
-        }
-
-        public Point GetCenter()
+        public new Point GetCenter()
         {
             Point[] pointsList = Points.ToArray();
 
