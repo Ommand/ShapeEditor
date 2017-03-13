@@ -9,7 +9,7 @@ namespace ShapeEditor.Fabrics
 {
     public static class ShapeFabric
     {
-        public static Shape CreateShape(ShapeTypes.ShapeType shape, IEnumerable<Point> points)
+        public static Shape CreateShape(ShapeTypes.ShapeType shape, IEnumerable<Point> points, ShapeModes.ShapeMode mode)
         {
             switch (shape)
             {
@@ -19,11 +19,16 @@ namespace ShapeEditor.Fabrics
                         throw new Exception("Cannot create triangle: points array has less than 3 points");
                     return new Triangle(ptsTriangle[0], ptsTriangle[1], ptsTriangle[2]);
 
-                case ShapeTypes.ShapeType.Rectangle_:
-                    var ptsRectangle = points as Point[] ?? points.ToArray();
-                    if (ptsRectangle.Length < 4)
-                        throw new Exception("Cannot create rectangle: points array has less than 4 points");
-                    return new Quadrangle(ptsRectangle[0], ptsRectangle[1], ptsRectangle[2], ptsRectangle[3]);
+                case ShapeTypes.ShapeType.Quadrangle_:
+                    var ptsQuadrangle = points as Point[] ?? points.ToArray();
+                    if (ptsQuadrangle.Length < 4)
+                        throw new Exception("Cannot create quadrangle: points array has less than 4 points");
+                    Quadrangle quadrangle = new Quadrangle(ptsQuadrangle[0], ptsQuadrangle[1], ptsQuadrangle[2], ptsQuadrangle[3]);
+                    if (!quadrangle.IsConvex() && mode == ShapeModes.ShapeMode.Fixed)
+                    {
+                        throw new Exception("Wrong quadrangle");
+                    }
+                    return quadrangle;
 
                 case ShapeTypes.ShapeType.Line_:
                     var ptsLine = points as Point[] ?? points.ToArray();

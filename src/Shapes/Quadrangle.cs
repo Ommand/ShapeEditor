@@ -59,7 +59,14 @@ namespace ShapeEditor.Shapes
                             }
                             else
                             {
-                                Points = new List<Point> { point1, point4, point3, point2 };
+                                if (IsConvex(point1, point4, point3, point2))
+                                {
+                                    Points = new List<Point> { point1, point4, point3, point2 };
+                                }
+                                else
+                                {
+                                    Points = new List<Point> { point1, point2, point3, point4 };
+                                }
                             }
                         }
                     }
@@ -82,11 +89,17 @@ namespace ShapeEditor.Shapes
             double productABAC = SpecialMath.VectorProductAB(ab, ac);
             double productACAD = SpecialMath.VectorProductAB(ac, ad);
 
-            if (productBABD >= 0 && productBDBC >= 0 && productABAC >= 0 && productACAD >= 0 ||
-               productBABD <= 0 && productBDBC <= 0 && productABAC <= 0 && productACAD <= 0)
+            if (productBABD >= 0 && productBDBC >= 0 && productABAC <= 0 && productACAD <= 0 ||
+               productBABD <= 0 && productBDBC <= 0 && productABAC >= 0 && productACAD >= 0)
                 return true;
 
             return false;
+        }
+
+        public bool IsConvex()
+        {
+            Point[] shapePoints = Points.ToArray();
+            return IsConvex(shapePoints[0], shapePoints[1], shapePoints[2], shapePoints[3]);
         }
 
         public void Draw(IRenderer render)

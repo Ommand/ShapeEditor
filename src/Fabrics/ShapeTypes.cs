@@ -8,13 +8,13 @@ namespace ShapeEditor.Fabrics
 {
     public static class ShapeTypes
     {
-        public enum ShapeType { Line_, Triangle_, Ellipse_, Rectangle_};
+        public enum ShapeType { Line_, Triangle_, Ellipse_, Quadrangle_};
         public static Dictionary<ShapeType, string> name = new Dictionary<ShapeType, string>()
         {
           { ShapeType.Line_, "Line"},
           { ShapeType.Triangle_, "Triangle"},
           { ShapeType.Ellipse_, "Ellipse"},
-          { ShapeType.Rectangle_, "Rectangle"}
+          { ShapeType.Quadrangle_, "Quadrangle"}
         };
     }
 }

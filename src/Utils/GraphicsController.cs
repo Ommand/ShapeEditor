@@ -146,7 +146,8 @@ namespace ShapeEditor.Utils
 
         public void AddShape(ShapeTypes.ShapeType shape, IEnumerable<Point> points)
         {
-            var newShape = ShapeFabric.CreateShape(shape, points);
+            ShapeEditor.Fabrics.ShapeModes.ShapeMode shapeMode = ShapeEditor.Fabrics.ShapeModes.ShapeMode.Fixed;
+            var newShape = ShapeFabric.CreateShape(shape, points, shapeMode);
             var newShapeDrawable = newShape as IDrawable2DShape;
 
             if (newShapeDrawable != null)
@@ -210,7 +211,7 @@ namespace ShapeEditor.Utils
                 case Mode.DrawRect:
                     if (currentPoints.Count == 4)
                     {
-                        AddShape(ShapeTypes.ShapeType.Rectangle_, currentPoints);
+                        AddShape(ShapeTypes.ShapeType.Quadrangle_, currentPoints);
                         CanvasMode = Mode.None;
                     }
                     break;
@@ -247,26 +248,27 @@ namespace ShapeEditor.Utils
         public void CanvasMouseMove(int inX, int inY)
         {
             var currentPoint = GetOrthoPoint(inX, inY);
+            ShapeEditor.Fabrics.ShapeModes.ShapeMode shapeMode = ShapeEditor.Fabrics.ShapeModes.ShapeMode.NotFixed;
 
             try
             {
                 var enumerable = currentPoints.Concat(new List<Point> { currentPoint });
                 if (CanvasMode == Mode.DrawLine && currentPoints.Count > 1)
-                    DynamicShape = ShapeFabric.CreateShape(ShapeTypes.ShapeType.Line_, enumerable);
+                    DynamicShape = ShapeFabric.CreateShape(ShapeTypes.ShapeType.Line_, enumerable, shapeMode);
                 else
                     switch (currentPoints.Count)
                     {
                         case 1:
-                            DynamicShape = ShapeFabric.CreateShape(ShapeTypes.ShapeType.Line_, enumerable);
+                            DynamicShape = ShapeFabric.CreateShape(ShapeTypes.ShapeType.Line_, enumerable, shapeMode);
                             break;
                         case 2:
                             if (CanvasMode == Mode.DrawEllipse)
-                                DynamicShape = ShapeFabric.CreateShape(ShapeTypes.ShapeType.Ellipse_, enumerable);
+                                DynamicShape = ShapeFabric.CreateShape(ShapeTypes.ShapeType.Ellipse_, enumerable, shapeMode);
                             else
-                                DynamicShape = ShapeFabric.CreateShape(ShapeTypes.ShapeType.Triangle_, enumerable);
+                                DynamicShape = ShapeFabric.CreateShape(ShapeTypes.ShapeType.Triangle_, enumerable, shapeMode);
                             break;
                         case 3:
-                            DynamicShape = ShapeFabric.CreateShape(ShapeTypes.ShapeType.Rectangle_, enumerable);
+                            DynamicShape = ShapeFabric.CreateShape(ShapeTypes.ShapeType.Quadrangle_, enumerable, shapeMode);
                             break;
                         default:
                             DynamicShape = null;
