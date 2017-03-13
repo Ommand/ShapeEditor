@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Linq;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Media;
 using ShapeEditor.Annotations;
 using ShapeEditor.Fabrics;
@@ -152,7 +153,7 @@ namespace ShapeEditor.Utils
             {
                 newShapeDrawable.BorderWidth = BorderWidth;
                 newShapeDrawable.BorderColor = SelectedBorderColor;
-                newShapeDrawable.FillColor = SelectedFillColor;
+                newShapeDrawable.FillColor = (newShape is Line) ? SelectedBorderColor : SelectedFillColor;
             }
 
             ShapesList.Add(newShape);
@@ -165,16 +166,22 @@ namespace ShapeEditor.Utils
             var drawable2DShape = DynamicShape as IDrawable2DShape;
             if (drawable2DShape != null)
                 drawable2DShapes.Add(drawable2DShape);
-            if (drawable2DShapes.Count <= 0) return;
+            //            if (drawable2DShapes.Count <= 0) return;
             switch (CurrentRenderMode)
             {
                 case RenderMode.OpenGL:
-                    oglWindow.Shapes = drawable2DShapes;
-                    oglWindow.Invalidate();
+                    if (oglWindow != null)
+                    {
+                        oglWindow.Shapes = drawable2DShapes;
+                        oglWindow.Invalidate();
+                    }
                     break;
                 case RenderMode.WPF:
-                    wpfWindow.Shapes = drawable2DShapes;
-                    wpfWindow.InvalidateVisual();
+                    if (wpfWindow != null)
+                    {
+                        wpfWindow.Shapes = drawable2DShapes;
+                        wpfWindow.InvalidateVisual();
+                    }
                     break;
             }
         }
@@ -244,28 +251,43 @@ namespace ShapeEditor.Utils
             try
             {
                 var enumerable = currentPoints.Concat(new List<Point> { currentPoint });
-                switch (currentPoints.Count)
-                {
-                    case 1:
-                        DynamicShape = ShapeFabric.CreateShape(ShapeTypes.ShapeType.Line_, enumerable);
-                        break;
-                    case 2:
-                        if (CanvasMode == Mode.DrawEllipse)
-                            DynamicShape = ShapeFabric.CreateShape(ShapeTypes.ShapeType.Ellipse_, enumerable);
-                        else
-                            DynamicShape = ShapeFabric.CreateShape(ShapeTypes.ShapeType.Triangle_, enumerable);
-                        break;
-                    case 3:
-                        DynamicShape = ShapeFabric.CreateShape(ShapeTypes.ShapeType.Rectangle_, enumerable);
-                        break;
-                    default:
-                        DynamicShape = null;
-                        break;
-                }
+                if (CanvasMode == Mode.DrawLine && currentPoints.Count > 1)
+                    DynamicShape = ShapeFabric.CreateShape(ShapeTypes.ShapeType.Line_, enumerable);
+                else
+                    switch (currentPoints.Count)
+                    {
+                        case 1:
+                            DynamicShape = ShapeFabric.CreateShape(ShapeTypes.ShapeType.Line_, enumerable);
+                            break;
+                        case 2:
+                            if (CanvasMode == Mode.DrawEllipse)
+                                DynamicShape = ShapeFabric.CreateShape(ShapeTypes.ShapeType.Ellipse_, enumerable);
+                            else
+                                DynamicShape = ShapeFabric.CreateShape(ShapeTypes.ShapeType.Triangle_, enumerable);
+                            break;
+                        case 3:
+                            DynamicShape = ShapeFabric.CreateShape(ShapeTypes.ShapeType.Rectangle_, enumerable);
+                            break;
+                        default:
+                            DynamicShape = null;
+                            break;
+                    }
             }
             catch
             {
                 // ignored
+            }
+        }
+
+        public void KeyPressed(Key key)
+        {
+            switch (key)
+            {
+                case Key.Escape:
+                    if (CanvasMode == Mode.DrawLine && currentPoints.Count > 1)
+                        AddShape(ShapeTypes.ShapeType.Line_, currentPoints);
+                    CanvasMode = Mode.None;
+                    break;
             }
         }
 
