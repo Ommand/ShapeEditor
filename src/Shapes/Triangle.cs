@@ -6,7 +6,7 @@ using System;
 
 namespace ShapeEditor.Shapes
 {
-    class Triangle : IShape, IDrawable2DShape
+    class Triangle : Shape, IDrawable2DShape
     {
         public Triangle(Point point1,
                         Point point2,
@@ -36,8 +36,8 @@ namespace ShapeEditor.Shapes
         public Color FillColor { get; set; }
         public Color BorderColor { get; set; }
         public float BorderWidth { get; set; }
-        public IEnumerable<Point> Points { get; }
-        public bool IsInside(Point point)
+
+        public override bool IsInside(Point point)
         {
             Point[] pointsList = Points.ToArray();
             Point ma = SpecialMath.GetVector(point, pointsList[0]);
@@ -55,32 +55,6 @@ namespace ShapeEditor.Shapes
                 return true;
 
             return false;
-        }
-
-        public IEnumerable<Point> GetShapePoints(int segmentsCount)
-        {
-            return Points;
-        }
-
-        public void ApplyTransformation(ITransform transform)
-        {
-            foreach (Point point in Points)
-                transform.Transform(point);
-        }
-
-        public Point GetCenter()
-        {
-            int count = Points.Count();
-            double xC = 0, yC = 0;
-
-            foreach(Point point in Points)
-            {
-                xC += point.X;
-                yC += point.Y;
-            }
-
-            Point center = new Point(xC / count, yC / count);
-            return center;
         }
     }
 }

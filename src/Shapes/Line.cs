@@ -8,7 +8,7 @@ using System.Windows.Media;
 
 namespace ShapeEditor.Shapes
 {
-    class Line : IShape, IDrawable2DShape
+    class Line : Shape, IDrawable2DShape
     {
         public Line(IEnumerable<Point> points,
                     Color borderColor,
@@ -33,36 +33,11 @@ namespace ShapeEditor.Shapes
         public Color FillColor { get; set; }
         public Color BorderColor { get; set; }
         public float BorderWidth { get; set; }
-        public IEnumerable<Point> Points { get; }
-        public bool IsInside(Point point)
+
+        public override bool IsInside(Point point)
         {
             return false;
         }
 
-        public IEnumerable<Point> GetShapePoints(int segmentsCount)
-        {
-            return Points;
-        }
-
-        public void ApplyTransformation(ITransform transform)
-        {
-            foreach (Point point in Points)
-                transform.Transform(point);
-        }
-
-        public Point GetCenter()
-        {
-            int count = Points.Count();
-            double xC = 0, yC = 0;
-
-            foreach (Point point in Points)
-            {
-                xC += point.X;
-                yC += point.Y;
-            }
-
-            Point center = new Point(xC / count, yC / count);
-            return center;
-        }
     }
 }
