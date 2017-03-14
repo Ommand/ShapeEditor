@@ -62,7 +62,7 @@ namespace ShapeEditor.src.RenderWindows
         }
         public void Scale(double sc) ///изменение размера видимой области
         {
-            sizeX *= sc;
+            sizeX = sc;
         }
         protected override void OnRender(DrawingContext dc)
         {

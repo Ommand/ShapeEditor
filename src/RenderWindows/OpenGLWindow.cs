@@ -76,7 +76,7 @@ namespace ShapeEditor.src.RenderWindows
         }
         public void Scale(double sc) ///изменение размера видимой области
         {
-            sizeX *= sc;
+            sizeX = sc;
             ChangeOrth();
         }
         private void OpenGLWindow_Paint(object sender, PaintEventArgs e)

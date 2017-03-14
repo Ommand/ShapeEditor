@@ -78,6 +78,7 @@ namespace ShapeEditor.Utils
             {
                 if (value == _currentRenderMode) return;
                 _currentRenderMode = value;
+                UpdateScale();
                 Render();
                 OnPropertyChanged();
             }
@@ -85,10 +86,10 @@ namespace ShapeEditor.Utils
 
         private List<Shape> ShapesList { get; set; } = new List<Shape>();
         public IRenderer Renderer { get; set; }
-        public Color _selectedFillColor = Color.FromRgb(255, 255, 255);
-        public Color _selectedBorderColor = Color.FromRgb(0, 0, 0);
-        public double _scale = 1;
-        public float _borderWidth = 1;
+        private Color _selectedFillColor = Color.FromRgb(255, 255, 255);
+        private Color _selectedBorderColor = Color.FromRgb(0, 0, 0);
+        private double _scale = 1;
+        private float _borderWidth = 1;
 
         public OpenGLWindow oglWindow { get; set; }
         public WpfWindow wpfWindow { get; set; }
@@ -138,10 +139,36 @@ namespace ShapeEditor.Utils
             }
         }
 
+        private double minScale = 0.1;
+        private double maxScale = 5;
         public double Scale
         {
             get { return _scale; }
-            set { _scale = value; }
+            set
+            {
+                if (value > maxScale) value = maxScale;
+                else if (value < minScale) value = minScale;
+                if (Scale == value) return;
+                _scale = value;
+                OnPropertyChanged();
+                UpdateScale();
+            }
+        }
+
+        private void UpdateScale()
+        {
+            switch (CurrentRenderMode)
+            {
+                case RenderMode.OpenGL:
+                    oglWindow?.Scale(1/Scale);
+                    break;
+                case RenderMode.WPF:
+                    wpfWindow?.Scale(1/Scale);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+            Render();
         }
 
         public void AddShape(ShapeTypes.ShapeType shape, IEnumerable<Point> points)
@@ -234,28 +261,10 @@ namespace ShapeEditor.Utils
             }
         }
 
-        private Point GetOrthoPoint(int inX, int inY)
-        {
-            double x;
-            double y;
-            switch (CurrentRenderMode)
-            {
-                case RenderMode.OpenGL:
-                    oglWindow.GetOrthoValue(inX, inY, out x, out y);
-                    break;
-                case RenderMode.WPF:
-                    wpfWindow.GetOrthoValue(inX, inY, out x, out y);
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-            return new Point(x, y);
-        }
-
         public void CanvasMouseMove(int inX, int inY)
         {
             var currentPoint = GetOrthoPoint(inX, inY);
-            ShapeEditor.Fabrics.ShapeModes.ShapeMode shapeMode = ShapeEditor.Fabrics.ShapeModes.ShapeMode.NotFixed;
+            var shapeMode = ShapeModes.ShapeMode.NotFixed;
 
             try
             {
@@ -286,6 +295,29 @@ namespace ShapeEditor.Utils
             {
                 // ignored
             }
+        }
+
+        public void CanvasMouseWheel(int inX, int inY, int delta)
+        {
+            Scale += delta*Scale/800.0;
+        }
+
+        private Point GetOrthoPoint(int inX, int inY)
+        {
+            double x;
+            double y;
+            switch (CurrentRenderMode)
+            {
+                case RenderMode.OpenGL:
+                    oglWindow.GetOrthoValue(inX, inY, out x, out y);
+                    break;
+                case RenderMode.WPF:
+                    wpfWindow.GetOrthoValue(inX, inY, out x, out y);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+            return new Point(x, y);
         }
 
         public void KeyPressed(Key key)

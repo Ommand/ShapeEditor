@@ -130,13 +130,18 @@ namespace ShapeEditor.Windows
             //Assign button style to mode change
             _graphics.PropertyChanged += (sender, args) =>
             {
-                if (args.PropertyName.Equals("CanvasMode"))
+                if (args.PropertyName.Equals(nameof(_graphics.CanvasMode)))
                 {
                     foreach (var it in shapeButtons.Keys)
                         it.Background = primaryHueMidBrush;
 
                     if (_graphics.CanvasMode != GraphicsController.Mode.None)
                         shapeButtons.First(x => x.Value == _graphics.CanvasMode).Key.Background = secondaryAccentBrush;
+                }
+                else if (args.PropertyName.Equals(nameof(_graphics.Scale)))
+                {
+                    OnPropertyChanged(nameof(Scale));
+                    OnPropertyChanged(nameof(ScalePercent));
                 }
             };
 
@@ -183,6 +188,16 @@ namespace ShapeEditor.Windows
             //переключение между окнами в рендере
             HostOpenGL.Visibility = _graphics.CurrentRenderMode == GraphicsController.RenderMode.OpenGL ? Visibility.Visible : Visibility.Collapsed;
             WpfRender.Visibility = _graphics.CurrentRenderMode == GraphicsController.RenderMode.WPF ? Visibility.Visible : Visibility.Collapsed;
+        }
+        private void WpfRender_OnMouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            var pt = e.GetPosition(this);
+            _graphics.CanvasMouseWheel((int)pt.X, (int)pt.Y, e.Delta);
+        }
+
+        private void OpenGLRender_OnMouseWheel(object sender, MouseEventArgs e)
+        {
+            _graphics.CanvasMouseWheel(e.X, e.Y, e.Delta);
         }
 
         #endregion
