@@ -130,7 +130,7 @@ namespace ShapeEditor.Windows
             //Assign button style to mode change
             _graphics.PropertyChanged += (sender, args) =>
             {
-                if (args.PropertyName.Equals("CanvasMode"))
+                if (args.PropertyName.Equals(nameof(_graphics.CanvasMode)))
                 {
                     foreach (var it in shapeButtons.Keys)
                         it.Background = primaryHueMidBrush;
@@ -138,13 +138,18 @@ namespace ShapeEditor.Windows
                     if (_graphics.CanvasMode != GraphicsController.Mode.None)
                         shapeButtons.First(x => x.Value == _graphics.CanvasMode).Key.Background = secondaryAccentBrush;
                 }
+                else if (args.PropertyName.Equals(nameof(_graphics.Scale)))
+                {
+                    OnPropertyChanged(nameof(Scale));
+                    OnPropertyChanged(nameof(ScalePercent));
+                }
             };
 
             //Настройка GraphicsController
             _graphics.oglWindow = OpenGLRender;
             _graphics.wpfWindow = WpfRender;
             _graphics.CurrentRenderMode = GraphicsController.RenderMode.WPF;
-
+            _graphics.ExceptionRaised += (sender, args) => Snackbar.MessageQueue.Enqueue(args.Str);
         }
 
         #endregion
@@ -159,30 +164,42 @@ namespace ShapeEditor.Windows
 
         private void OpenGLRender_OnMouseDown(object sender, MouseEventArgs e)
         {
-            _graphics.CanvasMouseDown(e.X, e.Y);
+            _graphics.CanvasMouseDown(e.X, e.Y, e.Button == MouseButtons.Left ? MouseButton.Left : MouseButton.Right);
         }
 
         private void WpfRender_OnMouseDown(object sender, MouseButtonEventArgs e)
         {
             var pt = e.GetPosition(this);
-            _graphics.CanvasMouseDown((int)pt.X, (int)pt.Y);
+            _graphics.CanvasMouseDown((int)pt.X, (int)pt.Y, e.ChangedButton);
         }
 
         private void WpfRender_OnMouseMove(object sender, System.Windows.Input.MouseEventArgs e)
         {
             var pt = e.GetPosition(this);
-            _graphics.CanvasMouseMove((int)pt.X, (int)pt.Y);
+            _graphics.CanvasMouseMove((int)pt.X, (int)pt.Y, e.LeftButton == MouseButtonState.Pressed, e.RightButton == MouseButtonState.Pressed);
         }
 
         private void OpenGLRender_OnMouseMove(object sender, MouseEventArgs e)
         {
-            _graphics.CanvasMouseMove(e.X, e.Y);
+            _graphics.CanvasMouseMove(e.X, e.Y,(e.Button & MouseButtons.Left) != 0,(e.Button & MouseButtons.Right) != 0);
         }
+
         private void SwitchRenderer()
         {
             //переключение между окнами в рендере
             HostOpenGL.Visibility = _graphics.CurrentRenderMode == GraphicsController.RenderMode.OpenGL ? Visibility.Visible : Visibility.Collapsed;
             WpfRender.Visibility = _graphics.CurrentRenderMode == GraphicsController.RenderMode.WPF ? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        private void WpfRender_OnMouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            var pt = e.GetPosition(this);
+            _graphics.CanvasMouseWheel((int)pt.X, (int)pt.Y, e.Delta);
+        }
+
+        private void OpenGLRender_OnMouseWheel(object sender, MouseEventArgs e)
+        {
+            _graphics.CanvasMouseWheel(e.X, e.Y, e.Delta);
         }
 
         #endregion

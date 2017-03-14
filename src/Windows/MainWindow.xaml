@@ -29,9 +29,9 @@
             <ColumnDefinition></ColumnDefinition>
             <ColumnDefinition Width="200"></ColumnDefinition>
         </Grid.ColumnDefinitions>
-        <render:WpfWindow x:Name="WpfRender" MouseDown="WpfRender_OnMouseDown" MouseMove="WpfRender_OnMouseMove"/>
+        <render:WpfWindow x:Name="WpfRender" MouseDown="WpfRender_OnMouseDown" MouseMove="WpfRender_OnMouseMove" MouseWheel="WpfRender_OnMouseWheel"/>
         <WindowsFormsHost Name="HostOpenGL">
-            <render:OpenGLWindow x:Name="OpenGLRender" MouseDown="OpenGLRender_OnMouseDown" MouseMove="OpenGLRender_OnMouseMove"/>
+            <render:OpenGLWindow x:Name="OpenGLRender" MouseDown="OpenGLRender_OnMouseDown" MouseMove="OpenGLRender_OnMouseMove" MouseWheel="OpenGLRender_OnMouseWheel"/>
         </WindowsFormsHost>
         <StackPanel Grid.Column="1">
             <materialDesign:Card Margin="4 4 4 0" Background="{DynamicResource PrimaryHueDarkBrush}"
@@ -131,5 +131,7 @@
                                            DialogContent="{Binding ColorPickerContent, ElementName=window, Mode=Default}"
                                            CloseOnClickAway="True" HorizontalAlignment="Left">
         </materialDesign:DialogHost>
+
+        <materialDesign:Snackbar Grid.Column="0" Grid.ColumnSpan="2" MessageQueue="{materialDesign:MessageQueue}" x:Name="Snackbar" />
     </Grid>
 </Window>
