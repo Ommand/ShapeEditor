@@ -146,18 +146,25 @@ namespace ShapeEditor.Utils
 
         public void AddShape(ShapeTypes.ShapeType shape, IEnumerable<Point> points)
         {
-            ShapeEditor.Fabrics.ShapeModes.ShapeMode shapeMode = ShapeEditor.Fabrics.ShapeModes.ShapeMode.Fixed;
-            var newShape = ShapeFabric.CreateShape(shape, points, shapeMode);
-            var newShapeDrawable = newShape as IDrawable2DShape;
-
-            if (newShapeDrawable != null)
+            try
             {
-                newShapeDrawable.BorderWidth = BorderWidth;
-                newShapeDrawable.BorderColor = SelectedBorderColor;
-                newShapeDrawable.FillColor = (newShape is Line) ? SelectedBorderColor : SelectedFillColor;
-            }
+                var shapeMode = ShapeModes.ShapeMode.Fixed;
+                var newShape = ShapeFabric.CreateShape(shape, points, shapeMode);
+                var newShapeDrawable = newShape as IDrawable2DShape;
 
-            ShapesList.Add(newShape);
+                if (newShapeDrawable != null)
+                {
+                    newShapeDrawable.BorderWidth = BorderWidth;
+                    newShapeDrawable.BorderColor = SelectedBorderColor;
+                    newShapeDrawable.FillColor = (newShape is Line) ? SelectedBorderColor : SelectedFillColor;
+                }
+
+                ShapesList.Add(newShape);
+            }
+            catch (Exception ex)
+            {
+                OnExceptionRaised(ex);
+            }
             Render();
         }
 
@@ -310,6 +317,23 @@ namespace ShapeEditor.Utils
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        public delegate void StringEventHandler(object sender, StringEventArgs args);
+        public event StringEventHandler ExceptionRaised;
+        public class StringEventArgs : EventArgs
+        {
+            public StringEventArgs(string str)
+            {
+                Str = str;
+            }
+
+            public string Str { get; }
+        }
+
+        protected void OnExceptionRaised(Exception ex)
+        {
+            ExceptionRaised?.Invoke(this, new StringEventArgs(ex.Message));
         }
     }
 }

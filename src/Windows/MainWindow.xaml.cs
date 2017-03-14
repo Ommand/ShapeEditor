@@ -144,7 +144,7 @@ namespace ShapeEditor.Windows
             _graphics.oglWindow = OpenGLRender;
             _graphics.wpfWindow = WpfRender;
             _graphics.CurrentRenderMode = GraphicsController.RenderMode.WPF;
-
+            _graphics.ExceptionRaised += (sender, args) => Snackbar.MessageQueue.Enqueue(args.Str);
         }
 
         #endregion
