@@ -15,13 +15,13 @@ namespace ShapeEditor.src.RenderWindows
     public partial class OpenGLWindow : UserControl
     {
         int oglContext_;
-        double centerX, centerY, sizeX;
+        double sizeX;
         IntPtr hdc;
         public List<IDrawable2DShape> Shapes { get; set; }
         protected override void OnPaintBackground(PaintEventArgs pevent) { }
         public OpenGLWindow()
         {
-            centerX = centerY = 0;
+            CenterX = CenterY = 0;
             sizeX = 1;
             InitializeComponent();
             oglContext_ = OpenGL.InitOpenGL((int)Handle);
@@ -49,31 +49,48 @@ namespace ShapeEditor.src.RenderWindows
         {
             double coefWnd = Height / (double)Width;
 
-            XOrth = X * (2 * sizeX) / (double)Width + centerX - sizeX;
-            YOrth = (Height - Y) * (2 * sizeX * coefWnd) / (double)Height + centerY - sizeX * coefWnd;
+            XOrth = X * (2 * sizeX) / (double)Width + CenterX - sizeX;
+            YOrth = (Height - Y) * (2 * sizeX * coefWnd) / (double)Height + CenterY - sizeX * coefWnd;
             ChangeOrth();
         }
         public void GetWindowValue(double XOrth, double YOrth, out int X, out int Y)
         {
             double coefWnd = Height / (double)Width;
 
-            X = (int)(Width * (XOrth - (centerX - sizeX)) / (2 * sizeX));
-            Y = Height - (int)(Height * (YOrth - (centerY - sizeX * coefWnd)) / (2 * sizeX * coefWnd));
+            X = (int)(Width * (XOrth - (CenterX - sizeX)) / (2 * sizeX));
+            Y = Height - (int)(Height * (YOrth - (CenterY - sizeX * coefWnd)) / (2 * sizeX * coefWnd));
             ChangeOrth();
         }
         public void TranslateI(int deltHor, int deltVert) //перемещеат центр сцены (входные параметры это пиксели в окне)
         {
             double coef = 2 * sizeX / Width;
-            centerX += deltHor * coef;
-            centerY += deltVert * coef;
+            CenterX += deltHor * coef;
+            CenterY += deltVert * coef;
             ChangeOrth();
         }
         public void TranslateD(double deltHor, double deltVert) //перемещеат центр сцены (входные параметры это значение мировых координат)
         {
-            centerX += deltHor;
-            centerY += deltVert;
+            CenterX += deltHor;
+            CenterY += deltVert;
             ChangeOrth();
         }
+        public void SetTranslateI(int deltHor, int deltVert) //перемещеат центр сцены (входные параметры это пиксели в окне)
+        {
+            double coef = 2 * sizeX / Width;
+            CenterX = deltHor * coef;
+            CenterY = deltVert * coef;
+            ChangeOrth();
+        }
+        public void SetTranslateD(double deltHor, double deltVert) //перемещеат центр сцены (входные параметры это значение мировых координат)
+        {
+            CenterX = deltHor;
+            CenterY = deltVert;
+            ChangeOrth();
+        }
+        public double CenterX { get; private set; }
+
+        public double CenterY { get; private set; }
+
         public void Scale(double sc) ///изменение размера видимой области
         {
             sizeX = sc;
@@ -107,7 +124,7 @@ namespace ShapeEditor.src.RenderWindows
             OpenGL.glLoadIdentity();
             OpenGL.glViewport(0, 0, Width, Height);
             double coefWnd = Height / (double)Width;
-            OpenGL.glOrtho(centerX - sizeX, centerX + sizeX, centerY - sizeX * coefWnd, centerY + sizeX * coefWnd, -1, 1);
+            OpenGL.glOrtho(CenterX - sizeX, CenterX + sizeX, CenterY - sizeX * coefWnd, CenterY + sizeX * coefWnd, -1, 1);
             OpenGL.glMatrixMode(OpenGL.GL_MODELVIEW);
             OpenGL.glLoadIdentity();
 

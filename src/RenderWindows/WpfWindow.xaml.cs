@@ -22,12 +22,12 @@ namespace ShapeEditor.src.RenderWindows
     /// </summary>
     public partial class WpfWindow : UserControl
     {
-        double centerX, centerY, sizeX;
+        double sizeX;
         public List<IDrawable2DShape> Shapes { get; set; }
 
         public WpfWindow()
         {
-            centerX = centerY = 0;
+            CenterX = CenterY = 0;
             sizeX = 1;
             InitializeComponent();
             this.Background = Brushes.Transparent;
@@ -37,29 +37,44 @@ namespace ShapeEditor.src.RenderWindows
         {
             double coefWnd = ActualHeight / (double)ActualWidth;
 
-            XOrth = X * (2 * sizeX) / (double)ActualWidth + centerX - sizeX;
-            YOrth = (ActualHeight - Y) * (2 * sizeX * coefWnd) / (double)ActualHeight + centerY - sizeX * coefWnd;
+            XOrth = X * (2 * sizeX) / (double)ActualWidth + CenterX - sizeX;
+            YOrth = (ActualHeight - Y) * (2 * sizeX * coefWnd) / (double)ActualHeight + CenterY - sizeX * coefWnd;
 
         }
         public void GetWindowValue(double XOrth, double YOrth, out int X, out int Y)
         {
-            double coefWnd = ActualHeight / (double)ActualWidth;
+            var coefWnd = ActualHeight / ActualWidth;
 
-            X = (int)(ActualWidth * (XOrth - (centerX - sizeX)) / (2 * sizeX));
-            Y = (int)ActualHeight - (int)(ActualHeight * (YOrth - (centerY - sizeX * coefWnd)) / (2 * sizeX * coefWnd));
+            X = (int)(ActualWidth * (XOrth - (CenterX - sizeX)) / (2 * sizeX));
+            Y = (int)ActualHeight - (int)(ActualHeight * (YOrth - (CenterY - sizeX * coefWnd)) / (2 * sizeX * coefWnd));
 
         }
         public void TranslateI(int deltHor, int deltVert) //перемещеат центр сцены (входные параметры это пиксели в окне)
         {
             double coef = 2 * sizeX / ActualWidth;
-            centerX += deltHor * coef;
-            centerY += deltVert * coef;
+            CenterX += deltHor * coef;
+            CenterY += deltVert * coef;
         }
         public void TranslateD(double deltHor, double deltVert) //перемещеат центр сцены (входные параметры это значение мировых координат)
         {
-            centerX += deltHor;
-            centerY += deltVert;
+            CenterX += deltHor;
+            CenterY += deltVert;
         }
+        public void SetTranslateI(int deltHor, int deltVert) //перемещеат центр сцены (входные параметры это пиксели в окне)
+        {
+            double coef = 2 * sizeX / ActualWidth;
+            CenterX = deltHor * coef;
+            CenterY = deltVert * coef;
+        }
+        public void SetTranslateD(double deltHor, double deltVert) //перемещеат центр сцены (входные параметры это значение мировых координат)
+        {
+            CenterX = deltHor;
+            CenterY = deltVert;
+        }
+        public double CenterX { get; private set; }
+
+        public double CenterY { get; private set; }
+
         public void Scale(double sc) ///изменение размера видимой области
         {
             sizeX = sc;

@@ -52,6 +52,7 @@ namespace ShapeEditor.Utils
             set
             {
                 if (value == _currentRenderMode) return;
+                SyncTranslate();
                 _currentRenderMode = value;
                 UpdateScale();
                 Render();
@@ -133,6 +134,8 @@ namespace ShapeEditor.Utils
         private Mode _canvasMode;
         private Shape _dynamicShape;
         private RenderMode _currentRenderMode;
+
+        private KeyValuePair<int, int> lastTransformPoint;
         #endregion
 
         #region Constructor
@@ -165,10 +168,10 @@ namespace ShapeEditor.Utils
                 //                    OnPropertyChanged(nameof(DynamicShape));
                 //                }
             };
-        } 
+        }
 
         #endregion
-        
+
         #region Shapes control
         public void AddShape(ShapeTypes.ShapeType shape, IEnumerable<Point> points)
         {
@@ -249,6 +252,37 @@ namespace ShapeEditor.Utils
             Render();
         }
 
+        private void UpdateTranslate(int deltaX, int deltaY)
+        {
+            switch (CurrentRenderMode)
+            {
+                case RenderMode.OpenGL:
+                    oglWindow?.TranslateI(deltaX, deltaY);
+                    break;
+                case RenderMode.WPF:
+                    wpfWindow?.TranslateI(deltaX, deltaY);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+            Render();
+        }
+
+        private void SyncTranslate()
+        {
+            switch (CurrentRenderMode)
+            {
+                case RenderMode.OpenGL:
+                    wpfWindow?.SetTranslateD(oglWindow.CenterX, oglWindow.CenterY);
+                    break;
+                case RenderMode.WPF:
+                    oglWindow?.SetTranslateD(wpfWindow.CenterX, wpfWindow.CenterY);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
         private Point GetOrthoPoint(int inX, int inY)
         {
             double x;
@@ -271,74 +305,93 @@ namespace ShapeEditor.Utils
 
         #region Canvas events
 
-        public void CanvasMouseDown(int inX, int inY)
+        public void CanvasMouseDown(int inX, int inY, MouseButton changedButton)
         {
-            if (CanvasMode == Mode.None)
-                return;
-
-            currentPoints.Add(GetOrthoPoint(inX, inY));
-
-            switch (CanvasMode)
+            switch (changedButton)
             {
-                case Mode.DrawTriangle:
-                    if (currentPoints.Count == 3)
+                case MouseButton.Left:
+                    if (CanvasMode == Mode.None)
+                        return;
+
+                    currentPoints.Add(GetOrthoPoint(inX, inY));
+
+                    switch (CanvasMode)
                     {
-                        AddShape(ShapeTypes.ShapeType.Triangle_, currentPoints);
-                        CanvasMode = Mode.None;
+                        case Mode.DrawTriangle:
+                            if (currentPoints.Count == 3)
+                            {
+                                AddShape(ShapeTypes.ShapeType.Triangle_, currentPoints);
+                                CanvasMode = Mode.None;
+                            }
+                            break;
+                        case Mode.DrawRect:
+                            if (currentPoints.Count == 4)
+                            {
+                                AddShape(ShapeTypes.ShapeType.Quadrangle_, currentPoints);
+                                CanvasMode = Mode.None;
+                            }
+                            break;
+                        case Mode.DrawEllipse:
+                            if (currentPoints.Count == 3)
+                            {
+                                AddShape(ShapeTypes.ShapeType.Ellipse_, currentPoints);
+                                CanvasMode = Mode.None;
+                            }
+                            break;
+                        case Mode.DrawLine:
+                            break;
                     }
                     break;
-                case Mode.DrawRect:
-                    if (currentPoints.Count == 4)
-                    {
-                        AddShape(ShapeTypes.ShapeType.Quadrangle_, currentPoints);
-                        CanvasMode = Mode.None;
-                    }
-                    break;
-                case Mode.DrawEllipse:
-                    if (currentPoints.Count == 3)
-                    {
-                        AddShape(ShapeTypes.ShapeType.Ellipse_, currentPoints);
-                        CanvasMode = Mode.None;
-                    }
-                    break;
-                case Mode.DrawLine:
+                case MouseButton.Right:
+                    lastTransformPoint = new KeyValuePair<int, int>(inX, inY);
                     break;
             }
         }
 
-        public void CanvasMouseMove(int inX, int inY)
+        public void CanvasMouseMove(int inX, int inY, bool lmbPressed, bool rmbPressed)
         {
-            var currentPoint = GetOrthoPoint(inX, inY);
-            var shapeMode = ShapeModes.ShapeMode.NotFixed;
+            if (!lmbPressed && !rmbPressed)
+            {
+                var currentPoint = GetOrthoPoint(inX, inY);
+                var shapeMode = ShapeModes.ShapeMode.NotFixed;
 
-            try
-            {
-                var enumerable = currentPoints.Concat(new List<Point> { currentPoint });
-                if (CanvasMode == Mode.DrawLine && currentPoints.Count > 1)
-                    DynamicShape = ShapeFabric.CreateShape(ShapeTypes.ShapeType.Line_, enumerable, shapeMode);
-                else
-                    switch (currentPoints.Count)
-                    {
-                        case 1:
-                            DynamicShape = ShapeFabric.CreateShape(ShapeTypes.ShapeType.Line_, enumerable, shapeMode);
-                            break;
-                        case 2:
-                            if (CanvasMode == Mode.DrawEllipse)
-                                DynamicShape = ShapeFabric.CreateShape(ShapeTypes.ShapeType.Ellipse_, enumerable, shapeMode);
-                            else
-                                DynamicShape = ShapeFabric.CreateShape(ShapeTypes.ShapeType.Triangle_, enumerable, shapeMode);
-                            break;
-                        case 3:
-                            DynamicShape = ShapeFabric.CreateShape(ShapeTypes.ShapeType.Quadrangle_, enumerable, shapeMode);
-                            break;
-                        default:
-                            DynamicShape = null;
-                            break;
-                    }
+                try
+                {
+                    var enumerable = currentPoints.Concat(new List<Point> { currentPoint });
+                    if (CanvasMode == Mode.DrawLine && currentPoints.Count > 1)
+                        DynamicShape = ShapeFabric.CreateShape(ShapeTypes.ShapeType.Line_, enumerable, shapeMode);
+                    else
+                        switch (currentPoints.Count)
+                        {
+                            case 1:
+                                DynamicShape = ShapeFabric.CreateShape(ShapeTypes.ShapeType.Line_, enumerable, shapeMode);
+                                break;
+                            case 2:
+                                if (CanvasMode == Mode.DrawEllipse)
+                                    DynamicShape = ShapeFabric.CreateShape(ShapeTypes.ShapeType.Ellipse_, enumerable,
+                                        shapeMode);
+                                else
+                                    DynamicShape = ShapeFabric.CreateShape(ShapeTypes.ShapeType.Triangle_, enumerable,
+                                        shapeMode);
+                                break;
+                            case 3:
+                                DynamicShape = ShapeFabric.CreateShape(ShapeTypes.ShapeType.Quadrangle_, enumerable,
+                                    shapeMode);
+                                break;
+                            default:
+                                DynamicShape = null;
+                                break;
+                        }
+                }
+                catch
+                {
+                    // ignored
+                }
             }
-            catch
+            else if (rmbPressed && !lmbPressed)
             {
-                // ignored
+                UpdateTranslate(-inX + lastTransformPoint.Key, inY - lastTransformPoint.Value);
+                lastTransformPoint = new KeyValuePair<int, int>(inX, inY);
             }
         }
 
@@ -357,7 +410,7 @@ namespace ShapeEditor.Utils
                     CanvasMode = Mode.None;
                     break;
             }
-        } 
+        }
 
         #endregion
 
@@ -386,7 +439,7 @@ namespace ShapeEditor.Utils
         protected void OnExceptionRaised(Exception ex)
         {
             ExceptionRaised?.Invoke(this, new StringEventArgs(ex.Message));
-        } 
+        }
 
         #endregion
     }
