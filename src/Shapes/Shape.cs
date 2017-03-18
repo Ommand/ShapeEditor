@@ -17,8 +17,8 @@ namespace ShapeEditor.Shapes
 
             foreach (Point point in Points)
             { 
-                transform.Transform(point);
-                newPoints.Add(point);
+                Point newPoint = transform.Transform(point);               
+                newPoints.Add(newPoint);
             }
 
             Points = newPoints;
