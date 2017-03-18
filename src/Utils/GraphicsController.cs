@@ -433,6 +433,7 @@ namespace ShapeEditor.Utils
                                 if (shape.IsInside(orthoPoint))
                                 {
                                     SelectShape(shape);
+                                    lastTransformPoint = new KeyValuePair<int, int>(inX, inY);
                                     break;
                                 }
                             break;
@@ -493,6 +494,18 @@ namespace ShapeEditor.Utils
             {
                 UpdateTranslate(-inX + lastTransformPoint.Key, inY - lastTransformPoint.Value);
                 lastTransformPoint = new KeyValuePair<int, int>(inX, inY);
+            }
+            else if (lmbPressed && !rmbPressed)
+            {
+                if (CanvasMode == Mode.ShapeSelected)
+                {
+                    var last = GetOrthoPoint(lastTransformPoint.Key, lastTransformPoint.Value);
+                    var current = GetOrthoPoint(inX, inY);
+                    SelectedShape.ApplyTransformation(new Translate(new Point(current.X-last.X,current.Y-last.Y))); 
+                    Render();
+
+                    lastTransformPoint = new KeyValuePair<int, int>(inX, inY);
+                }
             }
         }
 
