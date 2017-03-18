@@ -433,6 +433,7 @@ namespace ShapeEditor.Utils
                                 if (shape.IsInside(orthoPoint))
                                 {
                                     SelectShape(shape);
+                                    lastTransformPoint = new KeyValuePair<int, int>(inX, inY);
                                     break;
                                 }
                             break;
@@ -446,12 +447,15 @@ namespace ShapeEditor.Utils
                 case MouseButton.Right:
                     lastTransformPoint = new KeyValuePair<int, int>(inX, inY);
                     break;
+                case MouseButton.Middle:
+                    lastTransformPoint = new KeyValuePair<int, int>(inX, inY);
+                    break;
             }
         }
 
-        public void CanvasMouseMove(int inX, int inY, bool lmbPressed, bool rmbPressed)
+        public void CanvasMouseMove(int inX, int inY, bool lmbPressed, bool rmbPressed, bool mmbPressed)
         {
-            if (!lmbPressed && !rmbPressed)
+            if (!lmbPressed && !rmbPressed && !mmbPressed)
             {
                 var currentPoint = GetOrthoPoint(inX, inY);
                 var shapeMode = ShapeModes.ShapeMode.NotFixed;
@@ -489,10 +493,35 @@ namespace ShapeEditor.Utils
                     // ignored
                 }
             }
-            else if (rmbPressed && !lmbPressed)
+            else if (rmbPressed && !lmbPressed && !mmbPressed)
             {
                 UpdateTranslate(-inX + lastTransformPoint.Key, inY - lastTransformPoint.Value);
                 lastTransformPoint = new KeyValuePair<int, int>(inX, inY);
+            }
+            else if (lmbPressed && !rmbPressed && !mmbPressed)
+            {
+                if (CanvasMode == Mode.ShapeSelected)
+                {
+                    var last = GetOrthoPoint(lastTransformPoint.Key, lastTransformPoint.Value);
+                    var current = GetOrthoPoint(inX, inY);
+                    SelectedShape.ApplyTransformation(new Translate(new Point(current.X-last.X,current.Y-last.Y))); 
+                    Render();
+
+                    lastTransformPoint = new KeyValuePair<int, int>(inX, inY);
+                }
+            }
+            else if (!lmbPressed && !rmbPressed && mmbPressed)
+            {
+                if (CanvasMode == Mode.ShapeSelected)
+                {
+                    var last = GetOrthoPoint(lastTransformPoint.Key, lastTransformPoint.Value);
+                    var current = GetOrthoPoint(inX, inY);
+
+                    SelectedShape.ApplyTransformation(new Rotate(SelectedShape.GetCenter(), (current.X-last.X)*5.0f));
+                    Render();
+
+                    lastTransformPoint = new KeyValuePair<int, int>(inX, inY);
+                }
             }
         }
 
