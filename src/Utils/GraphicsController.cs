@@ -222,6 +222,13 @@ namespace ShapeEditor.Utils
             Render();
         }
 
+        public void DeleteSelectedShape()
+        {
+            if (SelectedShape != null)
+                ShapesList.Remove(SelectedShape);
+            SelectShape();
+        }
+
         private void SelectShape(Shape s = null)
         {
             if (s == SelectedShape)

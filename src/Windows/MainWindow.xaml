@@ -71,7 +71,7 @@
                         <Button Height="35" Width="35" ToolTip="Move shape to top"  Margin="2"   Style="{DynamicResource MaterialDesignRaisedButton}" Click="ButtonMoveShapeToTopClick">
                             <materialDesign:PackIcon Kind="FormatVerticalAlignTop" Margin="-12,0" Width="Auto" Height="Auto"/>
                         </Button>
-                        <Button Height="35" Width="35" ToolTip="Delete shape"  Margin="2"   Style="{DynamicResource MaterialDesignRaisedButton}">
+                        <Button Height="35" Width="35" ToolTip="Delete shape"  Margin="2"   Style="{DynamicResource MaterialDesignRaisedButton}" Click="ButtonDeleteShapeClick">
                             <materialDesign:PackIcon Kind="DeleteForever" Margin="-12,0" Width="Auto" Height="Auto"/>
                         </Button>
                     </StackPanel>

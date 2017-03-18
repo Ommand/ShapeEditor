@@ -311,5 +311,10 @@ namespace ShapeEditor.Windows
         {
             _graphics.MoveSelectedShapeToTop();
         }
+
+        private void ButtonDeleteShapeClick(object sender, RoutedEventArgs e)
+        {
+            _graphics.DeleteSelectedShape();
+        }
     }
 }
