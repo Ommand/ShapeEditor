@@ -36,6 +36,25 @@ namespace ShapeEditor.Shapes
 
         public override bool IsInside(Point point)
         {
+            double epsDistance = 0.05;
+            Point[] shapePoints = Points.ToArray();
+
+            if(shapePoints.First().X <= point.X && point.X <= shapePoints.Last().X)
+            { 
+                for(int i = 0; i < shapePoints.Length - 1; i++)
+                {
+                    double a = shapePoints[i].Y - shapePoints[i + 1].Y;
+                    double b = shapePoints[i + 1].X - shapePoints[i].X;
+                    double c = shapePoints[i].X * shapePoints[i + 1].Y -
+                               shapePoints[i + 1].X * shapePoints[i].Y;
+                    double y = -a / b * point.X - c / b;
+                    if(Math.Abs(y - point.Y) <= epsDistance)
+                    {
+                        return true;
+                    }
+                }
+            }
+
             return false;
         }
 
