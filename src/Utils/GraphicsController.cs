@@ -90,6 +90,9 @@ namespace ShapeEditor.Utils
             {
                 if (value.Equals(_selectedBorderColor)) return;
                 _selectedBorderColor = value;
+
+                UpdateSelectedShapeColors();
+
                 OnPropertyChanged();
             }
         }
@@ -101,6 +104,9 @@ namespace ShapeEditor.Utils
             {
                 if (value.Equals(_selectedFillColor)) return;
                 _selectedFillColor = value;
+
+                UpdateSelectedShapeColors();
+
                 OnPropertyChanged();
             }
         }
@@ -112,6 +118,9 @@ namespace ShapeEditor.Utils
             {
                 if (value.Equals(_borderWidth)) return;
                 _borderWidth = value;
+
+                UpdateSelectedShapeColors();
+
                 OnPropertyChanged();
             }
         }
@@ -246,12 +255,41 @@ namespace ShapeEditor.Utils
                 CanvasMode = Mode.ShapeSelected;
 
                 var dShape = s as IDrawable2DShape;
+
+                SelectedFillColor = dShape.FillColor;
+                SelectedBorderColor = dShape.BorderColor;
+                BorderWidth = dShape.BorderWidth;
+
                 savedColor = dShape.BorderColor;
                 dShape.BorderColor = selectedColor;
             }
 
             SelectedShape = s;
             Render();
+        }
+
+        private void UpdateSelectedShapeColors()
+        {
+            var changed = false;
+            var drawable2DShape = SelectedShape as IDrawable2DShape;
+            if (drawable2DShape == null) return;
+            if (drawable2DShape.FillColor != SelectedFillColor)
+            {
+                drawable2DShape.FillColor = SelectedFillColor;
+                changed = true;
+            }
+            if (drawable2DShape.BorderColor != SelectedBorderColor)
+            {
+                savedColor = SelectedBorderColor;
+                changed = true;
+            }
+            if (drawable2DShape.BorderWidth != BorderWidth)
+            {
+                drawable2DShape.BorderWidth = BorderWidth;
+                changed = true;
+            }
+
+            if (changed) Render();
         }
 
         #endregion

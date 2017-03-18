@@ -135,13 +135,20 @@ namespace ShapeEditor.Windows
                     foreach (var it in shapeButtons.Keys)
                         it.Background = primaryHueMidBrush;
 
-                    if (_graphics.CanvasMode > (GraphicsController.Mode) 1 && _graphics.CanvasMode <= (GraphicsController.Mode) 5)
+                    if (_graphics.CanvasMode > (GraphicsController.Mode)1 && _graphics.CanvasMode <= (GraphicsController.Mode)5)
                         shapeButtons.First(x => x.Value == _graphics.CanvasMode).Key.Background = secondaryAccentBrush;
                 }
                 else if (args.PropertyName.Equals(nameof(_graphics.Scale)))
                 {
                     OnPropertyChanged(nameof(Scale));
                     OnPropertyChanged(nameof(ScalePercent));
+                }
+                else if (args.PropertyName.Equals(nameof(_graphics.SelectedFillColor))
+                || args.PropertyName.Equals(nameof(_graphics.SelectedBorderColor))
+                || args.PropertyName.Equals(nameof(_graphics.BorderWidth)))
+                {
+                    OnPropertyChanged(args.PropertyName);
+                    OnPropertyChanged($"{args.PropertyName}Brush");
                 }
             };
 
@@ -181,7 +188,7 @@ namespace ShapeEditor.Windows
 
         private void OpenGLRender_OnMouseMove(object sender, MouseEventArgs e)
         {
-            _graphics.CanvasMouseMove(e.X, e.Y,(e.Button & MouseButtons.Left) != 0,(e.Button & MouseButtons.Right) != 0);
+            _graphics.CanvasMouseMove(e.X, e.Y, (e.Button & MouseButtons.Left) != 0, (e.Button & MouseButtons.Right) != 0);
         }
 
         private void SwitchRenderer()
