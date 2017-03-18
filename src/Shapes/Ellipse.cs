@@ -44,14 +44,23 @@ namespace ShapeEditor.Shapes
         {
             Point[] pointsList = Points.ToArray();
 
+            double k = (pointsList[1].Y - pointsList[0].Y) / (pointsList[1].X - pointsList[0].X);
+            double alpha = Math.Atan(k);
+            double cosA = Math.Cos(alpha);
+            double sinA = Math.Sin(alpha);
+
             double a = (SpecialMath.Norm(pointsList[0], pointsList[2]) +
             SpecialMath.Norm(pointsList[1], pointsList[2])) * 0.5;
             double c = SpecialMath.Norm(pointsList[0], pointsList[1]) * 0.5;
             double b = Math.Sqrt(a * a - c * c);
             Point center = GetCenter();
 
-            if (((point.X - center.X) * (point.X - center.X)) / (a * a) +
-                ((point.Y - center.Y) * (point.Y - center.Y)) / (b * b) <= 1)
+            double x = point.X - center.X;
+            double y = point.Y - center.Y;
+            Point pointInEllipseSystem = new Point(x * cosA + y * sinA, -x * sinA + y * cosA);
+
+            if ((pointInEllipseSystem.X * pointInEllipseSystem.X) / (a * a) +
+                (pointInEllipseSystem.Y * pointInEllipseSystem.Y) / (b * b) <= 1)
                 return true;
 
             return false;
