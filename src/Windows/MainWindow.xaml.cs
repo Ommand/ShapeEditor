@@ -135,7 +135,7 @@ namespace ShapeEditor.Windows
                     foreach (var it in shapeButtons.Keys)
                         it.Background = primaryHueMidBrush;
 
-                    if (_graphics.CanvasMode != GraphicsController.Mode.None)
+                    if (_graphics.CanvasMode > (GraphicsController.Mode) 1 && _graphics.CanvasMode <= (GraphicsController.Mode) 5)
                         shapeButtons.First(x => x.Value == _graphics.CanvasMode).Key.Background = secondaryAccentBrush;
                 }
                 else if (args.PropertyName.Equals(nameof(_graphics.Scale)))
@@ -307,5 +307,9 @@ namespace ShapeEditor.Windows
 
         #endregion
 
+        private void ButtonMoveShapeToTopClick(object sender, RoutedEventArgs e)
+        {
+            _graphics.MoveSelectedShapeToTop();
+        }
     }
 }

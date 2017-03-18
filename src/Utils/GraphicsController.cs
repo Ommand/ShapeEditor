@@ -20,6 +20,7 @@ namespace ShapeEditor.Utils
         public enum Mode
         {
             None,
+            ShapeSelected,
             DrawTriangle,
             DrawRect,
             DrawEllipse,
@@ -133,6 +134,9 @@ namespace ShapeEditor.Utils
         List<Point> currentPoints = new List<Point>();
         private Mode _canvasMode;
         private Shape _dynamicShape;
+        private Shape SelectedShape { get; set; }
+        private Color savedColor;
+        private Color selectedColor = Colors.Red;
         private RenderMode _currentRenderMode;
 
         private KeyValuePair<int, int> lastTransformPoint;
@@ -173,6 +177,7 @@ namespace ShapeEditor.Utils
         #endregion
 
         #region Shapes control
+
         public void AddShape(ShapeTypes.ShapeType shape, IEnumerable<Point> points)
         {
             try
@@ -196,6 +201,7 @@ namespace ShapeEditor.Utils
             }
             Render();
         }
+
         private void UpdateDynamicShape()
         {
             var dyn = DynamicShape as IDrawable2DShape;
@@ -206,6 +212,41 @@ namespace ShapeEditor.Utils
                 dyn.BorderWidth = BorderWidth;
             }
         }
+
+        public void MoveSelectedShapeToTop()
+        {
+            if (SelectedShape == null) return;
+
+            ShapesList.Remove(SelectedShape);
+            ShapesList.Add(SelectedShape);
+            Render();
+        }
+
+        private void SelectShape(Shape s = null)
+        {
+            if (s == SelectedShape)
+                return;
+            var drawable2DShape = SelectedShape as IDrawable2DShape;
+            if (drawable2DShape != null)
+                drawable2DShape.BorderColor = savedColor;
+
+            if (s == null)
+            {
+                CanvasMode = Mode.None;
+            }
+            else
+            {
+                CanvasMode = Mode.ShapeSelected;
+
+                var dShape = s as IDrawable2DShape;
+                savedColor = dShape.BorderColor;
+                dShape.BorderColor = selectedColor;
+            }
+
+            SelectedShape = s;
+            Render();
+        }
+
         #endregion
 
         #region Render control
@@ -305,15 +346,16 @@ namespace ShapeEditor.Utils
 
         #region Canvas events
 
-        public void CanvasMouseDown(int inX, int inY, MouseButton changedButton)
+        public void CanvasMouseDown(int inX, int inY, MouseButton button)
         {
-            switch (changedButton)
+            var orthoPoint = GetOrthoPoint(inX, inY);
+            switch (button)
             {
                 case MouseButton.Left:
-                    if (CanvasMode == Mode.None)
-                        return;
-
-                    currentPoints.Add(GetOrthoPoint(inX, inY));
+                    if (CanvasMode != Mode.None)
+                    {
+                        currentPoints.Add(orthoPoint);
+                    }
 
                     switch (CanvasMode)
                     {
@@ -340,6 +382,20 @@ namespace ShapeEditor.Utils
                             break;
                         case Mode.DrawLine:
                             break;
+                        case Mode.None:
+                            SelectShape();
+                            foreach (var shape in Enumerable.Reverse(ShapesList))
+                                if (shape.IsInside(orthoPoint))
+                                {
+                                    SelectShape(shape);
+                                    break;
+                                }
+                            break;
+                        case Mode.ShapeSelected:
+                            goto case Mode.None;
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException();
                     }
                     break;
                 case MouseButton.Right:
