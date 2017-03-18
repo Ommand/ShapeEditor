@@ -13,8 +13,15 @@ namespace ShapeEditor.Shapes
 
         public void ApplyTransformation(ITransform transform)
         {
+            List<Point> newPoints = new List<Point>();
+
             foreach (Point point in Points)
+            { 
                 transform.Transform(point);
+                newPoints.Add(point);
+            }
+
+            Points = newPoints;
         }
 
         public Point GetCenter()
