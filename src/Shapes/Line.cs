@@ -38,8 +38,11 @@ namespace ShapeEditor.Shapes
         {
             double epsDistance = 0.05;
             Point[] shapePoints = Points.ToArray();
+            List<double> x = new List<double>();
+            foreach(Point point_ in shapePoints)
+                x.Add(point_.X);
 
-            if(shapePoints.First().X <= point.X && point.X <= shapePoints.Last().X)
+            if(x.Min() <= point.X && point.X <= x.Max())
             { 
                 for(int i = 0; i < shapePoints.Length - 1; i++)
                 {
