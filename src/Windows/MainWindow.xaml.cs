@@ -183,12 +183,12 @@ namespace ShapeEditor.Windows
         private void WpfRender_OnMouseMove(object sender, System.Windows.Input.MouseEventArgs e)
         {
             var pt = e.GetPosition(this);
-            _graphics.CanvasMouseMove((int)pt.X, (int)pt.Y, e.LeftButton == MouseButtonState.Pressed, e.RightButton == MouseButtonState.Pressed);
+            _graphics.CanvasMouseMove((int)pt.X, (int)pt.Y, e.LeftButton == MouseButtonState.Pressed, e.RightButton == MouseButtonState.Pressed, e.MiddleButton == MouseButtonState.Pressed);
         }
 
         private void OpenGLRender_OnMouseMove(object sender, MouseEventArgs e)
         {
-            _graphics.CanvasMouseMove(e.X, e.Y, (e.Button & MouseButtons.Left) != 0, (e.Button & MouseButtons.Right) != 0);
+            _graphics.CanvasMouseMove(e.X, e.Y, (e.Button & MouseButtons.Left) != 0, (e.Button & MouseButtons.Right) != 0, (e.Button & MouseButtons.Middle) != 0);
         }
 
         private void SwitchRenderer()
