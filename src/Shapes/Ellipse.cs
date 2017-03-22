@@ -109,5 +109,23 @@ namespace ShapeEditor.Shapes
             Point center = new Point(xC, yC);
             return center;
         }
+
+        public new IEnumerable<Point> FormSelection()
+        {
+            Point[] shapePoints = GetShapePoints(360).ToArray();
+            List<double> x = new List<double>();
+            List<double> y = new List<double>();
+            foreach (Point point_ in shapePoints)
+            { 
+                x.Add(point_.X);
+                y.Add(point_.Y);
+            }
+
+            List<Point> selectionPoints = new List<Point>();
+            selectionPoints.Add(new Point(x.Min(), y.Max()));
+            selectionPoints.Add(new Point(x.Max(), y.Min()));
+
+            return selectionPoints;
+        }
     }
 }

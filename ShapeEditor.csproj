@@ -82,6 +82,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Properties\Annotations.cs" />
+    <Compile Include="src\Fabrics\PointPlaces.cs" />
     <Compile Include="src\Fabrics\ShapeModes.cs" />
     <Compile Include="src\Fabrics\ShapeTypes.cs" />
     <Compile Include="src\OpenGL\FontBitmaps.cs" />
@@ -99,6 +100,7 @@
     <Compile Include="src\Shapes\Ellipse.cs" />
     <Compile Include="src\Shapes\Line.cs" />
     <Compile Include="src\Shapes\Quadrangle.cs" />
+    <Compile Include="src\Shapes\SelectRectangle.cs" />
     <Compile Include="src\SpecialMath\SpecialMath.cs" />
     <Compile Include="src\Transforms\Expand.cs" />
     <Compile Include="src\Transforms\Rotate.cs" />
