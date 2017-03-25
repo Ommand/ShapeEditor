@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
+using ShapeEditor.Fabrics;
 
 namespace ShapeEditor.Shapes
 {
@@ -21,13 +22,14 @@ namespace ShapeEditor.Shapes
 
         public SelectRectangle(Point point1, Point point2)
         {
+            //левый верхний угол,првый нижний угол
             Points = new List<Point> { point1, point2 };
         }
 
         public void Draw(IRenderer render)
         {
-            List<Point> shapePoints = GetShapePoints().ToList();
-            render.DrawPolygon(shapePoints, BorderColor, BorderWidth);
+            Point[] pointsList = Points.ToArray();
+            render.DrawBoundingBox(pointsList[0], pointsList[1]);
         }
 
         public Color FillColor { get; set; }
@@ -38,83 +40,79 @@ namespace ShapeEditor.Shapes
         {
             Point[] pointsList = Points.ToArray();
 
-            if(pointsList[0].X <= point.X && point.X <= pointsList[1].X &&
+            if (pointsList[0].X <= point.X && point.X <= pointsList[1].X &&
                pointsList[0].Y <= point.Y && point.Y <= pointsList[1].Y)
                 return true;
 
             return false;
         }
 
-        public bool IsOnBoundary(ShapeEditor.Fabrics.PointPlaces.PointPlace pointPlace, Point point)
-        {
-            double eps = 1e-10;
-            Point[] shapePoints = Points.ToArray();
-
-            if (Math.Abs(shapePoints[0].X - point.X) <= eps)
-            {
-                if (Math.Abs(shapePoints[0].Y - point.Y) <= eps)
-                {
-                    pointPlace = Fabrics.PointPlaces.PointPlace.LeftUpCorner;
-                    return true;
-                }
-                else
-                {
-                    if (Math.Abs(shapePoints[1].Y - point.Y) <= eps)
-                    { 
-                        pointPlace = Fabrics.PointPlaces.PointPlace.LeftLowCorner;
-                        return true;
-                    }
-
-                    pointPlace = Fabrics.PointPlaces.PointPlace.LeftEdge;
-                    return true;
-                }
-            }
-
-            if (Math.Abs(shapePoints[1].X - point.X) <= eps)
-            {
-                if (Math.Abs(shapePoints[0].Y - point.Y) <= eps)
-                {
-                    pointPlace = Fabrics.PointPlaces.PointPlace.RightUpCorner;
-                    return true;
-                }
-                else
-                {
-                    if (Math.Abs(shapePoints[1].Y - point.Y) <= eps)
-                    {
-                        pointPlace = Fabrics.PointPlaces.PointPlace.RightLowCorner;
-                        return true;
-                    }
-
-                    pointPlace = Fabrics.PointPlaces.PointPlace.RightEdge;
-                    return true;
-                }
-            }
-
-            if (Math.Abs(shapePoints[0].Y - point.Y) <= eps)
-            {
-                pointPlace = Fabrics.PointPlaces.PointPlace.UpEdge;
-                return true;
-            }
-
-            if (Math.Abs(shapePoints[1].Y - point.Y) <= eps)
-            {
-                pointPlace = Fabrics.PointPlaces.PointPlace.LowEdge;
-                return true;
-            }
-
-            return false;
-        }
-
-        public IEnumerable<Point> GetShapePoints()
+        public PointPlaces.PointPlace IsOnBoundary(Point point)
         {
             Point[] pointsList = Points.ToArray();
-            List<Point> shapePoints = new List<Point>();
-            shapePoints.Add(pointsList[0]);
-            shapePoints.Add(new Point(pointsList[1].X, pointsList[0].Y));
-            shapePoints.Add(pointsList[1]);
-            shapePoints.Add(new Point(pointsList[0].X, pointsList[1].Y));
+            double eps = Point.Subtract(pointsList[1], pointsList[0]).Length / 20;
 
-            return shapePoints;
+            if (Math.Abs(pointsList[0].X - point.X) <= eps)
+            {
+                if (Math.Abs(pointsList[0].Y - point.Y) <= eps)
+                {
+                    return PointPlaces.PointPlace.LeftUpCorner;
+                }
+                else
+                {
+                    if (Math.Abs(pointsList[1].Y - point.Y) <= eps)
+                    {
+                        return PointPlaces.PointPlace.LeftLowCorner;
+                    }
+                    else
+                    {
+                        if (point.Y > pointsList[1].Y && point.Y < pointsList[0].Y)
+                        {
+                            return PointPlaces.PointPlace.LeftEdge;
+                        }                            
+                    }
+                }
+            }
+
+            if (Math.Abs(pointsList[1].X - point.X) <= eps)
+            {
+                if (Math.Abs(pointsList[0].Y - point.Y) <= eps)
+                {
+                    return PointPlaces.PointPlace.RightUpCorner;
+                }
+                else
+                {
+                    if (Math.Abs(pointsList[1].Y - point.Y) <= eps)
+                    {
+                        return PointPlaces.PointPlace.RightLowCorner;
+                    }
+                    else
+                    {
+                        if (point.Y > pointsList[1].Y && point.Y < pointsList[0].Y)
+                        {
+                            return PointPlaces.PointPlace.RightEdge;
+                        }
+                    }
+                }
+            }
+
+            if (Math.Abs(pointsList[0].Y - point.Y) <= eps)
+            {
+                if (point.X > pointsList[0].X && point.X < pointsList[1].X)
+                {
+                    return PointPlaces.PointPlace.UpEdge;
+                }
+            }
+
+            if (Math.Abs(pointsList[1].Y - point.Y) <= eps)
+            {
+                if (point.X > pointsList[0].X && point.X < pointsList[1].X)
+                {
+                    return PointPlaces.PointPlace.LowEdge;
+                }
+            }
+
+            return PointPlaces.PointPlace.None;
         }
     }
 }
