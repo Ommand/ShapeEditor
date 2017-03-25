@@ -43,6 +43,11 @@ namespace ShapeEditor.Utils
                 _canvasMode = value;
                 currentPoints.Clear();
                 DynamicShape = null;
+                if (SelectedShape != null)
+                {
+                    SelectedShape = null;
+                    Render();
+                }
                 OnPropertyChanged();
             }
         }
@@ -144,8 +149,6 @@ namespace ShapeEditor.Utils
         private Mode _canvasMode;
         private Shape _dynamicShape;
         private Shape SelectedShape { get; set; }
-        private Color savedColor;
-        private Color selectedColor = Colors.Red;
         private RenderMode _currentRenderMode;
 
         private KeyValuePair<int, int> lastTransformPoint;
@@ -242,9 +245,6 @@ namespace ShapeEditor.Utils
         {
             if (s == SelectedShape)
                 return;
-            var drawable2DShape = SelectedShape as IDrawable2DShape;
-            if (drawable2DShape != null)
-                drawable2DShape.BorderColor = savedColor;
 
             if (s == null)
             {
@@ -259,9 +259,6 @@ namespace ShapeEditor.Utils
                 SelectedFillColor = dShape.FillColor;
                 SelectedBorderColor = dShape.BorderColor;
                 BorderWidth = dShape.BorderWidth;
-
-                savedColor = dShape.BorderColor;
-                dShape.BorderColor = selectedColor;
             }
 
             SelectedShape = s;
@@ -280,7 +277,7 @@ namespace ShapeEditor.Utils
             }
             if (drawable2DShape.BorderColor != SelectedBorderColor)
             {
-                savedColor = SelectedBorderColor;
+                drawable2DShape.BorderColor = SelectedBorderColor;
                 changed = true;
             }
             if (drawable2DShape.BorderWidth != BorderWidth)
@@ -302,7 +299,15 @@ namespace ShapeEditor.Utils
             var drawable2DShape = DynamicShape as IDrawable2DShape;
             if (drawable2DShape != null)
                 drawable2DShapes.Add(drawable2DShape);
-            //            if (drawable2DShapes.Count <= 0) return;
+
+            //Selection box processing
+            if (SelectedShape != null)
+            {
+                var formSelection = SelectedShape.FormSelection().ToList();
+                var selectedBox = new SelectRectangle(formSelection[0], formSelection[1], 1);
+                drawable2DShapes.Add(selectedBox);
+            }
+
             switch (CurrentRenderMode)
             {
                 case RenderMode.OpenGL:
@@ -504,7 +509,7 @@ namespace ShapeEditor.Utils
                 {
                     var last = GetOrthoPoint(lastTransformPoint.Key, lastTransformPoint.Value);
                     var current = GetOrthoPoint(inX, inY);
-                    SelectedShape.ApplyTransformation(new Translate(new Point(current.X-last.X,current.Y-last.Y))); 
+                    SelectedShape.ApplyTransformation(new Translate(new Point(current.X - last.X, current.Y - last.Y)));
                     Render();
 
                     lastTransformPoint = new KeyValuePair<int, int>(inX, inY);
@@ -517,7 +522,7 @@ namespace ShapeEditor.Utils
                     var last = GetOrthoPoint(lastTransformPoint.Key, lastTransformPoint.Value);
                     var current = GetOrthoPoint(inX, inY);
 
-                    SelectedShape.ApplyTransformation(new Rotate(SelectedShape.GetCenter(), (current.X-last.X)*5.0f));
+                    SelectedShape.ApplyTransformation(new Rotate(SelectedShape.GetCenter(), (current.X - last.X) * 5.0f));
                     Render();
 
                     lastTransformPoint = new KeyValuePair<int, int>(inX, inY);
