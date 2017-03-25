@@ -152,6 +152,7 @@ namespace ShapeEditor.Utils
         private RenderMode _currentRenderMode;
 
         private KeyValuePair<int, int> lastTransformPoint;
+        private ShapeExpandController expandController;
         #endregion
 
         #region Constructor
@@ -530,6 +531,11 @@ namespace ShapeEditor.Utils
             }
         }
 
+        public void CanvasMouseUp(int inX, int inY, MouseButton button)
+        {
+            expandController = null;
+        }
+
         public void CanvasMouseWheel(int inX, int inY, int delta)
         {
             Scale += delta * Scale / 800.0;
@@ -577,5 +583,54 @@ namespace ShapeEditor.Utils
         }
 
         #endregion
+    }
+
+    public class ShapeExpandController
+    {
+        private PointPlaces.PointPlace mode;
+        private readonly Point leftBottom;
+        private readonly Point rightTop;
+        private KeyValuePair<int, int> lastTransformPoint;
+
+        public Expand CalculateExpand(KeyValuePair<int, int> newPoint)
+        {
+            Expand result = null;
+
+            switch (mode)
+            {
+                case PointPlaces.PointPlace.LeftTop:
+                    result = new Expand(new Point(rightTop.X, leftBottom.Y), 1.001, 1.001);
+                    break;
+                case PointPlaces.PointPlace.RightTop:
+                    break;
+                case PointPlaces.PointPlace.Bottom:
+                    break;
+                case PointPlaces.PointPlace.Top:
+                    break;
+                case PointPlaces.PointPlace.LeftUpCorner:
+                    break;
+                case PointPlaces.PointPlace.RightUpCorner:
+                    break;
+                case PointPlaces.PointPlace.LeftLowCorner:
+                    break;
+                case PointPlaces.PointPlace.RightLowCorner:
+                    break;
+                case PointPlaces.PointPlace.None:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+            lastTransformPoint = newPoint;
+            return result;
+        }
+
+        public ShapeExpandController(KeyValuePair<int, int> p, PointPlaces.PointPlace mode, Point leftBottom, Point rightTop)
+        {
+            lastTransformPoint = p;
+            this.mode = mode;
+            this.leftBottom = leftBottom;
+            this.rightTop = rightTop;
+        }
+
     }
 }
