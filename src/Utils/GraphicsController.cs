@@ -43,6 +43,13 @@ namespace ShapeEditor.Utils
                 _canvasMode = value;
                 currentPoints.Clear();
                 DynamicShape = null;
+                if (SelectedShape != null)
+                {
+                    SelectedShape = null;
+                    Mouse.OverrideCursor = null;
+                    BoundingBox = null;
+                    Render();
+                }
                 OnPropertyChanged();
             }
         }
@@ -144,11 +151,11 @@ namespace ShapeEditor.Utils
         private Mode _canvasMode;
         private Shape _dynamicShape;
         private Shape SelectedShape { get; set; }
-        private Color savedColor;
-        private Color selectedColor = Colors.Red;
+        private SelectRectangle BoundingBox { get; set; }
         private RenderMode _currentRenderMode;
 
         private KeyValuePair<int, int> lastTransformPoint;
+        private ShapeExpandController expandController;
         #endregion
 
         #region Constructor
@@ -242,13 +249,12 @@ namespace ShapeEditor.Utils
         {
             if (s == SelectedShape)
                 return;
-            var drawable2DShape = SelectedShape as IDrawable2DShape;
-            if (drawable2DShape != null)
-                drawable2DShape.BorderColor = savedColor;
 
             if (s == null)
             {
                 CanvasMode = Mode.None;
+                BoundingBox = null;
+                Mouse.OverrideCursor = null;
             }
             else
             {
@@ -260,12 +266,20 @@ namespace ShapeEditor.Utils
                 SelectedBorderColor = dShape.BorderColor;
                 BorderWidth = dShape.BorderWidth;
 
-                savedColor = dShape.BorderColor;
-                dShape.BorderColor = selectedColor;
+                UpdateBoundingBox(s);
             }
 
             SelectedShape = s;
             Render();
+        }
+
+        private void UpdateBoundingBox(Shape s)
+        {
+            if (s == null)
+                return;
+
+            var formSelection = s.FormSelection().ToList();
+            BoundingBox = new SelectRectangle(formSelection[0], formSelection[1]);
         }
 
         private void UpdateSelectedShapeColors()
@@ -280,7 +294,7 @@ namespace ShapeEditor.Utils
             }
             if (drawable2DShape.BorderColor != SelectedBorderColor)
             {
-                savedColor = SelectedBorderColor;
+                drawable2DShape.BorderColor = SelectedBorderColor;
                 changed = true;
             }
             if (drawable2DShape.BorderWidth != BorderWidth)
@@ -302,7 +316,11 @@ namespace ShapeEditor.Utils
             var drawable2DShape = DynamicShape as IDrawable2DShape;
             if (drawable2DShape != null)
                 drawable2DShapes.Add(drawable2DShape);
-            //            if (drawable2DShapes.Count <= 0) return;
+
+            //Selection box processing
+            if (BoundingBox != null)
+                drawable2DShapes.Add(BoundingBox);
+
             switch (CurrentRenderMode)
             {
                 case RenderMode.OpenGL:
@@ -397,7 +415,7 @@ namespace ShapeEditor.Utils
             switch (button)
             {
                 case MouseButton.Left:
-                    if (CanvasMode != Mode.None)
+                    if (CanvasMode >= Mode.DrawTriangle && CanvasMode <= Mode.DrawLine)
                     {
                         currentPoints.Add(orthoPoint);
                     }
@@ -438,7 +456,13 @@ namespace ShapeEditor.Utils
                                 }
                             break;
                         case Mode.ShapeSelected:
-                            goto case Mode.None;
+                            if (BoundingBox.IsOnBoundary(orthoPoint) != PointPlaces.PointPlace.None)
+                            {
+                                var formSelection = SelectedShape.FormSelection().ToList();
+                                expandController = new ShapeExpandController(new KeyValuePair<int, int>(inX, inY), BoundingBox.IsOnBoundary(orthoPoint), formSelection[0], formSelection[1]);
+                            }
+                            else
+                                goto case Mode.None;
                             break;
                         default:
                             throw new ArgumentOutOfRangeException();
@@ -460,37 +484,73 @@ namespace ShapeEditor.Utils
                 var currentPoint = GetOrthoPoint(inX, inY);
                 var shapeMode = ShapeModes.ShapeMode.NotFixed;
 
-                try
+                if (currentPoints.Count > 0)
                 {
-                    var enumerable = currentPoints.Concat(new List<Point> { currentPoint });
-                    if (CanvasMode == Mode.DrawLine && currentPoints.Count > 1)
-                        DynamicShape = ShapeFabric.CreateShape(ShapeTypes.ShapeType.Line_, enumerable, shapeMode);
-                    else
-                        switch (currentPoints.Count)
-                        {
-                            case 1:
-                                DynamicShape = ShapeFabric.CreateShape(ShapeTypes.ShapeType.Line_, enumerable, shapeMode);
-                                break;
-                            case 2:
-                                if (CanvasMode == Mode.DrawEllipse)
-                                    DynamicShape = ShapeFabric.CreateShape(ShapeTypes.ShapeType.Ellipse_, enumerable,
+                    try
+                    {
+                        var enumerable = currentPoints.Concat(new List<Point> { currentPoint });
+                        if (CanvasMode == Mode.DrawLine && currentPoints.Count > 1)
+                            DynamicShape = ShapeFabric.CreateShape(ShapeTypes.ShapeType.Line_, enumerable, shapeMode);
+                        else
+                            switch (currentPoints.Count)
+                            {
+                                case 1:
+                                    DynamicShape = ShapeFabric.CreateShape(ShapeTypes.ShapeType.Line_, enumerable, shapeMode);
+                                    break;
+                                case 2:
+                                    if (CanvasMode == Mode.DrawEllipse)
+                                        DynamicShape = ShapeFabric.CreateShape(ShapeTypes.ShapeType.Ellipse_, enumerable,
+                                            shapeMode);
+                                    else
+                                        DynamicShape = ShapeFabric.CreateShape(ShapeTypes.ShapeType.Triangle_, enumerable,
+                                            shapeMode);
+                                    break;
+                                case 3:
+                                    DynamicShape = ShapeFabric.CreateShape(ShapeTypes.ShapeType.Quadrangle_, enumerable,
                                         shapeMode);
-                                else
-                                    DynamicShape = ShapeFabric.CreateShape(ShapeTypes.ShapeType.Triangle_, enumerable,
-                                        shapeMode);
-                                break;
-                            case 3:
-                                DynamicShape = ShapeFabric.CreateShape(ShapeTypes.ShapeType.Quadrangle_, enumerable,
-                                    shapeMode);
-                                break;
-                            default:
-                                DynamicShape = null;
-                                break;
-                        }
+                                    break;
+                                default:
+                                    DynamicShape = null;
+                                    break;
+                            }
+                    }
+                    catch
+                    {
+                        // ignored
+                    }
                 }
-                catch
+                else if (CanvasMode == Mode.ShapeSelected)
                 {
-                    // ignored
+                    switch (BoundingBox.IsOnBoundary(GetOrthoPoint(inX, inY)))
+                    {
+                        case PointPlaces.PointPlace.LeftUpCorner:
+                            Mouse.OverrideCursor = Cursors.SizeNWSE;
+                            break;
+                        case PointPlaces.PointPlace.UpEdge:
+                            Mouse.OverrideCursor = Cursors.SizeNS;
+                            break;
+                        case PointPlaces.PointPlace.RightUpCorner:
+                            Mouse.OverrideCursor = Cursors.SizeNESW;
+                            break;
+                        case PointPlaces.PointPlace.RightEdge:
+                            Mouse.OverrideCursor = Cursors.SizeWE;
+                            break;
+                        case PointPlaces.PointPlace.RightLowCorner:
+                            Mouse.OverrideCursor = Cursors.SizeNWSE;
+                            break;
+                        case PointPlaces.PointPlace.LowEdge:
+                            Mouse.OverrideCursor = Cursors.SizeNS;
+                            break;
+                        case PointPlaces.PointPlace.LeftLowCorner:
+                            Mouse.OverrideCursor = Cursors.SizeNESW;
+                            break;
+                        case PointPlaces.PointPlace.LeftEdge:
+                            Mouse.OverrideCursor = Cursors.SizeWE;
+                            break;
+                        case PointPlaces.PointPlace.None:
+                            Mouse.OverrideCursor = null;
+                            break;
+                    }
                 }
             }
             else if (rmbPressed && !lmbPressed && !mmbPressed)
@@ -500,15 +560,25 @@ namespace ShapeEditor.Utils
             }
             else if (lmbPressed && !rmbPressed && !mmbPressed)
             {
-                if (CanvasMode == Mode.ShapeSelected)
+                if (expandController != null)
+                {
+                    var calculatedExpand = expandController.CalculateExpand(new KeyValuePair<int, int>(inX, inY));
+                    if (calculatedExpand != null)
+                    {
+                        SelectedShape.ApplyTransformation(calculatedExpand);
+                        UpdateBoundingBox(SelectedShape);
+                    }
+                }
+                else if (CanvasMode == Mode.ShapeSelected)
                 {
                     var last = GetOrthoPoint(lastTransformPoint.Key, lastTransformPoint.Value);
                     var current = GetOrthoPoint(inX, inY);
-                    SelectedShape.ApplyTransformation(new Translate(new Point(current.X-last.X,current.Y-last.Y))); 
-                    Render();
+                    SelectedShape.ApplyTransformation(new Translate(new Point(current.X - last.X, current.Y - last.Y)));
+                    UpdateBoundingBox(SelectedShape);
 
                     lastTransformPoint = new KeyValuePair<int, int>(inX, inY);
                 }
+                Render();
             }
             else if (!lmbPressed && !rmbPressed && mmbPressed)
             {
@@ -517,12 +587,18 @@ namespace ShapeEditor.Utils
                     var last = GetOrthoPoint(lastTransformPoint.Key, lastTransformPoint.Value);
                     var current = GetOrthoPoint(inX, inY);
 
-                    SelectedShape.ApplyTransformation(new Rotate(SelectedShape.GetCenter(), (current.X-last.X)*5.0f));
+                    SelectedShape.ApplyTransformation(new Rotate(SelectedShape.GetCenter(), -(current.X - last.X) * 2.0f));
+                    UpdateBoundingBox(SelectedShape);
                     Render();
 
                     lastTransformPoint = new KeyValuePair<int, int>(inX, inY);
                 }
             }
+        }
+
+        public void CanvasMouseUp(int inX, int inY, MouseButton button)
+        {
+            expandController = null;
         }
 
         public void CanvasMouseWheel(int inX, int inY, int delta)
@@ -572,5 +648,61 @@ namespace ShapeEditor.Utils
         }
 
         #endregion
+    }
+
+    public class ShapeExpandController
+    {
+        private readonly PointPlaces.PointPlace mode;
+        private readonly Point leftBottom;
+        private readonly Point rightTop;
+        private KeyValuePair<int, int> lastTransformPoint;
+
+        public Expand CalculateExpand(KeyValuePair<int, int> newPoint)
+        {
+            Expand result = null;
+            int deltaX = lastTransformPoint.Key - newPoint.Key;
+            int deltaY = lastTransformPoint.Value - newPoint.Value;
+
+            switch (mode)
+            {
+                case PointPlaces.PointPlace.LeftUpCorner:
+                    result = new Expand(new Point(rightTop.X, leftBottom.Y), 1 + deltaX / 100.0f, 1 + deltaY / 100.0f);
+                    break;
+                case PointPlaces.PointPlace.RightUpCorner:
+                    result = new Expand(leftBottom, 1 - deltaX / 100.0f, 1 + deltaY / 100.0f);
+                    break;
+                case PointPlaces.PointPlace.LowEdge:
+                    result = new Expand(rightTop, 1, 1 + deltaY / 100.0f);
+                    break;
+                case PointPlaces.PointPlace.UpEdge:
+                    result = new Expand(leftBottom, 1, 1 + deltaY / 100.0f);
+                    break;
+                case PointPlaces.PointPlace.LeftLowCorner:
+                    result = new Expand(rightTop, 1 + deltaX / 100.0f, 1 - deltaY / 100.0f);
+                    break;
+                case PointPlaces.PointPlace.RightLowCorner:
+                    result = new Expand(new Point(leftBottom.X, rightTop.Y), 1 - deltaX / 100.0f, 1 - deltaY / 100.0f);
+                    break;
+                case PointPlaces.PointPlace.None:
+                    break;
+                case PointPlaces.PointPlace.LeftEdge:
+                    result = new Expand(rightTop, 1 + deltaX / 100.0f, 1);
+                    break;
+                case PointPlaces.PointPlace.RightEdge:
+                    result = new Expand(leftBottom, 1 + deltaX / 100.0f, 1);
+                    break;
+            }
+            lastTransformPoint = newPoint;
+            return result;
+        }
+
+        public ShapeExpandController(KeyValuePair<int, int> p, PointPlaces.PointPlace mode, Point leftBottom, Point rightTop)
+        {
+            lastTransformPoint = p;
+            this.mode = mode;
+            this.leftBottom = leftBottom;
+            this.rightTop = rightTop;
+        }
+
     }
 }

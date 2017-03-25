@@ -29,9 +29,9 @@
             <ColumnDefinition></ColumnDefinition>
             <ColumnDefinition Width="200"></ColumnDefinition>
         </Grid.ColumnDefinitions>
-        <render:WpfWindow x:Name="WpfRender" MouseDown="WpfRender_OnMouseDown" MouseMove="WpfRender_OnMouseMove" MouseWheel="WpfRender_OnMouseWheel"/>
+        <render:WpfWindow x:Name="WpfRender" MouseDown="WpfRender_OnMouseDown" MouseMove="WpfRender_OnMouseMove" MouseWheel="WpfRender_OnMouseWheel" MouseUp="WpfRender_OnMouseUp"/>
         <WindowsFormsHost Name="HostOpenGL">
-            <render:OpenGLWindow x:Name="OpenGLRender" MouseDown="OpenGLRender_OnMouseDown" MouseMove="OpenGLRender_OnMouseMove" MouseWheel="OpenGLRender_OnMouseWheel"/>
+            <render:OpenGLWindow x:Name="OpenGLRender" MouseDown="OpenGLRender_OnMouseDown" MouseMove="OpenGLRender_OnMouseMove" MouseWheel="OpenGLRender_OnMouseWheel" MouseUp="OpenGLRender_OnMouseUp"/>
         </WindowsFormsHost>
         <StackPanel Grid.Column="1">
             <materialDesign:Card Margin="4 4 4 0" Background="{DynamicResource PrimaryHueDarkBrush}"

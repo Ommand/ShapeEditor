@@ -7,7 +7,7 @@ using System.Windows;
 
 namespace ShapeEditor
 {
-    class Expand: ITransform
+    public class Expand: ITransform
     {
         Point center;
         double kx, ky;

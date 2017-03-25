@@ -174,10 +174,21 @@ namespace ShapeEditor.Windows
             _graphics.CanvasMouseDown(e.X, e.Y, e.Button == MouseButtons.Left ? MouseButton.Left : MouseButton.Right);
         }
 
+        private void OpenGLRender_OnMouseUp(object sender, MouseEventArgs e)
+        {
+            _graphics.CanvasMouseUp(e.X, e.Y, e.Button == MouseButtons.Left ? MouseButton.Left : MouseButton.Right);
+        }
+
         private void WpfRender_OnMouseDown(object sender, MouseButtonEventArgs e)
         {
             var pt = e.GetPosition(this);
             _graphics.CanvasMouseDown((int)pt.X, (int)pt.Y, e.ChangedButton);
+        }
+
+        private void WpfRender_OnMouseUp(object sender, MouseButtonEventArgs e)
+        {
+            var pt = e.GetPosition(this);
+            _graphics.CanvasMouseUp((int)pt.X, (int)pt.Y, e.ChangedButton);
         }
 
         private void WpfRender_OnMouseMove(object sender, System.Windows.Input.MouseEventArgs e)
@@ -323,5 +334,6 @@ namespace ShapeEditor.Windows
         {
             _graphics.DeleteSelectedShape();
         }
+
     }
 }
