@@ -15,8 +15,7 @@ namespace ShapeEditor.Renderers
 
         public void DrawBoundingBox(Point pointLeftBot, Point pointRightTop)
         {
-           
-            OpenGL.glLineStipple(1, 0x0101);
+            OpenGL.glLineStipple(4, 0xAAAA);
             OpenGL.glEnable(OpenGL.GL_LINE_STIPPLE);
             OpenGL.glBegin(OpenGL.GL_LINES);
             OpenGL.glColor3f(0.5f, 0.5f, 0.5f);
