@@ -522,7 +522,7 @@ namespace ShapeEditor.Utils
                     var last = GetOrthoPoint(lastTransformPoint.Key, lastTransformPoint.Value);
                     var current = GetOrthoPoint(inX, inY);
 
-                    SelectedShape.ApplyTransformation(new Rotate(SelectedShape.GetCenter(), (current.X - last.X) * 5.0f));
+                    SelectedShape.ApplyTransformation(new Rotate(SelectedShape.GetCenter(), -(current.X - last.X) * 2.0f));
                     Render();
 
                     lastTransformPoint = new KeyValuePair<int, int>(inX, inY);
