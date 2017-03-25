@@ -9,6 +9,6 @@ namespace ShapeEditor.Fabrics
     public static class PointPlaces
     {
         public enum PointPlace { LeftEdge, RightEdge, LowEdge, UpEdge,
-                                 LeftUpCorner, RightUpCorner, LeftLowCorner, RightLowCorner };
+                                 LeftUpCorner, RightUpCorner, LeftLowCorner, RightLowCorner, None };
     }
 }
