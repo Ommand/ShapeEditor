@@ -24,7 +24,7 @@ namespace ShapeEditor.Shapes
             Points = newPoints;
         }
 
-        public Point GetCenter()
+        public virtual Point GetCenter()
         {
             int count = Points.Count();
             double xC = 0, yC = 0;
@@ -39,7 +39,7 @@ namespace ShapeEditor.Shapes
             return center;
         }
 
-        public IEnumerable<Point> FormSelection()
+        public virtual IEnumerable<Point> FormSelection()
         {
             List<double> x = new List<double>();
             List<double> y = new List<double>();
