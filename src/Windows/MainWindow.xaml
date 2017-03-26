@@ -33,6 +33,7 @@
         <WindowsFormsHost Name="HostOpenGL">
             <render:OpenGLWindow x:Name="OpenGLRender" MouseDown="OpenGLRender_OnMouseDown" MouseMove="OpenGLRender_OnMouseMove" MouseWheel="OpenGLRender_OnMouseWheel" MouseUp="OpenGLRender_OnMouseUp"/>
         </WindowsFormsHost>
+        <UserControl Grid.Column="1" Background="White"></UserControl>
         <StackPanel Grid.Column="1">
             <materialDesign:Card Margin="4 4 4 0" Background="{DynamicResource PrimaryHueDarkBrush}"
                   Foreground="{DynamicResource PrimaryHueDarkForegroundBrush}"
