@@ -99,7 +99,7 @@ namespace ShapeEditor.Shapes
             return shapePoints;
         }
 
-        public new Point GetCenter()
+        public override Point GetCenter()
         {
             Point[] pointsList = Points.ToArray();
 
@@ -110,7 +110,7 @@ namespace ShapeEditor.Shapes
             return center;
         }
 
-        public new IEnumerable<Point> FormSelection()
+        public override IEnumerable<Point> FormSelection()
         {
             Point[] shapePoints = GetShapePoints(360).ToArray();
             List<double> x = new List<double>();
