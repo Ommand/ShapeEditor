@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace ShapeEditor.src.IO
 {
@@ -57,14 +58,81 @@ namespace ShapeEditor.src.IO
 
         #region Methods
 
+        private string createLineString(Line line)
+        {
+            string result = "<g class=\"Line\">\n\t";
+            string div = "\"";
+            List<Point> points = (List<Point>)line.FormSelection();
+
+            string fill = div + line.FillColor.ToString() + div;
+            string width = div + line.BorderWidth.ToString() + div;
+            string borderColor = div + line.BorderColor.ToString() + div;
+
+            result += "<polyline points=";
+            foreach(Point item in points)
+            {
+                result += div + item.X.ToString() + "," + item.Y.ToString() + " ";
+            }
+            result += String.Format(div + "fill={0} stroke={1} stroke-width={2}/>", fill, borderColor, width);
+            result += ("\n</g>\n");
+            return result;
+        }
+
+        private string createTriangleString(Triangle triangle)
+        {
+            string result = "<g class=\"Triangle\">\n\t";
+            string div = "\"";
+            List<Point> points = (List<Point>)triangle.FormSelection();
+
+            string fill = div + triangle.FillColor.ToString() + div;
+            string width = div + triangle.BorderWidth.ToString() + div;
+            string borderColor = div + triangle.BorderColor.ToString() + div;
+
+            result += "<polygon points=";
+            foreach (Point item in points)
+            {
+                result += div + item.X.ToString() + "," + item.Y.ToString() + " ";
+            }
+            result += String.Format(div + "fill={0} stroke={1} stroke-width={2}/>", fill, borderColor, width);
+            result += ("\n</g>\n");
+            return result;
+        }
+
+        private string createQuadrangleString(Quadrangle quadrangle)
+        {
+            string result = "<g class=\"Quadrangle\">\n\t";
+            string div = "\"";
+            List<Point> points = (List<Point>)quadrangle.FormSelection();
+
+            string fill = div + quadrangle.FillColor.ToString() + div;
+            string width = div + quadrangle.BorderWidth.ToString() + div;
+            string borderColor = div + quadrangle.BorderColor.ToString() + div;
+
+            result += "<polygon points=";
+            foreach (Point item in points)
+            {
+                result += div + item.X.ToString() + "," + item.Y.ToString() + " ";
+            }
+            result += String.Format(div + "fill={0} stroke={1} stroke-width={2}/>", fill, borderColor, width);
+            result += ("\n</g>\n");
+            return result;
+        }
+        private string createEllipseString(Ellipse line)
+        {
+            string result = "";
+
+            return result;
+        }
         int IOShapeEditor.saveShapes(List<Shape> shapes, string filePath)
         {
             foreach (Shape item in shapes)
             {
-                if (item is Ellipse) saveEllipse();
-                else if (item is Line) saveLine();
-                else if (item is Triangle) saveTriangle();
-                else if (item is Quadrangle) saveQuadrangle();
+                string shapeString;
+
+                if (item is Ellipse) shapeString = createEllipseString((Ellipse)item);
+                else if (item is Line) shapeString = createLineString((Line)item);
+                else if (item is Triangle) shapeString = createTriangleString((Triangle)item);
+                else if (item is Quadrangle) shapeString = createQuadrangleString((Quadrangle)item);
             }
 
             return 0;

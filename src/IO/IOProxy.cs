@@ -10,8 +10,9 @@ namespace ShapeEditor.src.IO
 {
     public class IOProxy : IOShapeEditor
     {
-        const string SVG_FORMAT = @"\w*\.svg$";
-        const string JSON_FORMAT = @"\w*\.json$";
+        const string SVG_FORMAT = @"\w*\.svg$";     // *.svg
+        const string XML_FORMAT = @"\w*\.xml$";     // *.xml
+        const string JSON_FORMAT = @"\w*\.json$";   // *.json
 
         private IOShapeEditor ioShape;
         private bool checkFormat(string filePath)
@@ -21,12 +22,16 @@ namespace ShapeEditor.src.IO
                 ioShape = new IOSvg();
                 return true;
             }
+            else if(Regex.IsMatch(filePath, XML_FORMAT, RegexOptions.Compiled | RegexOptions.IgnoreCase))
+            {
+                ioShape = new IOSvg();
+                return true;
+            }
             else if(Regex.IsMatch(filePath, JSON_FORMAT, RegexOptions.Compiled | RegexOptions.IgnoreCase))
             {
                 ioShape = new IOJson();
                 return true;
             }
-
             return false;
         }
 
