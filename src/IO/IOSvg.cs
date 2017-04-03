@@ -58,6 +58,12 @@ namespace ShapeEditor.src.IO
 
         #region Methods
 
+        private string getFormatValueSvg(string str)
+        {
+            string div = "\"";
+            return (div + str + div);
+        }
+
         private string createLineString(Line line)
         {
             string result = "<g class=\"Line\">\n\t";
@@ -117,10 +123,23 @@ namespace ShapeEditor.src.IO
             result += ("\n</g>\n");
             return result;
         }
-        private string createEllipseString(Ellipse line)
+        private string createEllipseString(Ellipse shape)
         {
-            string result = "";
+            Point c = shape.GetCenter();
+            
+            string cx = getFormatValueSvg(c.X.ToString());
+            string cy = getFormatValueSvg(c.Y.ToString());
+            string rx = getFormatValueSvg(shape.GetSemiMajorAxis().ToString());
+            string ry = getFormatValueSvg(shape.GetSemiMinorAxis().ToString());
 
+            string borderColor = getFormatValueSvg(shape.BorderColor.ToString());
+            string borderWidth = getFormatValueSvg(shape.BorderWidth.ToString());
+            string fill = getFormatValueSvg(shape.FillColor.ToString());
+      
+            string result = "<g class=\"Ellipse\">\n\t";
+            result += String.Format("<ellipse> cx={0} cy={1} rx={2} ry={3} fill={4} stroke={5} stroke-width={6}", 
+                cx, cy, rx, ry, fill, borderColor, borderWidth);
+            result += ("\n</g>\n");
             return result;
         }
         public int saveShapes(List<Shape> shapes, string filePath)

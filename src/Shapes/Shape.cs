@@ -15,6 +15,11 @@ namespace ShapeEditor.Shapes
     {
         protected IEnumerable<Point> Points { get; set; }
 
+        public IEnumerable<Point> GetPoint
+        {
+            get { return this.Points; }
+        }
+
         public abstract bool IsInside(Point point);
 
         public void ApplyTransformation(ITransform transform)
