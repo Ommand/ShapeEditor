@@ -11,7 +11,7 @@ namespace ShapeEditor.src.IO
 {
     class IOJson : IOShapeEditor
     {
-        List<Shape> IOShapeEditor.loadShapes(string filePath)
+        public List<Shape> loadShapes(string filePath)
         {
             List<Shape> list = null;
 
@@ -21,7 +21,7 @@ namespace ShapeEditor.src.IO
             return list;
         }
 
-        int IOShapeEditor.saveShapes(List<Shape> shapes, string filePath)
+        public int saveShapes(List<Shape> shapes, string filePath)
         {
             FileStream fout = new FileStream(filePath, FileMode.OpenOrCreate);
             DataContractJsonSerializer jSer = new DataContractJsonSerializer(typeof(List<Shape>));

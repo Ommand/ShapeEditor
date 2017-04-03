@@ -35,7 +35,7 @@ namespace ShapeEditor.src.IO
             return false;
         }
 
-        List<Shape> IOShapeEditor.loadShapes(string filePath)
+        public List<Shape> loadShapes(string filePath)
         {
             List<Shape> result = null;
             if (checkFormat(filePath))
@@ -44,7 +44,7 @@ namespace ShapeEditor.src.IO
             }
             return result;
         }
-        int IOShapeEditor.saveShapes(List<Shape> shapes, string filePath)
+        public int saveShapes(List<Shape> shapes, string filePath)
         {
             if (checkFormat(filePath))
             {

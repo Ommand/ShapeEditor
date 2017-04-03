@@ -123,7 +123,7 @@ namespace ShapeEditor.src.IO
 
             return result;
         }
-        int IOShapeEditor.saveShapes(List<Shape> shapes, string filePath)
+        public int saveShapes(List<Shape> shapes, string filePath)
         {
             foreach (Shape item in shapes)
             {
@@ -138,7 +138,7 @@ namespace ShapeEditor.src.IO
             return 0;
         }
 
-        List<Shape> IOShapeEditor.loadShapes(string filePath)
+        public List<Shape> loadShapes(string filePath)
         {
             return null;
         }
