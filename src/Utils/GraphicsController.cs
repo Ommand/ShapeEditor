@@ -459,7 +459,7 @@ namespace ShapeEditor.Utils
                             if (BoundingBox.IsOnBoundary(orthoPoint) != PointPlaces.PointPlace.None)
                             {
                                 var formSelection = SelectedShape.FormSelection().ToList();
-                                expandController = new ShapeExpandController(new KeyValuePair<int, int>(inX, inY), BoundingBox.IsOnBoundary(orthoPoint), formSelection[0], formSelection[1]);
+                                expandController = new ShapeExpandController(new KeyValuePair<int, int>(inX, inY), BoundingBox.IsOnBoundary(orthoPoint), new Point(formSelection[0].X, formSelection[1].Y), new Point(formSelection[1].X, formSelection[0].Y));
                             }
                             else
                                 goto case Mode.None;
