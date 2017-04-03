@@ -60,6 +60,7 @@
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
@@ -85,6 +86,10 @@
     <Compile Include="src\Fabrics\PointPlaces.cs" />
     <Compile Include="src\Fabrics\ShapeModes.cs" />
     <Compile Include="src\Fabrics\ShapeTypes.cs" />
+    <Compile Include="src\IO\IOJson.cs" />
+    <Compile Include="src\IO\IOProxy.cs" />
+    <Compile Include="src\IO\IOShapeEditor.cs" />
+    <Compile Include="src\IO\IOSvg.cs" />
     <Compile Include="src\OpenGL\FontBitmaps.cs" />
     <Compile Include="src\OpenGL\OpenGL.cs" />
     <Compile Include="src\OpenGL\Win32.cs" />
