@@ -15,7 +15,7 @@ namespace ShapeEditor.Shapes
     {
         protected IEnumerable<Point> Points { get; set; }
 
-        public IEnumerable<Point> GetPoint
+        public IEnumerable<Point> GetPoints
         {
             get { return this.Points; }
         }

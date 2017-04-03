@@ -23,7 +23,7 @@ namespace ShapeEditor.src.IO
 
         public int saveShapes(List<Shape> shapes, string filePath)
         {
-            FileStream fout = new FileStream(filePath, FileMode.OpenOrCreate);
+            FileStream fout = new FileStream(filePath, FileMode.Create);
             DataContractJsonSerializer jSer = new DataContractJsonSerializer(typeof(List<Shape>));
             jSer.WriteObject(fout, shapes);
             return 0;

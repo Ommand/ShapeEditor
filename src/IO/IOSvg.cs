@@ -1,6 +1,8 @@
 ﻿using ShapeEditor.Shapes;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Text;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -68,7 +70,7 @@ namespace ShapeEditor.src.IO
         {
             string result = "<g class=\"Line\">\n\t";
             string div = "\"";
-            List<Point> points = (List<Point>)line.FormSelection();
+            List<Point> points = (List<Point>)line.GetPoints;
 
             string fill = div + line.FillColor.ToString() + div;
             string width = div + line.BorderWidth.ToString() + div;
@@ -88,7 +90,7 @@ namespace ShapeEditor.src.IO
         {
             string result = "<g class=\"Triangle\">\n\t";
             string div = "\"";
-            List<Point> points = (List<Point>)triangle.FormSelection();
+            List<Point> points = (List<Point>)triangle.GetPoints;
 
             string fill = div + triangle.FillColor.ToString() + div;
             string width = div + triangle.BorderWidth.ToString() + div;
@@ -108,7 +110,7 @@ namespace ShapeEditor.src.IO
         {
             string result = "<g class=\"Quadrangle\">\n\t";
             string div = "\"";
-            List<Point> points = (List<Point>)quadrangle.FormSelection();
+            List<Point> points = (List<Point>)quadrangle.GetPoints;
 
             string fill = div + quadrangle.FillColor.ToString() + div;
             string width = div + quadrangle.BorderWidth.ToString() + div;
@@ -144,16 +146,27 @@ namespace ShapeEditor.src.IO
         }
         public int saveShapes(List<Shape> shapes, string filePath)
         {
-            foreach (Shape item in shapes)
+            FileStream fout = new FileStream(filePath, FileMode.Create);
+            string head = "<!DOCTYPE svg PUBLIC \" -//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">" +
+                "< svg version = \"1.1\" xmlns = \"http://www.w3.org/2000/svg\"" +
+                " xmlns: xlink = \"http://www.w3.org/1999/xlink\" xml: space = \"preserve\" >\n\t";
+
+            using (StreamWriter sw = new StreamWriter(filePath, false, System.Text.Encoding.Default))
             {
-                string shapeString;
+                sw.WriteLine(head);
+                foreach (Shape item in shapes)
+                {
+                    string shapeString = "";
 
-                if (item is Ellipse) shapeString = createEllipseString((Ellipse)item);
-                else if (item is Line) shapeString = createLineString((Line)item);
-                else if (item is Triangle) shapeString = createTriangleString((Triangle)item);
-                else if (item is Quadrangle) shapeString = createQuadrangleString((Quadrangle)item);
+                    if (item is Ellipse) shapeString = createEllipseString((Ellipse)item);
+                    else if (item is Line) shapeString = createLineString((Line)item);
+                    else if (item is Triangle) shapeString = createTriangleString((Triangle)item);
+                    else if (item is Quadrangle) shapeString = createQuadrangleString((Quadrangle)item);
+
+                    sw.WriteLine(shapeString);              
+                }
+                sw.WriteLine("</svg>");
             }
-
             return 0;
         }
 
