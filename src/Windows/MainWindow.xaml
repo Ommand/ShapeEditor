@@ -117,10 +117,10 @@
                 <StackPanel>
                     <TextBlock Margin="10 10 12 8"  Style="{DynamicResource MaterialDesignTitleTextBlock}">I/O</TextBlock>
                     <StackPanel Orientation="Horizontal">
-                        <Button Height="35" Width="35" ToolTip="Save to..." Margin="2"  Padding="0,0,0,0" Style="{DynamicResource MaterialDesignRaisedButton}">
+                        <Button Height="35" Width="35" ToolTip="Save to..." Margin="2"  Padding="0,0,0,0" Style="{DynamicResource MaterialDesignRaisedButton}" Click="ButtonSaveClick">
                             <materialDesign:PackIcon Kind="PackageDown" Margin="0,0" Width="Auto" Height="Auto"/>
                         </Button>
-                        <Button Height="35" Width="35" ToolTip="Load from..."  Padding="1,1,1,1" Margin="2"  Style="{DynamicResource MaterialDesignRaisedButton}">
+                        <Button Height="35" Width="35" ToolTip="Load from..."  Padding="1,1,1,1" Margin="2"  Style="{DynamicResource MaterialDesignRaisedButton}" Click="ButtonLoadClick">
                             <materialDesign:PackIcon Kind="PackageUp" Margin="-13,-1" Width="Auto" Height="Auto"/>
                         </Button>
                     </StackPanel>

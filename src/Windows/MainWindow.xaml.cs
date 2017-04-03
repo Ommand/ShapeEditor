@@ -12,6 +12,7 @@ using System.Windows.Media;
 using MaterialDesignThemes.Wpf;
 using ShapeEditor.Renderers;
 using ShapeEditor.src;
+using ShapeEditor.src.IO;
 using ShapeEditor.Utils;
 using SharpGL;
 using SharpGL.SceneGraph;
@@ -335,5 +336,22 @@ namespace ShapeEditor.Windows
             _graphics.DeleteSelectedShape();
         }
 
+        private void ButtonSaveClick(object sender, RoutedEventArgs e)
+        {
+            var sfd = new Microsoft.Win32.SaveFileDialog {Filter = "JSON file (*.json)|*.json|C# file (*.svg)|*.svg"};
+            if (sfd.ShowDialog() == true)
+            {
+                new IOProxy().saveShapes(_graphics.ShapesList, sfd.FileName);
+            }
+        }
+
+        private void ButtonLoadClick(object sender, RoutedEventArgs e)
+        {
+            var ofd = new Microsoft.Win32.OpenFileDialog {Filter = "JSON file (*.json)|*.json|C# file (*.svg)|*.svg"};
+            if (ofd.ShowDialog() == true)
+            {
+                _graphics.ShapesList = new IOProxy().loadShapes(ofd.FileName);
+            }
+        }
     }
 }

@@ -68,7 +68,17 @@ namespace ShapeEditor.Utils
             }
         }
 
-        private List<Shape> ShapesList { get; set; } = new List<Shape>();
+        public List<Shape> ShapesList
+        {
+            get { return _shapesList; }
+            set
+            {
+                SelectShape();
+                _shapesList.Clear();
+                _shapesList = value;
+            }
+        }
+        
         public IRenderer Renderer { get; set; }
         private Color _selectedFillColor = Color.FromRgb(255, 255, 255);
         private Color _selectedBorderColor = Color.FromRgb(0, 0, 0);
@@ -156,6 +166,8 @@ namespace ShapeEditor.Utils
 
         private KeyValuePair<int, int> lastTransformPoint;
         private ShapeExpandController expandController;
+        private List<Shape> _shapesList = new List<Shape>();
+
         #endregion
 
         #region Constructor
