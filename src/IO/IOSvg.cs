@@ -137,10 +137,13 @@ namespace ShapeEditor.src.IO
             string borderColor = getFormatValueSvg(shape.BorderColor.ToString());
             string borderWidth = getFormatValueSvg(shape.BorderWidth.ToString());
             string fill = getFormatValueSvg(shape.FillColor.ToString());
-      
+
+            string tangle = (-180 * shape.AngleBeetweenMajorAxisAndPositiveX() / Math.PI).ToString();
+            string transform = String.Format("\"rotate({0}, {1}, {2})\"", tangle, c.X.ToString(), c.Y.ToString());
+
             string result = "<g class=\"Ellipse\">\n\t";
-            result += String.Format("<ellipse> cx={0} cy={1} rx={2} ry={3} fill={4} stroke={5} stroke-width={6}", 
-                cx, cy, rx, ry, fill, borderColor, borderWidth);
+            result += String.Format("<ellipse> cx={0} cy={1} rx={2} ry={3} fill={4} stroke={5} stroke-width={6} transform={7}", 
+                cx, cy, rx, ry, fill, borderColor, borderWidth, transform);
             result += ("\n</g>\n");
             return result;
         }
