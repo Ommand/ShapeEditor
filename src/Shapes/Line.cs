@@ -5,9 +5,11 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
+using System.Runtime.Serialization;
 
 namespace ShapeEditor.Shapes
 {
+    [Serializable]
     class Line : Shape, IDrawable2DShape
     {
         public Line(IEnumerable<Point> points,

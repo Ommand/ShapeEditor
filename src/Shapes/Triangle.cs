@@ -3,9 +3,11 @@ using System.Windows;
 using System.Windows.Media;
 using System.Linq;
 using System;
+using System.Runtime.Serialization;
 
 namespace ShapeEditor.Shapes
 {
+    [Serializable]
     class Triangle : Shape, IDrawable2DShape
     {
         public Triangle(Point point1,
