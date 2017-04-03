@@ -138,6 +138,22 @@ namespace ShapeEditor.Shapes
             return alpha;
         }
 
+        public void BuildEllipse(double semiMinorAxis, 
+                                 double semiMajorAxis,
+                                 double angleBeetweenMajorAxisAndPositiveX,
+                                 Point center)
+        {
+            double c = Math.Sqrt(semiMajorAxis * semiMajorAxis - semiMinorAxis * semiMinorAxis);
+            double cosA = Math.Cos(angleBeetweenMajorAxisAndPositiveX);
+            double sinA = Math.Sin(angleBeetweenMajorAxisAndPositiveX);
+
+            Point focus1 = new Point(cosA * (-c) + center.X, sinA * (-c) + center.Y);
+            Point focus2 = new Point(cosA * c + center.X, sinA * c + center.Y);
+            Point pointM = new Point(-sinA * semiMinorAxis + center.X, cosA * semiMinorAxis + center.Y);
+
+            Points = new List<Point> { focus1, focus2, pointM };
+        }
+
         public override IEnumerable<Point> FormSelection()
         {
             Point[] shapePoints = GetShapePoints(360).ToArray();
