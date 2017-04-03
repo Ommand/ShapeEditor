@@ -338,7 +338,7 @@ namespace ShapeEditor.Windows
 
         private void ButtonSaveClick(object sender, RoutedEventArgs e)
         {
-            var sfd = new Microsoft.Win32.SaveFileDialog {Filter = "JSON file (*.json)|*.json|C# file (*.svg)|*.svg"};
+            var sfd = new Microsoft.Win32.SaveFileDialog {Filter = "JSON file (*.json)|*.json|SVG file (*.svg)|*.svg" };
             if (sfd.ShowDialog() == true)
             {
                 new IOProxy().saveShapes(_graphics.ShapesList, sfd.FileName);
@@ -347,7 +347,7 @@ namespace ShapeEditor.Windows
 
         private void ButtonLoadClick(object sender, RoutedEventArgs e)
         {
-            var ofd = new Microsoft.Win32.OpenFileDialog {Filter = "JSON file (*.json)|*.json|C# file (*.svg)|*.svg"};
+            var ofd = new Microsoft.Win32.OpenFileDialog {Filter = "JSON file (*.json)|*.json|SVG file (*.svg)|*.svg"};
             if (ofd.ShowDialog() == true)
             {
                 _graphics.ShapesList = new IOProxy().loadShapes(ofd.FileName);
