@@ -5,9 +5,11 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
+using System.Runtime.Serialization;
 
 namespace ShapeEditor.Shapes
 {
+    [Serializable]
     class Ellipse : Shape, IDrawable2DShape
     {
         public Ellipse(Point point1,
@@ -108,6 +110,32 @@ namespace ShapeEditor.Shapes
 
             Point center = new Point(xC, yC);
             return center;
+        }
+
+        public double GetSemiMinorAxis()
+        {
+            Point[] pointsList = Points.ToArray();
+            double a = (SpecialMath.Norm(pointsList[0], pointsList[2]) +
+                        SpecialMath.Norm(pointsList[1], pointsList[2])) * 0.5;
+            double c = SpecialMath.Norm(pointsList[0], pointsList[1]) * 0.5;
+            double b = Math.Sqrt(a * a - c * c);
+            return b;
+        }
+
+        public double GetSemiMajorAxis()
+        {
+            Point[] pointsList = Points.ToArray();
+            double a = (SpecialMath.Norm(pointsList[0], pointsList[2]) +
+                        SpecialMath.Norm(pointsList[1], pointsList[2])) * 0.5;
+            return a;
+        }
+
+        public double AngleBeetweenMajorAxisAndPositiveX()
+        {
+            Point[] pointsList = Points.ToArray();
+            double k = (pointsList[1].Y - pointsList[0].Y) / (pointsList[1].X - pointsList[0].X);
+            double alpha = Math.Atan(k);
+            return alpha;
         }
 
         public override IEnumerable<Point> FormSelection()
