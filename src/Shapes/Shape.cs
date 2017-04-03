@@ -2,9 +2,15 @@ using System.Collections.Generic;
 using System.Windows;
 using System.Linq;
 using System;
+using System.Runtime.Serialization;
 
 namespace ShapeEditor.Shapes
 {
+    [Serializable]
+    [KnownType(typeof(Ellipse))]
+    [KnownType(typeof(Triangle))]
+    [KnownType(typeof(Line))]
+    [KnownType(typeof(Quadrangle))]
     public abstract class Shape
     {
         protected IEnumerable<Point> Points { get; set; }
