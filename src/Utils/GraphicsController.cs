@@ -80,7 +80,7 @@ namespace ShapeEditor.Utils
                 _shapesList = value;
             }
         }
-        
+
         public IRenderer Renderer { get; set; }
         private Color _selectedFillColor = Color.FromRgb(255, 255, 255);
         private Color _selectedBorderColor = Color.FromRgb(0, 0, 0);
@@ -473,7 +473,7 @@ namespace ShapeEditor.Utils
                             if (BoundingBox.IsOnBoundary(orthoPoint) != PointPlaces.PointPlace.None)
                             {
                                 var formSelection = SelectedShape.FormSelection().ToList();
-                                expandController = new ShapeExpandController(new KeyValuePair<int, int>(inX, inY), BoundingBox.IsOnBoundary(orthoPoint), new Point(formSelection[0].X, formSelection[1].Y), new Point(formSelection[1].X, formSelection[0].Y));
+                                expandController = new ShapeExpandController(new KeyValuePair<int, int>(inX, inY), BoundingBox.IsOnBoundary(orthoPoint), new Point(formSelection[0].X, formSelection[1].Y), new Point(formSelection[1].X, formSelection[0].Y), GetOrthoPoint);
                             }
                             else
                                 goto case Mode.None;
@@ -670,52 +670,66 @@ namespace ShapeEditor.Utils
         private readonly Point leftBottom;
         private readonly Point rightTop;
         private KeyValuePair<int, int> lastTransformPoint;
+        private Func<int, int, Point> Transform;
 
         public Expand CalculateExpand(KeyValuePair<int, int> newPoint)
         {
             Expand result = null;
             int deltaX = lastTransformPoint.Key - newPoint.Key;
             int deltaY = lastTransformPoint.Value - newPoint.Value;
+            var currentPoint = Transform(newPoint.Key, newPoint.Value);
+            var prevPoint = Transform(lastTransformPoint.Key, lastTransformPoint.Value);
+            Point center = new Point(0, 0);
+            double kX = double.NaN, kY = double.NaN;
 
             switch (mode)
             {
                 case PointPlaces.PointPlace.LeftUpCorner:
-                    result = new Expand(new Point(rightTop.X, leftBottom.Y), 1 + deltaX / 100.0f, 1 + deltaY / 100.0f);
+                    center = new Point(rightTop.X, leftBottom.Y);
                     break;
                 case PointPlaces.PointPlace.RightUpCorner:
-                    result = new Expand(leftBottom, 1 - deltaX / 100.0f, 1 + deltaY / 100.0f);
+                    center = leftBottom;
                     break;
                 case PointPlaces.PointPlace.LowEdge:
-                    result = new Expand(rightTop, 1, 1 + deltaY / 100.0f);
+                    kX = 1;
+                    center = rightTop;
                     break;
                 case PointPlaces.PointPlace.UpEdge:
-                    result = new Expand(leftBottom, 1, 1 + deltaY / 100.0f);
+                    kX = 1;
+                    center = leftBottom;
                     break;
                 case PointPlaces.PointPlace.LeftLowCorner:
-                    result = new Expand(rightTop, 1 + deltaX / 100.0f, 1 - deltaY / 100.0f);
+                    center = rightTop;
                     break;
                 case PointPlaces.PointPlace.RightLowCorner:
-                    result = new Expand(new Point(leftBottom.X, rightTop.Y), 1 - deltaX / 100.0f, 1 - deltaY / 100.0f);
+                    center = new Point(leftBottom.X, rightTop.Y);
                     break;
                 case PointPlaces.PointPlace.None:
                     break;
                 case PointPlaces.PointPlace.LeftEdge:
-                    result = new Expand(rightTop, 1 + deltaX / 100.0f, 1);
+                    kY = 1;
+                    center = rightTop;
                     break;
                 case PointPlaces.PointPlace.RightEdge:
-                    result = new Expand(leftBottom, 1 + deltaX / 100.0f, 1);
+                    kY = 1;
+                    center = leftBottom;
                     break;
             }
+            kX = double.IsNaN(kX) ? (currentPoint.X - center.X) / (prevPoint.X - center.X) : kX;
+            kY = double.IsNaN(kY) ? (currentPoint.Y - center.Y) / (prevPoint.Y - center.Y) : kY;
+
+            result = new Expand(center, kX, kY);
             lastTransformPoint = newPoint;
             return result;
         }
 
-        public ShapeExpandController(KeyValuePair<int, int> p, PointPlaces.PointPlace mode, Point leftBottom, Point rightTop)
+        public ShapeExpandController(KeyValuePair<int, int> p, PointPlaces.PointPlace mode, Point leftBottom, Point rightTop, Func<int, int, Point> transform)
         {
             lastTransformPoint = p;
             this.mode = mode;
             this.leftBottom = leftBottom;
             this.rightTop = rightTop;
+            Transform = transform;
         }
 
     }
