@@ -91,7 +91,9 @@ namespace ShapeEditor.Windows
             {
                 if (value == (_graphics.CurrentRenderMode == GraphicsController.RenderMode.WPF)) return;
 
-                _graphics.CurrentRenderMode = value ? GraphicsController.RenderMode.WPF : GraphicsController.RenderMode.OpenGL;
+                _graphics.CurrentRenderMode = value
+                    ? GraphicsController.RenderMode.WPF
+                    : GraphicsController.RenderMode.OpenGL;
                 SwitchRenderer();
                 OnPropertyChanged();
             }
@@ -122,10 +124,10 @@ namespace ShapeEditor.Windows
             //Initialize button dictionary
             shapeButtons = new Dictionary<Button, GraphicsController.Mode>
             {
-                {btnTriangle,GraphicsController.Mode.DrawTriangle},
-                {btnEllipse,GraphicsController.Mode.DrawEllipse},
-                {btnLine,GraphicsController.Mode.DrawLine},
-                {btnRect,GraphicsController.Mode.DrawRect}
+                {btnTriangle, GraphicsController.Mode.DrawTriangle},
+                {btnEllipse, GraphicsController.Mode.DrawEllipse},
+                {btnLine, GraphicsController.Mode.DrawLine},
+                {btnRect, GraphicsController.Mode.DrawRect}
             };
 
             //Assign button style to mode change
@@ -136,7 +138,8 @@ namespace ShapeEditor.Windows
                     foreach (var it in shapeButtons.Keys)
                         it.Background = primaryHueMidBrush;
 
-                    if (_graphics.CanvasMode > (GraphicsController.Mode)1 && _graphics.CanvasMode <= (GraphicsController.Mode)5)
+                    if (_graphics.CanvasMode > (GraphicsController.Mode)1 &&
+                        _graphics.CanvasMode <= (GraphicsController.Mode)5)
                         shapeButtons.First(x => x.Value == _graphics.CanvasMode).Key.Background = secondaryAccentBrush;
                 }
                 else if (args.PropertyName.Equals(nameof(_graphics.Scale)))
@@ -145,8 +148,8 @@ namespace ShapeEditor.Windows
                     OnPropertyChanged(nameof(ScalePercent));
                 }
                 else if (args.PropertyName.Equals(nameof(_graphics.SelectedFillColor))
-                || args.PropertyName.Equals(nameof(_graphics.SelectedBorderColor))
-                || args.PropertyName.Equals(nameof(_graphics.BorderWidth)))
+                         || args.PropertyName.Equals(nameof(_graphics.SelectedBorderColor))
+                         || args.PropertyName.Equals(nameof(_graphics.BorderWidth)))
                 {
                     OnPropertyChanged(args.PropertyName);
                     OnPropertyChanged($"{args.PropertyName}Brush");
@@ -157,7 +160,12 @@ namespace ShapeEditor.Windows
             _graphics.oglWindow = OpenGLRender;
             _graphics.wpfWindow = WpfRender;
             _graphics.CurrentRenderMode = GraphicsController.RenderMode.WPF;
-            _graphics.ExceptionRaised += (sender, args) => Snackbar.MessageQueue.Enqueue(args.Str);
+            _graphics.ExceptionRaised += (sender, args) => HandleException(args.Str);
+        }
+
+        private void HandleException(string msg)
+        {
+            Snackbar.MessageQueue.Enqueue(msg);
         }
 
         #endregion
@@ -195,19 +203,25 @@ namespace ShapeEditor.Windows
         private void WpfRender_OnMouseMove(object sender, System.Windows.Input.MouseEventArgs e)
         {
             var pt = e.GetPosition(this);
-            _graphics.CanvasMouseMove((int)pt.X, (int)pt.Y, e.LeftButton == MouseButtonState.Pressed, e.RightButton == MouseButtonState.Pressed, e.MiddleButton == MouseButtonState.Pressed);
+            _graphics.CanvasMouseMove((int)pt.X, (int)pt.Y, e.LeftButton == MouseButtonState.Pressed,
+                e.RightButton == MouseButtonState.Pressed, e.MiddleButton == MouseButtonState.Pressed);
         }
 
         private void OpenGLRender_OnMouseMove(object sender, MouseEventArgs e)
         {
-            _graphics.CanvasMouseMove(e.X, e.Y, (e.Button & MouseButtons.Left) != 0, (e.Button & MouseButtons.Right) != 0, (e.Button & MouseButtons.Middle) != 0);
+            _graphics.CanvasMouseMove(e.X, e.Y, (e.Button & MouseButtons.Left) != 0,
+                (e.Button & MouseButtons.Right) != 0, (e.Button & MouseButtons.Middle) != 0);
         }
 
         private void SwitchRenderer()
         {
             //переключение между окнами в рендере
-            HostOpenGL.Visibility = _graphics.CurrentRenderMode == GraphicsController.RenderMode.OpenGL ? Visibility.Visible : Visibility.Collapsed;
-            WpfRender.Visibility = _graphics.CurrentRenderMode == GraphicsController.RenderMode.WPF ? Visibility.Visible : Visibility.Collapsed;
+            HostOpenGL.Visibility = _graphics.CurrentRenderMode == GraphicsController.RenderMode.OpenGL
+                ? Visibility.Visible
+                : Visibility.Collapsed;
+            WpfRender.Visibility = _graphics.CurrentRenderMode == GraphicsController.RenderMode.WPF
+                ? Visibility.Visible
+                : Visibility.Collapsed;
         }
 
         private void WpfRender_OnMouseWheel(object sender, MouseWheelEventArgs e)
@@ -219,6 +233,58 @@ namespace ShapeEditor.Windows
         private void OpenGLRender_OnMouseWheel(object sender, MouseEventArgs e)
         {
             _graphics.CanvasMouseWheel(e.X, e.Y, e.Delta);
+        }
+
+        private void ButtonMoveShapeToTopClick(object sender, RoutedEventArgs e)
+        {
+            _graphics.MoveSelectedShapeToTop();
+        }
+
+        private void ButtonDeleteShapeClick(object sender, RoutedEventArgs e)
+        {
+            _graphics.DeleteSelectedShape();
+        }
+
+        private void ButtonSaveClick(object sender, RoutedEventArgs e)
+        {
+            _graphics.CanvasMode = GraphicsController.Mode.None;
+            var sfd = new Microsoft.Win32.SaveFileDialog { Filter = "JSON file (*.json)|*.json|SVG file (*.svg)|*.svg" };
+            if (sfd.ShowDialog() == true)
+            {
+                try
+                {
+                    new IOProxy().saveShapes(_graphics.ShapesList, sfd.FileName);
+                    HandleException("Save completed");
+                }
+                catch (Exception ex)
+                {
+                    HandleException($"Save failed: {ex.Message}");
+                }
+            }
+        }
+
+        private void ButtonLoadClick(object sender, RoutedEventArgs e)
+        {
+            _graphics.CanvasMode = GraphicsController.Mode.None;
+            var ofd = new Microsoft.Win32.OpenFileDialog { Filter = "Supported file formats (*.json;*.svg)|*.json;*.svg" };
+            if (ofd.ShowDialog() == true)
+            {
+                try
+                {
+                    var graphicsShapesList = new IOProxy().loadShapes(ofd.FileName);
+                    if (graphicsShapesList == null)
+                        HandleException("Load failed");
+                    else
+                    {
+                        _graphics.ShapesList = graphicsShapesList;
+                        HandleException("Load completed");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    HandleException($"Load failed: {ex.Message}");
+                }
+            }
         }
 
         #endregion
@@ -313,6 +379,7 @@ namespace ShapeEditor.Windows
         {
             _graphics.KeyPressed(e.Key);
         }
+
         #endregion
 
         #region INotifyPropertyChanged
@@ -325,33 +392,5 @@ namespace ShapeEditor.Windows
         }
 
         #endregion
-
-        private void ButtonMoveShapeToTopClick(object sender, RoutedEventArgs e)
-        {
-            _graphics.MoveSelectedShapeToTop();
-        }
-
-        private void ButtonDeleteShapeClick(object sender, RoutedEventArgs e)
-        {
-            _graphics.DeleteSelectedShape();
-        }
-
-        private void ButtonSaveClick(object sender, RoutedEventArgs e)
-        {
-            var sfd = new Microsoft.Win32.SaveFileDialog {Filter = "JSON file (*.json)|*.json|C# file (*.svg)|*.svg"};
-            if (sfd.ShowDialog() == true)
-            {
-                new IOProxy().saveShapes(_graphics.ShapesList, sfd.FileName);
-            }
-        }
-
-        private void ButtonLoadClick(object sender, RoutedEventArgs e)
-        {
-            var ofd = new Microsoft.Win32.OpenFileDialog {Filter = "JSON file (*.json)|*.json|C# file (*.svg)|*.svg"};
-            if (ofd.ShowDialog() == true)
-            {
-                _graphics.ShapesList = new IOProxy().loadShapes(ofd.FileName);
-            }
-        }
     }
 }
