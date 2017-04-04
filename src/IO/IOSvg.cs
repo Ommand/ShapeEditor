@@ -10,9 +10,12 @@ using System.Windows;
 
 namespace ShapeEditor.src.IO
 {
-    class IOSvg: IOShapeEditor
+    class IOSvg: IOData, IOShapeEditor
     {
-       
+        public IOSvg(Func<int, int, Point> _TransformPixelToOrtho, Func<double, double, Point> _TransformOrthoToPixel) : base(_TransformPixelToOrtho, _TransformOrthoToPixel)
+        {
+        }
+
         #region Methods
 
         private string getFormatValueSvg(string str)

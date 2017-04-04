@@ -401,7 +401,7 @@ namespace ShapeEditor.Utils
             }
         }
 
-        private Point GetOrthoPoint(int inX, int inY)
+        public Point GetOrthoPoint(int inX, int inY)
         {
             double x;
             double y;
@@ -419,6 +419,22 @@ namespace ShapeEditor.Utils
             return new Point(x, y);
         }
 
+        public Point GetPointOrtho(double inX, double inY)
+        {
+            int X, Y;
+            switch (CurrentRenderMode)
+            {
+                case RenderMode.OpenGL:
+                    oglWindow.GetWindowValue(inX, inY, out X, out Y);
+                    break;
+                case RenderMode.WPF:
+                    wpfWindow.GetWindowValue(inX, inY, out X, out Y);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+            return new Point(X, Y);
+        }
         #endregion
 
         #region Canvas events
