@@ -73,6 +73,8 @@ namespace ShapeEditor.Utils
             get { return _shapesList; }
             set
             {
+                if (value == null) return;
+
                 SelectShape();
                 _shapesList.Clear();
                 _shapesList = value;
