@@ -12,52 +12,7 @@ namespace ShapeEditor.src.IO
 {
     class IOSvg: IOShapeEditor
     {
-        #region SaveMethods
-        private int saveEllipse()
-        {
-            return 0;
-        }
-
-        private int saveLine()
-        {
-            return 0;
-        }
-
-        private int saveQuadrangle()
-        {
-            return 0;
-        }
-
-        private int saveTriangle()
-        {
-            return 0;
-        }
-
-        #endregion
-
-        #region LoadMethods
-        private int loadEllipse()
-        {
-            return 0;
-        }
-
-        private int loadLine()
-        {
-            return 0;
-        }
-
-        private int loadQuadrangle()
-        {
-            return 0;
-        }
-
-        private int loadTriangle()
-        {
-            return 0;
-        }
-
-        #endregion
-
+       
         #region Methods
 
         private string getFormatValueSvg(string str)
@@ -85,7 +40,6 @@ namespace ShapeEditor.src.IO
             result += ("\n</g>\n");
             return result;
         }
-
         private string createTriangleString(Triangle triangle)
         {
             string result = "<g class=\"Triangle\">\n\t";
@@ -105,7 +59,6 @@ namespace ShapeEditor.src.IO
             result += ("\n</g>\n");
             return result;
         }
-
         private string createQuadrangleString(Quadrangle quadrangle)
         {
             string result = "<g class=\"Quadrangle\">\n\t";
@@ -128,33 +81,31 @@ namespace ShapeEditor.src.IO
         private string createEllipseString(Ellipse shape)
         {
             Point c = shape.GetCenter();
-            
-            string cx = getFormatValueSvg(c.X.ToString());
-            string cy = getFormatValueSvg(c.Y.ToString());
-            string rx = getFormatValueSvg(shape.GetSemiMajorAxis().ToString());
-            string ry = getFormatValueSvg(shape.GetSemiMinorAxis().ToString());
+            string formatDouble = "{0:0.00}";
+            string div = "\"";
+            string cx = div + String.Format(formatDouble, c.X) + div;
+            string cy = div + String.Format(formatDouble, c.Y) + div;
+            string rx = div + String.Format(formatDouble, shape.GetSemiMajorAxis()) + div;
+            string ry = div + String.Format(formatDouble, shape.GetSemiMinorAxis()) + div;
 
             string borderColor = getFormatValueSvg(shape.BorderColor.ToString());
             string borderWidth = getFormatValueSvg(shape.BorderWidth.ToString());
             string fill = getFormatValueSvg(shape.FillColor.ToString());
 
-            string tangle = (-180 * shape.AngleBeetweenMajorAxisAndPositiveX() / Math.PI).ToString();
-            string transform = String.Format("\"rotate({0}, {1}, {2})\"", tangle, c.X.ToString(), c.Y.ToString());
+            double tangle = (-180 * shape.AngleBeetweenMajorAxisAndPositiveX() / Math.PI);
+            string transform = String.Format("\"rotate({0:0.00}, {1:0.00}, {2:0.00})\"", tangle, c.X, c.Y);
 
             string result = "<g class=\"Ellipse\">\n\t";
-            result += String.Format("<ellipse> cx={0} cy={1} rx={2} ry={3} fill={4} stroke={5} stroke-width={6} transform={7}", 
+            result += String.Format("<ellipse cx={0} cy={1} rx={2} ry={3} fill={4} stroke={5} stroke-width={6} transform={7}", 
                 cx, cy, rx, ry, fill, borderColor, borderWidth, transform);
             result += ("\n</g>\n");
             return result;
         }
         public int saveShapes(List<Shape> shapes, string filePath)
         {
-            FileStream fout = new FileStream(filePath, FileMode.Create);
-            string head = "<!DOCTYPE svg PUBLIC \" -//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">" +
-                "< svg version = \"1.1\" xmlns = \"http://www.w3.org/2000/svg\"" +
-                " xmlns: xlink = \"http://www.w3.org/1999/xlink\" xml: space = \"preserve\" >\n\t";
-
-            using (StreamWriter sw = new StreamWriter(filePath, false, System.Text.Encoding.Default))
+            string head = "<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">";
+            head += "<svg version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xml:space=\"preserve\">";
+            using (StreamWriter sw = new StreamWriter(filePath, true, System.Text.Encoding.Default))
             {
                 sw.WriteLine(head);
                 foreach (Shape item in shapes)
