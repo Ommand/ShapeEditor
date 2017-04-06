@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Media;
 
 namespace ShapeEditor.src.IO
 {
@@ -11,6 +13,26 @@ namespace ShapeEditor.src.IO
     {
         protected Func<int, int, Point> TransformPixelToOrtho;
         protected Func<double, double, Point> TransformOrthoToPixel;
+
+        protected Point TransformPointToPixel(Point point)
+        {
+            return this.TransformOrthoToPixel(point.X, point.Y);
+        }
+        protected Point TransformPointToOrtho(Point point)
+        {
+            return this.TransformPixelToOrtho((int)point.X, (int)point.Y);
+        }
+        protected double Norm(Point a, Point b)
+        {
+            double result = 0;
+            result += (Math.Pow(b.X - a.X, 2) + Math.Pow(b.Y - a.Y, 2));
+            return Math.Sqrt(result);
+        }
+        protected string ColorToString(Color color)
+        {
+            string result = String.Format(CultureInfo.InvariantCulture, "#{0:X2}{1:X2}{2:X2}", color.R, color.G, color.B);
+            return result;
+        }
         public IOData(Func<int, int, Point> _TransformPixelToOrtho, Func<double, double, Point> _TransformOrthoToPixel)
         {
             if (_TransformPixelToOrtho == null || _TransformOrthoToPixel == null)
