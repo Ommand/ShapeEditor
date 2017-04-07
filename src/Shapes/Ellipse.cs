@@ -133,7 +133,18 @@ namespace ShapeEditor.Shapes
         public Point GetUpperPoint()
         {
             Point[] pointsList = Points.ToArray();
-            return pointsList[2];
+            double a = (SpecialMath.Norm(pointsList[0], pointsList[2]) +
+            SpecialMath.Norm(pointsList[1], pointsList[2])) * 0.5;
+            double c = SpecialMath.Norm(pointsList[0], pointsList[1]) * 0.5;
+            double b = Math.Sqrt(a * a - c * c);
+            double k = (pointsList[1].Y - pointsList[0].Y) / (pointsList[1].X - pointsList[0].X);
+            double alpha = Math.Atan(k);
+            double cosA = Math.Cos(alpha);
+            double sinA = Math.Sin(alpha);
+            Point center = GetCenter();
+            Point upperPoint = new Point(-sinA * b + center.X, cosA * b + center.Y);
+
+            return upperPoint;
         }
 
         public Point GetRightPoint()
