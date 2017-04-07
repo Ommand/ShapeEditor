@@ -105,8 +105,8 @@ namespace ShapeEditor.src.IO
             Point pixel0 = this.TransformPointToPixel(orth0);
             Point pixel1 = this.TransformPointToPixel(orth1);
 
-            double scaleX = (orth1.X - orth0.X) / (pixel1.X - pixel0.X);
-            double scaleY = (orth1.Y - orth0.Y) / (pixel1.Y - pixel0.Y);
+            double scaleX = Math.Abs((orth1.X - orth0.X) / (pixel1.X - pixel0.X));
+            double scaleY = Math.Abs((orth1.Y - orth0.Y) / (pixel1.Y - pixel0.Y));
 
             double shiftX = pixel0.X - scaleX * orth0.X;
             double shiftY = pixel0.Y - scaleY * orth0.Y;
@@ -114,12 +114,25 @@ namespace ShapeEditor.src.IO
             string fillc = this.ColorToString(shape.FillColor);
 
             Point c = this.TransformPointToPixel(shape.GetCenter());
+            //Point upper = this.TransformPointToPixel(shape.GetUpperPoint());
+            //Point Right = this.TransformPointToPixel(shape.GetRightPoint());
+
+            Point cOrth = shape.GetCenter();
+            Point upper = shape.GetUpperPoint();
+            Point Right = shape.GetRightPoint();
+
+            double aa = Norm(cOrth, upper);
+            double bb = Norm(cOrth, Right);
+
+            double minor = shape.GetSemiMinorAxis();
+            double major = shape.GetSemiMajorAxis();
+
             string formatDouble = "{0:0.0}";
             string div = "\"";
             string cx = div + String.Format(CultureInfo.InvariantCulture, formatDouble, c.X) + div;
             string cy = div + String.Format(CultureInfo.InvariantCulture, formatDouble, c.Y) + div;
-            string rx = div + String.Format(CultureInfo.InvariantCulture, formatDouble, scaleX*shape.GetSemiMajorAxis() + shiftX) + div;
-            string ry = div + String.Format(CultureInfo.InvariantCulture, formatDouble, scaleY*shape.GetSemiMinorAxis() + shiftY) + div;
+            string rx = div + String.Format(CultureInfo.InvariantCulture, formatDouble, this.ScalebleNorm(cOrth, Right, scaleX, scaleY)) + div;
+            string ry = div + String.Format(CultureInfo.InvariantCulture, formatDouble, this.ScalebleNorm(cOrth, upper, scaleX, scaleY)) + div;
 
             string borderColor = getFormatValueSvg(this.ColorToString(shape.BorderColor));
             string borderWidth = getFormatValueSvg(shape.BorderWidth.ToString());

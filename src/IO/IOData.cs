@@ -24,8 +24,13 @@ namespace ShapeEditor.src.IO
         }
         protected double Norm(Point a, Point b)
         {
-            double result = 0;
-            result += (Math.Pow(b.X - a.X, 2) + Math.Pow(b.Y - a.Y, 2));
+            double result = (Math.Pow(b.X - a.X, 2) + Math.Pow(b.Y - a.Y, 2));
+            return Math.Sqrt(result);
+        }
+
+        protected double ScalebleNorm(Point a, Point b, double scaleX, double scaleY)
+        {
+            double result = (Math.Pow((b.X - a.X) / scaleX, 2) + Math.Pow((b.Y - a.Y) / scaleY, 2));
             return Math.Sqrt(result);
         }
         protected string ColorToString(Color color)
