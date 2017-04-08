@@ -86,6 +86,7 @@
     <Compile Include="src\Fabrics\PointPlaces.cs" />
     <Compile Include="src\Fabrics\ShapeModes.cs" />
     <Compile Include="src\Fabrics\ShapeTypes.cs" />
+    <Compile Include="src\IO\IOData.cs" />
     <Compile Include="src\IO\IOJson.cs" />
     <Compile Include="src\IO\IOProxy.cs" />
     <Compile Include="src\IO\IOShapeEditor.cs" />
