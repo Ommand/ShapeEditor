@@ -151,7 +151,7 @@ namespace ShapeEditor.src.IO
 
             Point cOrth = shape.GetCenter();
 
-            string formatDouble = "{0:0.0}";
+            string formatDouble = "{0:0.###############}";
             string div = "\"";
             string cx = div + String.Format(CultureInfo.InvariantCulture, formatDouble, c.X) + div;
             string cy = div + String.Format(CultureInfo.InvariantCulture, formatDouble, c.Y) + div;
@@ -185,7 +185,7 @@ namespace ShapeEditor.src.IO
                 Point item = points[i];
                 ellipsePoints += String.Format(CultureInfo.InvariantCulture, "{0:0.###############},{1:0.###############}", item.X, item.Y) + " ";
             }
-            ellipsePoints += String.Format(CultureInfo.InvariantCulture, "{0:0.#},{1:0.#}", points[N].X, points[N].Y);
+            ellipsePoints += String.Format(CultureInfo.InvariantCulture, "{0:0.###############},{1:0.###############}", points[N].X, points[N].Y);
             result += String.Format(" {0}=\"{1}\"", POINTS_ORTH, ellipsePoints);
 
             result += "/>";
