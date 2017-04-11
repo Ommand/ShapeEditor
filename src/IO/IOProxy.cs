@@ -48,14 +48,17 @@ namespace ShapeEditor.src.IO
             {
                 result = ioShape.loadShapes(filePath);
             }
+            else throw new Exception("Указанный файл имеет недопустимое расширение");
             return result;
         }
         public int saveShapes(List<Shape> shapes, string filePath)
         {
+            if(shapes == null) throw new Exception("Список фигур пуст");
             if (checkFormat(filePath))
             {
                 ioShape.saveShapes(shapes, filePath);
             }
+            else throw new Exception("Указанный файл имеет недопустимое расширение");
             return 0;
         }
     }

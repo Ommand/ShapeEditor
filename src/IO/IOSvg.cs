@@ -2,10 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Globalization;
 using System.Xml;
@@ -14,24 +11,6 @@ using ShapeEditor.Fabrics;
 
 namespace ShapeEditor.src.IO
 {
-    struct BuilderParametrs
-    {
-        string points;
-        string fill;
-        string fillOpacity;
-
-        string stroke;
-        string strokeOpacity;
-        string strokeWidth;
-
-        string rotate_angle;
-        string rotate_x0;
-        string rotate_y0;
-
-        string cx, cy, rx, ry;
-        string className;
-    }
-
     class IOSvg: IOData, IOShapeEditor
     {
         public IOSvg(Func<int, int, Point> _TransformPixelToOrtho, Func<double, double, Point> _TransformOrthoToPixel) 
@@ -50,14 +29,12 @@ namespace ShapeEditor.src.IO
         const string RX = "rx";
         const string RY = "ry";
         const string POINTS = "points";
-        const string CLASS = "class";
+        const string CLASS = "className";
         const string ELLIPSE = "ellipse";
         const string POLYLINE = "polyline";
         const string POLYGON = "polygon";
         const string CLASS_ATR = "g";
-
-        const string FOCUS1_ORTH = "focus1-orth";
-        const string FOCUS2_ORTH = "focus2-orth";
+        const string TRANSFORM = "transform";
         const string POINTS_ORTH = "points-orth";
         #endregion
 
@@ -81,101 +58,109 @@ namespace ShapeEditor.src.IO
             }
             return result;
         }
-        private string getFormatValueSvg(string str)
-        {
-            string div = "\"";
-            return (div + str + div);
-        }
-        private string createPolygonString(Shape shape)
-        {
-            string result = "<g class=\"" + shape.GetType().Name + "\">\n\t";
-            string div = "\"";
-            List<Point> points = this.TransformToPixels(shape.GetPoints.ToList<Point>());
 
+        #region Save methods
+        private int writePolyline(XmlWriter writer, Shape shape)
+        {
+            writer.WriteStartElement(POLYLINE);
+
+            List<Point> points = this.TransformToPixels(shape.GetPoints.ToList<Point>());
             IDrawable2DShape colorShape = (IDrawable2DShape)shape;
 
-            string fill = getFormatValueSvg(this.ColorToString(colorShape.FillColor));
-            string width = getFormatValueSvg(colorShape.BorderWidth.ToString());
-            string borderColor = getFormatValueSvg(this.ColorToString(colorShape.BorderColor));
-            string fillOpacity = getFormatValueSvg(colorShape.FillColor.A.ToString());
-            string borderColorOpacity = getFormatValueSvg(colorShape.BorderColor.A.ToString());
+            string fill = this.ColorToString(colorShape.FillColor);
+            string width = colorShape.BorderWidth.ToString();
+            string borderColor = this.ColorToString(colorShape.BorderColor);
+            string fillOpacity = ((double)colorShape.FillColor.A / 255 ).ToString();
+            string borderColorOpacity = ((double)colorShape.BorderColor.A / 255).ToString();
 
-            result += "<polygon points=\"";
-            int N = points.Count-1;
-            for(int i=0;i<N;i++)
-            {
-                Point item = points[i];
-                result += (item.X.ToString() + "," + item.Y.ToString() + " ");
-            }
-            result += (points[N].X.ToString() + "," + points[N].Y.ToString());
-            result += String.Format(div + " fill={0} stroke={1} stroke-width={2} fill-opacity={3} stroke-opacity={4}/>", 
-                fill, borderColor, width, fillOpacity, borderColorOpacity);
-            result += ("\n</g>\n");
-            return result;
-        }
-        private string createLineString(Line line)
-        {
-            string result = "<g class=\"" + line.GetType().Name + "\">\n\t";
-            string div = "\"";
-            List<Point> linePoints = line.GetPoints.ToList<Point>(); 
-            List<Point> points = this.TransformToPixels(linePoints.ToList<Point>());
+            fillOpacity = "0.0";
 
-            string fill = getFormatValueSvg(this.ColorToString(line.FillColor));
-            string width = getFormatValueSvg(line.BorderWidth.ToString());
-            string borderColor = getFormatValueSvg(this.ColorToString(line.BorderColor));
-
-            string fillOpacity = "\"0\"";// getFormatValueSvg(line.FillColor.A.ToString());
-            string borderColorOpacity = getFormatValueSvg(line.BorderColor.A.ToString());
-
-            result += "<polyline points=\"";
+            string spoints = "";
             int N = points.Count - 1;
             for (int i = 0; i < N; i++)
             {
                 Point item = points[i];
-                result += (item.X.ToString() + "," + item.Y.ToString() + " ");
+                spoints += (item.X.ToString() + "," + item.Y.ToString() + " ");
             }
-            result += (points[N].X.ToString() + "," + points[N].Y.ToString());
-            result += String.Format(div + " fill={0} stroke={1} stroke-width={2} fill-opacity={3} stroke-opacity={4}/>",
-                fill, fill, width, fillOpacity, borderColorOpacity);
-          
-            result += ("\n</g>\n");
-            return result;
-        }
-        private string createEllipseString(Ellipse shape)
-        {
-            string fillc = this.ColorToString(shape.FillColor);
+            spoints += (points[N].X.ToString() + "," + points[N].Y.ToString());
 
+            writer.WriteAttributeString(POINTS, spoints);
+            writer.WriteAttributeString(FILL, fill);
+            writer.WriteAttributeString(FILL_OPACITY, fillOpacity);
+            writer.WriteAttributeString(STROKE, fill);
+            writer.WriteAttributeString(STROKE_WIDTH, width);
+            writer.WriteAttributeString(STROKE_OPACITY, borderColorOpacity);
+
+            writer.WriteAttributeString(CLASS, shape.GetType().Name);
+
+            writer.WriteEndElement(); // />
+            return 0;
+        }
+        private int writePolygon(XmlWriter writer, Shape shape)
+        {
+            writer.WriteStartElement(POLYGON);
+
+            List<Point> points = this.TransformToPixels(shape.GetPoints.ToList<Point>());
+            IDrawable2DShape colorShape = (IDrawable2DShape)shape;
+
+            string fill = this.ColorToString(colorShape.FillColor);
+            string width = colorShape.BorderWidth.ToString();
+            string borderColor = this.ColorToString(colorShape.BorderColor);
+            string fillOpacity = ((double)colorShape.FillColor.A / 255).ToString();
+            string borderColorOpacity = ((double)colorShape.BorderColor.A / 255).ToString();
+
+            string spoints = "";
+            int N = points.Count - 1;
+            for (int i = 0; i < N; i++)
+            {
+                Point item = points[i];
+                spoints += (item.X.ToString() + "," + item.Y.ToString() + " ");
+            }
+            spoints += (points[N].X.ToString() + "," + points[N].Y.ToString());
+
+            writer.WriteAttributeString(POINTS, spoints);
+            writer.WriteAttributeString(FILL, fill);
+            writer.WriteAttributeString(FILL_OPACITY, fillOpacity);
+            writer.WriteAttributeString(STROKE, borderColor);
+            writer.WriteAttributeString(STROKE_WIDTH, width);
+            writer.WriteAttributeString(STROKE_OPACITY, borderColorOpacity);
+
+            writer.WriteAttributeString(CLASS, shape.GetType().Name);
+
+            writer.WriteEndElement(); // />
+            return 0;
+        }
+        private int writeEllipse(XmlWriter writer, Shape cshape)
+        {
+            writer.WriteStartElement(ELLIPSE);
+            Ellipse shape = cshape as Ellipse;
             Point c = this.TransformPointToPixel(shape.GetCenter());
-            Point upper = this.TransformPointToPixel(shape.GetUpperPoint());
+            Point Upper = this.TransformPointToPixel(shape.GetUpperPoint());
             Point Right = this.TransformPointToPixel(shape.GetRightPoint());
 
             Point cOrth = shape.GetCenter();
 
-            string formatDouble = "{0:0.0}";
+            string formatDouble = "{0:0.###############}";
             string div = "\"";
-            string cx = div + String.Format(CultureInfo.InvariantCulture, formatDouble, c.X) + div;
-            string cy = div + String.Format(CultureInfo.InvariantCulture, formatDouble, c.Y) + div;
-            string rx = div + String.Format(CultureInfo.InvariantCulture, formatDouble, this.Norm(c, Right)) + div;
-            string ry = div + String.Format(CultureInfo.InvariantCulture, formatDouble, this.Norm(c, upper)) + div;
+            string cx = String.Format(CultureInfo.InvariantCulture, formatDouble, c.X);
+            string cy = String.Format(CultureInfo.InvariantCulture, formatDouble, c.Y);
+            string rx = String.Format(CultureInfo.InvariantCulture, formatDouble, this.Norm(c, Right));
+            string ry = String.Format(CultureInfo.InvariantCulture, formatDouble, this.Norm(c, Upper));
 
-            string borderColor = getFormatValueSvg(this.ColorToString(shape.BorderColor));
-            string borderWidth = getFormatValueSvg(shape.BorderWidth.ToString());
-            string fill = getFormatValueSvg(this.ColorToString(shape.FillColor));
+            string borderColor = this.ColorToString(shape.BorderColor);
+            string borderWidth = shape.BorderWidth.ToString();
+            string fill = this.ColorToString(shape.FillColor);
 
-            string borderColorOpacity = div + shape.BorderColor.A.ToString() + div;
-            string fillColorOpacity = div + shape.FillColor.A.ToString() + div;
+            string borderColorOpacity = ((double)shape.BorderColor.A / 255).ToString();
+            string fillColorOpacity = ((double)shape.FillColor.A / 255).ToString();
 
             double tangle = (-180 * shape.AngleBeetweenMajorAxisAndPositiveX() / Math.PI);
 
             string transform = "";
-            transform += String.Format(CultureInfo.InvariantCulture, "\"rotate({0:0.###############}", tangle);
+            transform += String.Format(CultureInfo.InvariantCulture, "rotate({0:0.###############}", tangle);
             transform += String.Format(CultureInfo.InvariantCulture, ",{0:0.###############}", c.X);
             transform += String.Format(CultureInfo.InvariantCulture, ",{0:0.###############}", c.Y);
-            transform += ")" + div;
-
-            string result = "<g class=\"Ellipse\">\n\t";
-            result += String.Format("<ellipse cx={0} cy={1} rx={2} ry={3} fill={4} stroke={5} stroke-width={6} transform={7} stroke-opacity={8} fill-opacity={9}", 
-                cx, cy, rx, ry, fill, borderColor, borderWidth, transform, borderColorOpacity, fillColorOpacity);
+            transform += ")";
 
             List<Point> points = shape.GetPoints.ToList<Point>();
             string ellipsePoints = "";
@@ -185,36 +170,28 @@ namespace ShapeEditor.src.IO
                 Point item = points[i];
                 ellipsePoints += String.Format(CultureInfo.InvariantCulture, "{0:0.###############},{1:0.###############}", item.X, item.Y) + " ";
             }
-            ellipsePoints += String.Format(CultureInfo.InvariantCulture, "{0:0.#},{1:0.#}", points[N].X, points[N].Y);
-            result += String.Format(" {0}=\"{1}\"", POINTS_ORTH, ellipsePoints);
+            ellipsePoints += String.Format(CultureInfo.InvariantCulture, "{0:0.###############},{1:0.###############}", points[N].X, points[N].Y);
 
-            result += "/>";
-            result += ("\n</g>\n");
-            return result;
-        }
-        public int saveShapes(List<Shape> shapes, string filePath)
-        {
-            string head = "<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">";
-            head += "\n<svg version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xml:space=\"preserve\">";
-            using (StreamWriter sw = new StreamWriter(filePath, false, System.Text.Encoding.Default))
-            {
-                sw.WriteLine(head);
-                foreach (Shape item in shapes)
-                {
-                    string shapeString = "";
+            writer.WriteAttributeString(CX, cx);
+            writer.WriteAttributeString(CY, cy);
+            writer.WriteAttributeString(RX, rx);
+            writer.WriteAttributeString(RY, ry);
+            writer.WriteAttributeString(TRANSFORM, transform);
+            writer.WriteAttributeString(FILL, fill);
+            writer.WriteAttributeString(FILL_OPACITY, fillColorOpacity);
+            writer.WriteAttributeString(STROKE, borderColor);
+            writer.WriteAttributeString(STROKE_WIDTH, borderWidth);
+            writer.WriteAttributeString(STROKE_OPACITY, borderColorOpacity);
+            writer.WriteAttributeString(POINTS_ORTH, ellipsePoints);
 
-                    if (item is Ellipse) shapeString = createEllipseString((Ellipse)item);
-                    else if (item is Line) shapeString = createLineString((Line)item);
-                    else if (item is Triangle) shapeString = createPolygonString((Triangle)item);
-                    else if (item is Quadrangle) shapeString = createPolygonString((Quadrangle)item);
+            writer.WriteAttributeString(CLASS, cshape.GetType().Name);
 
-                    sw.WriteLine(shapeString);
-                }
-                sw.WriteLine("</svg>");
-            }
+            writer.WriteEndElement(); // />
             return 0;
         }
+        #endregion
 
+        #region Load methods
         private Shape buildEllipse(string className, string cx, string cy, string rx, string ry, string fill, string fillOpacity, string stroke, string strokeWidth, string strokeOpacity)
         {
             Ellipse shape;
@@ -244,7 +221,9 @@ namespace ShapeEditor.src.IO
                     bool resultParse;
                     int j = 2 * i;
                     resultParse = Double.TryParse(split[j], style, culture, out x);
+                    if (resultParse == false) throw new Exception("Невозможно прочитать значение координаты точки");
                     resultParse = Double.TryParse(split[j + 1], style, culture, out y);
+                    if (resultParse == false) throw new Exception("Невозможно прочитать значение координаты точки");
 
                     listPoints.Add(new Point(x, y));
                 }
@@ -254,6 +233,8 @@ namespace ShapeEditor.src.IO
             Color borderColor = (Color)ColorConverter.ConvertFromString(stroke);
             double borderWidth;
             bool parseResult = Double.TryParse(strokeWidth, out borderWidth);
+            if (parseResult == false) throw new Exception("Невозможно прочитать значение ширины контура");
+
             ShapeTypes.ShapeType shapeType;
             switch (className)
             {
@@ -289,10 +270,10 @@ namespace ShapeEditor.src.IO
             string[] split = points.Split(sep);
             List<Point> listPoints = new List<Point>();
 
-            if(split.Length % 2 == 0)
+            if (split.Length % 2 == 0)
             {
                 int N = split.Length / 2;
-                for(int i = 0; i < N; i++)
+                for (int i = 0; i < N; i++)
                 {
                     int x;
                     int y;
@@ -301,12 +282,13 @@ namespace ShapeEditor.src.IO
                     bool resultParse;
                     int j = 2 * i;
                     resultParse = Int32.TryParse(split[j], out x);
-                    resultParse = Int32.TryParse(split[j+1], out y);
+                    resultParse = Int32.TryParse(split[j + 1], out y);
 
                     point = this.TransformPixelToOrtho(x, y);
                     listPoints.Add(point);
                 }
             }
+            else throw new Exception("Точки указаны некорректно");
 
             Color fillColor = (Color)ColorConverter.ConvertFromString(fill);
             Color borderColor = (Color)ColorConverter.ConvertFromString(stroke);
@@ -339,11 +321,36 @@ namespace ShapeEditor.src.IO
 
             return shape;
         }
-        private List<Point> parseStringPoints(string points)
-        {
-            List<Point> result = new List<Point>();
+        #endregion
 
-            return result;
+        public int saveShapes(List<Shape> shapes, string filePath)
+        {
+            using (StreamWriter sw = new StreamWriter(filePath, false, System.Text.Encoding.Default))
+            {
+                XmlWriterSettings ws = new XmlWriterSettings();
+                ws.Indent = true;
+                using (XmlTextWriter writer = new XmlTextWriter(sw))
+                {
+                    writer.Formatting = Formatting.Indented;
+                    string xmlns = @"http://www.w3.org/2000/svg";
+                    string xmlns_xlink = @"http://www.w3.org/1999/xlink";
+
+                    writer.WriteStartElement("svg");
+                    writer.WriteAttributeString("version", "1.1");
+                    writer.WriteAttributeString("xmlns", xmlns);
+                    writer.WriteAttributeString("xmlns", "xlink", null, xmlns_xlink);
+                    writer.WriteAttributeString("xml", "space", null, "preserve");
+                    foreach (Shape item in shapes)
+                    {
+                        if (item is Ellipse) writeEllipse(writer, item);
+                        else if (item is Line) writePolyline(writer, item);
+                        else if (item is Triangle) writePolygon(writer, item);
+                        else if (item is Quadrangle) writePolygon(writer, item);
+                    }
+                    writer.WriteEndElement(); // </svg>
+                }
+            }
+            return 0;
         }
         public List<Shape> loadShapes(string filePath)
         {
@@ -386,6 +393,8 @@ namespace ShapeEditor.src.IO
                                     }
                                     else if (nodeName == POLYGON || nodeName == POLYLINE)
                                     {
+                                        className = reader.GetAttribute(CLASS);
+
                                         points = reader.GetAttribute(POINTS);
                                         fill = reader.GetAttribute(FILL);
                                         fillOpacity = reader.GetAttribute(FILL_OPACITY);
@@ -397,6 +406,8 @@ namespace ShapeEditor.src.IO
                                     }
                                     else if (nodeName == ELLIPSE)
                                     {
+                                        className = reader.GetAttribute(CLASS);
+
                                         cx = reader.GetAttribute(CX);
                                         cy = reader.GetAttribute(CY);
                                         rx = reader.GetAttribute(RX);
