@@ -221,7 +221,9 @@ namespace ShapeEditor.src.IO
                     bool resultParse;
                     int j = 2 * i;
                     resultParse = Double.TryParse(split[j], style, culture, out x);
+                    if (resultParse == false) throw new Exception("Невозможно прочитать значение координаты точки");
                     resultParse = Double.TryParse(split[j + 1], style, culture, out y);
+                    if (resultParse == false) throw new Exception("Невозможно прочитать значение координаты точки");
 
                     listPoints.Add(new Point(x, y));
                 }
@@ -231,6 +233,8 @@ namespace ShapeEditor.src.IO
             Color borderColor = (Color)ColorConverter.ConvertFromString(stroke);
             double borderWidth;
             bool parseResult = Double.TryParse(strokeWidth, out borderWidth);
+            if (parseResult == false) throw new Exception("Невозможно прочитать значение ширины линии");
+
             ShapeTypes.ShapeType shapeType;
             switch (className)
             {
@@ -266,10 +270,10 @@ namespace ShapeEditor.src.IO
             string[] split = points.Split(sep);
             List<Point> listPoints = new List<Point>();
 
-            if(split.Length % 2 == 0)
+            if (split.Length % 2 == 0)
             {
                 int N = split.Length / 2;
-                for(int i = 0; i < N; i++)
+                for (int i = 0; i < N; i++)
                 {
                     int x;
                     int y;
@@ -278,12 +282,13 @@ namespace ShapeEditor.src.IO
                     bool resultParse;
                     int j = 2 * i;
                     resultParse = Int32.TryParse(split[j], out x);
-                    resultParse = Int32.TryParse(split[j+1], out y);
+                    resultParse = Int32.TryParse(split[j + 1], out y);
 
                     point = this.TransformPixelToOrtho(x, y);
                     listPoints.Add(point);
                 }
             }
+            else throw new Exception("Точки указаны некорректно");
 
             Color fillColor = (Color)ColorConverter.ConvertFromString(fill);
             Color borderColor = (Color)ColorConverter.ConvertFromString(stroke);
