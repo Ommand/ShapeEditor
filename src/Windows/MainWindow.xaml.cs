@@ -127,7 +127,7 @@ namespace ShapeEditor.Windows
                 {btnTriangle, GraphicsController.Mode.DrawTriangle},
                 {btnEllipse, GraphicsController.Mode.DrawEllipse},
                 {btnLine, GraphicsController.Mode.DrawLine},
-                {btnRect, GraphicsController.Mode.DrawRect}
+                {btnQuadrilateral, GraphicsController.Mode.DrawRect}
             };
 
             //Assign button style to mode change

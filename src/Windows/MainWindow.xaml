@@ -41,7 +41,7 @@
                 <StackPanel>
                     <TextBlock Margin="10 10 12 8"  Style="{DynamicResource MaterialDesignTitleTextBlock}">New shape</TextBlock>
                     <StackPanel Orientation="Horizontal">
-                        <Button x:Name="btnRect" Height="35" Width="35" ToolTip="New rectangle" Margin="2"  Style="{DynamicResource MaterialDesignRaisedButton}" Click="ButtonAddShape_Click">
+                        <Button x:Name="btnQuadrilateral" Height="35" Width="35" ToolTip="New quadrilateral" Margin="2"  Style="{DynamicResource MaterialDesignRaisedButton}" Click="ButtonAddShape_Click">
                             <materialDesign:PackIcon Kind="CheckboxBlankOutline" Margin="-12,0" Width="Auto" Height="Auto"/>
                         </Button>
                         <Button x:Name="btnEllipse" Height="35" Width="35" ToolTip="New ellipse"   Margin="2"  Style="{DynamicResource MaterialDesignRaisedButton}" Click="ButtonAddShape_Click">
@@ -82,8 +82,7 @@
 
                     <StackPanel Orientation="Horizontal" Margin="10,15,10,10">
                         <TextBlock Style="{DynamicResource MaterialDesignSubheadingTextBlock}" Margin="0,0,0,0"> OpenGL</TextBlock>
-                        <ToggleButton Style="{DynamicResource MaterialDesignSwitchDarkToggleButton}" VerticalAlignment="Center" Margin="8 0 0 0"
-                          ToolTip="MaterialDesignSwitchDarkToggleButton" IsChecked="{Binding IsWpfMode,ElementName=window}" />
+                        <ToggleButton Style="{DynamicResource MaterialDesignSwitchDarkToggleButton}" VerticalAlignment="Center" Margin="8 0 0 0" IsChecked="{Binding IsWpfMode,ElementName=window}" />
                         <TextBlock Style="{DynamicResource MaterialDesignSubheadingTextBlock}" Margin="20,0,0,0"><Run Text="WPF"/></TextBlock>
                     </StackPanel>
                 </StackPanel>
