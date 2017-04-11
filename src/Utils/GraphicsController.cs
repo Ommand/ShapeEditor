@@ -489,7 +489,9 @@ namespace ShapeEditor.Utils
                             if (BoundingBox.IsOnBoundary(orthoPoint) != PointPlaces.PointPlace.None)
                             {
                                 var formSelection = SelectedShape.FormSelection().ToList();
-                                expandController = new ShapeExpandController(new KeyValuePair<int, int>(inX, inY), BoundingBox.IsOnBoundary(orthoPoint), new Point(formSelection[0].X, formSelection[1].Y), new Point(formSelection[1].X, formSelection[0].Y), GetOrthoPoint);
+                                var leftBottom = new Point(formSelection[0].X, formSelection[1].Y);
+                                var rightTop = new Point(formSelection[1].X, formSelection[0].Y);
+                                expandController = new ShapeExpandController(new KeyValuePair<int, int>(inX, inY), BoundingBox.IsOnBoundary(orthoPoint), leftBottom, rightTop, GetOrthoPoint, Point.Subtract(leftBottom, rightTop).Length * 0.05);
                             }
                             else
                                 goto case Mode.None;
@@ -688,6 +690,8 @@ namespace ShapeEditor.Utils
         private KeyValuePair<int, int> lastTransformPoint;
         private Func<int, int, Point> Transform;
 
+        private double minExpand;
+
         public Expand CalculateExpand(KeyValuePair<int, int> newPoint)
         {
             Expand result = null;
@@ -731,21 +735,37 @@ namespace ShapeEditor.Utils
                     center = leftBottom;
                     break;
             }
-            kX = double.IsNaN(kX) ? (currentPoint.X - center.X) / (prevPoint.X - center.X) : kX;
-            kY = double.IsNaN(kY) ? (currentPoint.Y - center.Y) / (prevPoint.Y - center.Y) : kY;
+
+            if (Math.Abs(currentPoint.X - center.X) < minExpand)
+            {
+                kX = 1;
+                newPoint = new KeyValuePair<int, int>(lastTransformPoint.Key,newPoint.Value);
+            }
+
+            if (Math.Abs(currentPoint.Y - center.Y) < minExpand)
+            {
+                kY = 1;
+                newPoint = new KeyValuePair<int, int>(newPoint.Key, lastTransformPoint.Value);
+            }
+
+            if (double.IsNaN(kX))
+                kX = (currentPoint.X - center.X) / (prevPoint.X - center.X);
+            if (double.IsNaN(kY))
+                kY = (currentPoint.Y - center.Y) / (prevPoint.Y - center.Y);
 
             result = new Expand(center, kX, kY);
             lastTransformPoint = newPoint;
             return result;
         }
 
-        public ShapeExpandController(KeyValuePair<int, int> p, PointPlaces.PointPlace mode, Point leftBottom, Point rightTop, Func<int, int, Point> transform)
+        public ShapeExpandController(KeyValuePair<int, int> p, PointPlaces.PointPlace mode, Point leftBottom, Point rightTop, Func<int, int, Point> transform, double minExpand)
         {
             lastTransformPoint = p;
             this.mode = mode;
             this.leftBottom = leftBottom;
             this.rightTop = rightTop;
             Transform = transform;
+            this.minExpand = minExpand;
         }
 
     }
