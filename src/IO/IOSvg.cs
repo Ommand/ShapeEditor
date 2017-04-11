@@ -233,7 +233,7 @@ namespace ShapeEditor.src.IO
             Color borderColor = (Color)ColorConverter.ConvertFromString(stroke);
             double borderWidth;
             bool parseResult = Double.TryParse(strokeWidth, out borderWidth);
-            if (parseResult == false) throw new Exception("Невозможно прочитать значение ширины линии");
+            if (parseResult == false) throw new Exception("Невозможно прочитать значение ширины контура");
 
             ShapeTypes.ShapeType shapeType;
             switch (className)

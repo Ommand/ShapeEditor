@@ -48,7 +48,7 @@ namespace ShapeEditor.src.IO
             {
                 result = ioShape.loadShapes(filePath);
             }
-            else throw new Exception("Указанный файл иммет недопустимое расширение");
+            else throw new Exception("Указанный файл имеет недопустимое расширение");
             return result;
         }
         public int saveShapes(List<Shape> shapes, string filePath)
