@@ -18,8 +18,8 @@ namespace ShapeEditor.src.IO
 
         private IOShapeEditor ioShape;
 
-        public IOProxy(GraphicsController _graphicsController, Func<int, int, Point> _TransformPixelToOrtho, Func<double, double, Point> _TransformOrthoToPixel): 
-            base(_graphicsController, _TransformPixelToOrtho, _TransformOrthoToPixel)
+        public IOProxy(GraphicsController _graphicsController): 
+            base(_graphicsController)
         {
             
         }
@@ -27,12 +27,12 @@ namespace ShapeEditor.src.IO
         {
             if(Regex.IsMatch(filePath, SVG_FORMAT, RegexOptions.Compiled | RegexOptions.IgnoreCase))
             {
-                ioShape = new IOSvg(this.graphicsController, this.TransformPixelToOrtho, this.TransformOrthoToPixel);
+                ioShape = new IOSvg(this.graphicsController);
                 return true;
             }
             else if(Regex.IsMatch(filePath, XML_FORMAT, RegexOptions.Compiled | RegexOptions.IgnoreCase))
             {
-                ioShape = new IOSvg(this.graphicsController, this.TransformPixelToOrtho, this.TransformOrthoToPixel);
+                ioShape = new IOSvg(this.graphicsController);
                 return true;
             }
             else if(Regex.IsMatch(filePath, JSON_FORMAT, RegexOptions.Compiled | RegexOptions.IgnoreCase))

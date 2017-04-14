@@ -14,8 +14,8 @@ namespace ShapeEditor.src.IO
 {
     class IOSvg: IOData, IOShapeEditor
     {
-        public IOSvg(GraphicsController _graphicsController, Func<int, int, Point> _TransformPixelToOrtho, Func<double, double, Point> _TransformOrthoToPixel) 
-            : base(_graphicsController, _TransformPixelToOrtho, _TransformOrthoToPixel)
+        public IOSvg(GraphicsController _graphicsController) 
+            : base(_graphicsController)
         {
         }
 
@@ -224,11 +224,11 @@ namespace ShapeEditor.src.IO
 
             double scale, centerX, centerY;
             resultParse = Double.TryParse(_scale, style, culture, out scale);
-            if (resultParse == false) throw new Exception("Невозможно прочитать значение");
+            if (resultParse == false) throw new Exception("Невозможно прочитать значение масштаба сцены");
             resultParse = Double.TryParse(_centerX, style, culture, out centerX);
-            if (resultParse == false) throw new Exception("Невозможно прочитать значение");
+            if (resultParse == false) throw new Exception("Невозможно прочитать значение точки центра сцены по оси X");
             resultParse = Double.TryParse(_centerY, style, culture, out centerY);
-            if (resultParse == false) throw new Exception("Невозможно прочитать значение");
+            if (resultParse == false) throw new Exception("Невозможно прочитать значение точки центра сцены по оси Y");
 
             this.graphicsController.Scale = scale;
             this.graphicsController.CenterScene = new Point(centerX, centerY);

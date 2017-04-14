@@ -41,14 +41,14 @@ namespace ShapeEditor.src.IO
             string result = String.Format(CultureInfo.InvariantCulture, "#{0:X2}{1:X2}{2:X2}", color.R, color.G, color.B);
             return result;
         }
-        public IOData(GraphicsController _graphicsController, Func<int, int, Point> _TransformPixelToOrtho, Func<double, double, Point> _TransformOrthoToPixel)
+        public IOData(GraphicsController _graphicsController)
         {
-            if (_TransformPixelToOrtho == null || _TransformOrthoToPixel == null || _graphicsController == null)
+            if (_graphicsController == null)
                 throw new ArgumentNullException();
 
             this.graphicsController = _graphicsController;
-            this.TransformPixelToOrtho = _TransformPixelToOrtho;
-            this.TransformOrthoToPixel = _TransformOrthoToPixel;
+            this.TransformPixelToOrtho = this.graphicsController.GetOrthoPoint;
+            this.TransformOrthoToPixel = this.graphicsController.GetPointOrtho;
         }
     }
 }
