@@ -253,7 +253,7 @@ namespace ShapeEditor.Windows
             {
                 try
                 {
-                    new IOProxy(_graphics.GetOrthoPoint, _graphics.GetPointOrtho).saveShapes(_graphics.ShapesList, sfd.FileName);
+                    new IOProxy(_graphics, _graphics.GetOrthoPoint, _graphics.GetPointOrtho).saveShapes(_graphics.ShapesList, sfd.FileName);
                     HandleException("Save completed");
                 }
                 catch (Exception ex)
@@ -271,7 +271,7 @@ namespace ShapeEditor.Windows
             {
                 try
                 {
-                    var graphicsShapesList = new IOProxy(_graphics.GetOrthoPoint, _graphics.GetPointOrtho).loadShapes(ofd.FileName);
+                    var graphicsShapesList = new IOProxy(_graphics, _graphics.GetOrthoPoint, _graphics.GetPointOrtho).loadShapes(ofd.FileName);
                     if (graphicsShapesList == null)
                         HandleException("Load failed");
                     else

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using ShapeEditor.Shapes;
 using System.Text.RegularExpressions;
 using System.Windows;
+using ShapeEditor.Utils;
 
 namespace ShapeEditor.src.IO
 {
@@ -17,7 +18,8 @@ namespace ShapeEditor.src.IO
 
         private IOShapeEditor ioShape;
 
-        public IOProxy(Func<int, int, Point> _TransformPixelToOrtho, Func<double, double, Point> _TransformOrthoToPixel): base(_TransformPixelToOrtho, _TransformOrthoToPixel)
+        public IOProxy(GraphicsController _graphicsController, Func<int, int, Point> _TransformPixelToOrtho, Func<double, double, Point> _TransformOrthoToPixel): 
+            base(_graphicsController, _TransformPixelToOrtho, _TransformOrthoToPixel)
         {
             
         }
@@ -25,12 +27,12 @@ namespace ShapeEditor.src.IO
         {
             if(Regex.IsMatch(filePath, SVG_FORMAT, RegexOptions.Compiled | RegexOptions.IgnoreCase))
             {
-                ioShape = new IOSvg(this.TransformPixelToOrtho, this.TransformOrthoToPixel);
+                ioShape = new IOSvg(this.graphicsController, this.TransformPixelToOrtho, this.TransformOrthoToPixel);
                 return true;
             }
             else if(Regex.IsMatch(filePath, XML_FORMAT, RegexOptions.Compiled | RegexOptions.IgnoreCase))
             {
-                ioShape = new IOSvg(this.TransformPixelToOrtho, this.TransformOrthoToPixel);
+                ioShape = new IOSvg(this.graphicsController, this.TransformPixelToOrtho, this.TransformOrthoToPixel);
                 return true;
             }
             else if(Regex.IsMatch(filePath, JSON_FORMAT, RegexOptions.Compiled | RegexOptions.IgnoreCase))
