@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ShapeEditor.Utils;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -11,6 +12,8 @@ namespace ShapeEditor.src.IO
 {
     public abstract class IOData
     {
+        protected GraphicsController graphicsController;
+
         protected Func<int, int, Point> TransformPixelToOrtho;
         protected Func<double, double, Point> TransformOrthoToPixel;
 
@@ -38,12 +41,14 @@ namespace ShapeEditor.src.IO
             string result = String.Format(CultureInfo.InvariantCulture, "#{0:X2}{1:X2}{2:X2}", color.R, color.G, color.B);
             return result;
         }
-        public IOData(Func<int, int, Point> _TransformPixelToOrtho, Func<double, double, Point> _TransformOrthoToPixel)
+        public IOData(GraphicsController _graphicsController)
         {
-            if (_TransformPixelToOrtho == null || _TransformOrthoToPixel == null)
+            if (_graphicsController == null)
                 throw new ArgumentNullException();
-            this.TransformPixelToOrtho = _TransformPixelToOrtho;
-            this.TransformOrthoToPixel = _TransformOrthoToPixel;
+
+            this.graphicsController = _graphicsController;
+            this.TransformPixelToOrtho = this.graphicsController.GetOrthoPoint;
+            this.TransformOrthoToPixel = this.graphicsController.GetPointOrtho;
         }
     }
 }

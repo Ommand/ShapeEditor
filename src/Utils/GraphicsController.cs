@@ -159,6 +159,47 @@ namespace ShapeEditor.Utils
                 UpdateScale();
             }
         }
+        public Point CenterScene
+        {
+            get
+            {
+                double x0, y0;
+                switch (CurrentRenderMode)
+                {
+                    case RenderMode.OpenGL:
+                        {
+                            x0 = oglWindow.CenterX;
+                            y0 = oglWindow.CenterY;
+                        }
+                        break;
+                    case RenderMode.WPF:
+                        {
+                            x0 = wpfWindow.CenterX;
+                            y0 = wpfWindow.CenterY;
+                        }
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+                return new Point(x0, y0);
+            }
+            set
+            {
+                double x0 = value.X;
+                double y0 = value.Y;
+                switch (CurrentRenderMode)
+                {
+                    case RenderMode.OpenGL:                       
+                        oglWindow.SetTranslateD(x0, y0);             
+                        break;
+                    case RenderMode.WPF:                       
+                        wpfWindow.SetTranslateD(x0, y0);                                                
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            }
+        }
         List<Point> currentPoints = new List<Point>();
         private Mode _canvasMode;
         private Shape _dynamicShape;

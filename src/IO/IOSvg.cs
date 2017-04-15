@@ -8,34 +8,41 @@ using System.Globalization;
 using System.Xml;
 using System.Windows.Media;
 using ShapeEditor.Fabrics;
+using ShapeEditor.Utils;
 
 namespace ShapeEditor.src.IO
 {
     class IOSvg: IOData, IOShapeEditor
     {
-        public IOSvg(Func<int, int, Point> _TransformPixelToOrtho, Func<double, double, Point> _TransformOrthoToPixel) 
-            : base(_TransformPixelToOrtho, _TransformOrthoToPixel)
+        public IOSvg(GraphicsController _graphicsController) 
+            : base(_graphicsController)
         {
         }
 
         #region Consts
-        const string FILL = "fill";
-        const string STROKE = "stroke";
-        const string STROKE_WIDTH = "stroke-width";
-        const string FILL_OPACITY = "fill-opacity";
-        const string STROKE_OPACITY = "stroke-opacity";
-        const string CX = "cx";
-        const string CY = "cy";
-        const string RX = "rx";
-        const string RY = "ry";
-        const string POINTS = "points";
-        const string CLASS = "className";
-        const string ELLIPSE = "ellipse";
-        const string POLYLINE = "polyline";
-        const string POLYGON = "polygon";
-        const string CLASS_ATR = "g";
-        const string TRANSFORM = "transform";
-        const string POINTS_ORTH = "points-orth";
+        const string FILL =                 "fill";
+        const string STROKE =               "stroke";
+        const string STROKE_WIDTH =         "stroke-width";
+        const string FILL_OPACITY =         "fill-opacity";
+        const string STROKE_OPACITY =       "stroke-opacity";
+        const string CX =                   "cx";
+        const string CY =                   "cy";
+        const string RX =                   "rx";
+        const string RY =                   "ry";
+        const string POINTS =               "points";
+        const string CLASS =                "className";
+        const string ELLIPSE =              "ellipse";
+        const string POLYLINE =             "polyline";
+        const string POLYGON =              "polygon";
+        const string CLASS_ATR =            "g";
+        const string TRANSFORM =            "transform";
+
+        const string GRAPHICS_CONTROLER =   "graphics_controler_settings";
+        const string SCENE_PARAMETERS =     "scene_parameters";
+        const string POINTS_ORTH =          "points-orth";
+        const string CENTER_X_ORTH =        "centerX-orth";
+        const string CENTER_Y_ORTH =        "centerY-orth";
+        const string SCALE_SCENE_ORTH =     "scale-orth";
         #endregion
 
         #region Methods
@@ -60,6 +67,23 @@ namespace ShapeEditor.src.IO
         }
 
         #region Save methods
+        private int writeGraphicsControlerSettings(XmlWriter writer)
+        {
+            Point center = graphicsController.CenterScene;
+            string centerX = String.Format(CultureInfo.InvariantCulture, "{0:0.###############}", center.X);
+            string centerY = String.Format(CultureInfo.InvariantCulture, "{0:0.###############}", center.Y);
+            string scale = String.Format(CultureInfo.InvariantCulture, "{0:0.###############}", this.graphicsController.Scale);
+
+            writer.WriteStartElement(GRAPHICS_CONTROLER);
+            writer.WriteStartElement(SCENE_PARAMETERS);
+            writer.WriteAttributeString(SCALE_SCENE_ORTH, scale);
+            writer.WriteAttributeString(CENTER_X_ORTH, centerX);
+            writer.WriteAttributeString(CENTER_Y_ORTH, centerY);
+            writer.WriteEndElement(); // /scene_parametrs
+            writer.WriteEndElement(); // /graphics_controler
+
+            return 0;
+        }
         private int writePolyline(XmlWriter writer, Shape shape)
         {
             writer.WriteStartElement(POLYLINE);
@@ -192,6 +216,25 @@ namespace ShapeEditor.src.IO
         #endregion
 
         #region Load methods
+        private int setGraphicsControlerSettings(string _scale, string _centerX, string _centerY)
+        {
+            NumberStyles style = NumberStyles.Number | NumberStyles.AllowDecimalPoint;
+            CultureInfo culture = CultureInfo.InvariantCulture;
+            bool resultParse;
+
+            double scale, centerX, centerY;
+            resultParse = Double.TryParse(_scale, style, culture, out scale);
+            if (resultParse == false) throw new Exception("Невозможно прочитать значение масштаба сцены");
+            resultParse = Double.TryParse(_centerX, style, culture, out centerX);
+            if (resultParse == false) throw new Exception("Невозможно прочитать значение точки центра сцены по оси X");
+            resultParse = Double.TryParse(_centerY, style, culture, out centerY);
+            if (resultParse == false) throw new Exception("Невозможно прочитать значение точки центра сцены по оси Y");
+
+            this.graphicsController.Scale = scale;
+            this.graphicsController.CenterScene = new Point(centerX, centerY);
+
+            return 0;
+        }
         private Shape buildEllipse(string className, string cx, string cy, string rx, string ry, string fill, string fillOpacity, string stroke, string strokeWidth, string strokeOpacity)
         {
             Ellipse shape;
@@ -340,6 +383,9 @@ namespace ShapeEditor.src.IO
                     writer.WriteAttributeString("xmlns", xmlns);
                     writer.WriteAttributeString("xmlns", "xlink", null, xmlns_xlink);
                     writer.WriteAttributeString("xml", "space", null, "preserve");
+
+                    writeGraphicsControlerSettings(writer);
+
                     foreach (Shape item in shapes)
                     {
                         if (item is Ellipse) writeEllipse(writer, item);
@@ -423,6 +469,14 @@ namespace ShapeEditor.src.IO
                                         //shape = buildEllipse(className, cx, cy, rx, ry, fill, fillOpacity, stroke, strokeWidth, strokeOpacity);
                                         shape = buildEllipseWithOrth(className, pointsOrth, fill, fillOpacity, stroke, strokeWidth, strokeOpacity);
                                         if (shape != null) listShapes.Add(shape);
+                                    }
+                                    else if(nodeName == SCENE_PARAMETERS)
+                                    {
+                                        string scale = reader.GetAttribute(SCALE_SCENE_ORTH);
+                                        string centerX = reader.GetAttribute(CENTER_X_ORTH);
+                                        string centerY = reader.GetAttribute(CENTER_Y_ORTH);
+
+                                        this.setGraphicsControlerSettings(scale, centerX, centerY);
                                     }
                                 }
                                 break;
