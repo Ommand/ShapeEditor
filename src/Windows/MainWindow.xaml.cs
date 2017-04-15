@@ -278,6 +278,7 @@ namespace ShapeEditor.Windows
                     {
                         _graphics.ShapesList = graphicsShapesList;
                         HandleException("Load completed");
+                        _graphics.Render();
                     }
                 }
                 catch (Exception ex)
